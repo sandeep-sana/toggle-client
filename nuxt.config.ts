@@ -1,4 +1,3 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -8,5 +7,14 @@ export default defineNuxtConfig({
   css: [
     'bootstrap/dist/css/bootstrap.min.css',
     'bootstrap-icons/font/bootstrap-icons.css',
+    'vue3-toastify/dist/index.css',
   ],
+  plugins:[
+    '~/plugins/toastify.client.js',
+  ],
+  runtimeConfig: {
+    public: {
+      API: process.env.API,
+    },
+  },
 })

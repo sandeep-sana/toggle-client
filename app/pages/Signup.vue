@@ -21,13 +21,8 @@
                     <ErrorMessage name="lastName" class="text-red-500 text-sm" />
                 </div>
                 <div>
-                    <label for="domain">Domain</label>
-                    <Field name="domain" as="input" type="text" rules="required|nospace|alphabate|min:3|max:12" />
-                    <ErrorMessage name="domain" class="text-red-500 text-sm" />
-                </div>
-                <div>
                     <label for="company.name">Company Name</label>
-                    <Field name="company.name" as="input" type="text" rules="required|nospace|alphabate|min:3|max:50" />
+                    <Field name="company.name" as="input" type="text" rules="required|alphabate|min:3|max:50" />
                     <ErrorMessage name="company.name" class="text-red-500 text-sm" />
                 </div>
                 <div>
@@ -35,22 +30,36 @@
                     <Field name="company.email" as="input" type="text" rules="required|nospace|email" />
                     <ErrorMessage name="company.email" class="text-red-500 text-sm" />
                 </div>
-
                 <div>
-                    <button type="submit">Submit</button>
+                    <button type="submit" :disabled="isSubmitting">Submit</button>
                 </div>
             </form>
         </div>
     </div>
 </template>
 
-<script setup lang="ts">
-import { Field, ErrorMessage, useForm } from 'vee-validate'
-import HomeHeader from '~~/headers/Home-Header.vue'
+<script setup>
+import api from '~~/api.config';
+import HomeHeader from '~~/headers/Home-Header.vue';
+import { Field, ErrorMessage, useForm } from 'vee-validate';
+import STATUS from '~~/status';
 
-const { handleSubmit } = useForm({});
+const { $toast } = useNuxtApp();
+const config = useRuntimeConfig();
 
-const signup = handleSubmit((values) => {
-    console.log('submitted:', values)
+const { handleSubmit, isSubmitting } = useForm({});
+
+const signup = handleSubmit(async (values) => {
+    try {
+        const response = await api.post(`${config.public.API}/super-admin/account`, {
+            query: JSON.stringify(values),
+        })
+        if (response.status === STATUS.CREATED) {
+            $toast.success(response.data.message);
+        }
+    } catch (error) {
+        $toast.error(error.response.data.message);
+
+    }
 })
 </script>
