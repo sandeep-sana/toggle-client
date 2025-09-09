@@ -1,5 +1,4 @@
 <template>
-    <HomeHeader />
     <div>
         <div>left side</div>
 
@@ -25,7 +24,6 @@
 
 <script setup>
 import api from '~~/api.config';
-import HomeHeader from '~~/headers/Home-Header.vue';
 import { Field, ErrorMessage, useForm } from 'vee-validate';
 import STATUS from '~~/status';
 

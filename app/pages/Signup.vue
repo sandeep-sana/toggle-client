@@ -1,5 +1,4 @@
 <template>
-    <HomeHeader />
     <div>
         <div>left side</div>
 
@@ -22,13 +21,18 @@
                 </div>
                 <div>
                     <label for="company.name">Company Name</label>
-                    <Field name="company.name" as="input" type="text" rules="required|alphabate|min:3|max:50" />
+                    <Field name="company.name" as="input" type="text" rules="required|min:3|max:50" />
                     <ErrorMessage name="company.name" class="text-red-500 text-sm" />
                 </div>
                 <div>
                     <label for="company.email">Company Email</label>
                     <Field name="company.email" as="input" type="text" rules="required|nospace|email" />
                     <ErrorMessage name="company.email" class="text-red-500 text-sm" />
+                </div>
+                <div>
+                    <label for="description">Description</label>
+                    <Field name="description" as="textarea" rules="required" />
+                    <ErrorMessage name="description" class="text-red-500 text-sm" />
                 </div>
                 <div>
                     <button type="submit" :disabled="isSubmitting">Submit</button>
@@ -40,10 +44,11 @@
 
 <script setup>
 import api from '~~/api.config';
-import HomeHeader from '~~/headers/Home-Header.vue';
-import { Field, ErrorMessage, useForm } from 'vee-validate';
 import STATUS from '~~/status';
+import { useAuth } from '../../function';
+import { Field, ErrorMessage, useForm } from 'vee-validate';
 
+const { login } = useAuth();
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 

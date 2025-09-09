@@ -1,11 +1,23 @@
 <template>
   <div>
     <ToastContainer />
+    <HomeHeader v-if="showHomeHeader" />
+    <SideHeader v-if="showSideHeader" />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
   </div>
 </template>
+
 <script setup>
-import ToastContainer from 'vue3-toastify'
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import ToastContainer from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
+import HomeHeader from "~~/headers/Home-Header.vue";
+import SideHeader from "~~/headers/Side-Header.vue";
+const route = useRoute();
+const ACCESS = ["/", "/login", "/signup"];
+const showHomeHeader = computed(() => ACCESS.includes(route.fullPath));
+const showSideHeader = computed(() => !ACCESS.includes(route.fullPath));
 </script>
