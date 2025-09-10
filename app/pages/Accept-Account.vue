@@ -6,11 +6,12 @@
                 <h6 class="card-subtitle mb-2 text-muted">{{ user.email }}</h6>
                 <p class="card-text">{{ user.description }}</p>
 
+                <button type="button" class="btn btn-outline-danger btn-sm me-2" @click="block(user)">Block</button>
+                <a :href="`${config.public.AUTH}${user.domain}.${config.public.DOMAIN}`"
+                    class="btn btn-outline-danger btn-sm me-2" target="_blank">View Website</a>
                 <button type="button" class="btn btn-outline-danger btn-sm me-2"
-                    @click="reject(user)">Reject</button>
-                <button type="button" class="btn btn-success btn-sm" @click="accept(user)">
-                    Accept
-                </button>
+                    @click="createDatabase(user._id)">Create Database</button>
+
             </div>
         </div>
     </div>
@@ -35,23 +36,17 @@ const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 
 
-const reject = (user) => {
+const block = (user) => {
     modal.value.isConfirmation = true;
-    modal.value.message = `you want to reject ${user.companyName}`;
+    modal.value.message = `you want to block ${user.companyName}`;
     modal.value._id = user._id;
-    modal.value.reject = rejectUser;
-}
-const accept = (user) => {
-    modal.value.isConfirmation = true;
-    modal.value.message = `you want to accept ${user.companyName}`;
-    modal.value._id = user._id;
-    modal.value.reject = acceptUser;
+    modal.value.reject = blockUser;
 }
 
-const acceptUser = async (_id) => {
+const blockUser = async (_id) => {
     try {
         const projection = {
-            status: "ACCEPT",
+            status: "BLOCK",
         }
         const response = await api.post(`${config.public.API}/user/user/${_id}`, {
             projection: JSON.stringify(projection),
@@ -64,27 +59,18 @@ const acceptUser = async (_id) => {
         console.log(error);
     }
 }
-const rejectUser = async (_id) => {
-    try {
-        const projection = {
-            status: "REJECT",
-        }
-        const response = await api.post(`${config.public.API}/user/user/${_id}`, {
-            projection: JSON.stringify(projection),
-        });
-        if (response.status === STATUS.OK) {
-            $toast.success(response.data.message);
-            users.value = users.value.filter(user => user._id != _id);
-        }
-    } catch (error) {
-        console.log(error);
+
+const createDatabase = async (_id) => {
+    const response = await api.post(`${config.public.API}/user/create-database/${_id}`);
+    if (response.status === STATUS.OK) {
+        $toast.success(response.data.message);
     }
 }
 
 
 const init = async () => {
     try {
-        const query = { role: 'ADMIN', status: 'PENDING' }
+        const query = { role: 'ADMIN', status: 'ACCEPT' }
         const res = await api.get(`${config.public.API}/user/users`, {
             params: { query: JSON.stringify(query) }
         })

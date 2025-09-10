@@ -1,4 +1,4 @@
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 export function useAuth() {
     const router = useRouter()
@@ -12,6 +12,7 @@ export function useAuth() {
         if (!_id) {
             router.push('/login');
         }
+        return _id;
     }
     const login = (_id) => {
         localStorage.setItem('_id', _id);
@@ -20,3 +21,17 @@ export function useAuth() {
 
     return { logout, session, login }
 }
+
+export function subDomain() {
+  const host = window.location.hostname; 
+  const parts = host.split(".");
+  if (parts.length < 2) {
+    return null; 
+  }
+  const subdomain = parts[0];
+  if (subdomain === process.env.DOMAIN) {
+    return null;
+  }
+  return subdomain || null;
+}
+

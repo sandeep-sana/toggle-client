@@ -17,22 +17,7 @@ const sidebars = [
         name: 'Dashboard',
         path: '/dashboard',
     },
-    {
-        name: 'Account',
-        path: '/account',
-    },
-    {
-        name: 'Rejected Account',
-        path: '/reject-account',
-    },
-    {
-        name: 'Accept Account',
-        path: '/accept-account',
-    },
-    {
-        name: 'Block Account',
-        path: '/block-account',
-    },
+    
 ]
 const init = () => {
     const domain = subDomain();

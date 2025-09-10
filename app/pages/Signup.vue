@@ -20,14 +20,14 @@
                     <ErrorMessage name="lastName" class="text-red-500 text-sm" />
                 </div>
                 <div>
-                    <label for="company.name">Company Name</label>
-                    <Field name="company.name" as="input" type="text" rules="required|min:3|max:50" />
-                    <ErrorMessage name="company.name" class="text-red-500 text-sm" />
+                    <label for="companyName">Company Name</label>
+                    <Field name="companyName" as="input" type="text" rules="required|min:3|max:50" />
+                    <ErrorMessage name="companyName" class="text-red-500 text-sm" />
                 </div>
                 <div>
-                    <label for="company.email">Company Email</label>
-                    <Field name="company.email" as="input" type="text" rules="required|nospace|email" />
-                    <ErrorMessage name="company.email" class="text-red-500 text-sm" />
+                    <label for="email">Company Email</label>
+                    <Field name="email" as="input" type="text" rules="required|nospace|email" />
+                    <ErrorMessage name="email" class="text-red-500 text-sm" />
                 </div>
                 <div>
                     <label for="description">Description</label>
@@ -45,19 +45,21 @@
 <script setup>
 import api from '~~/api.config';
 import STATUS from '~~/status';
-import { useAuth } from '../../function';
 import { Field, ErrorMessage, useForm } from 'vee-validate';
 
-const { login } = useAuth();
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 
 const { handleSubmit, isSubmitting } = useForm({});
 
 const signup = handleSubmit(async (values) => {
+    const query = {
+        ...values,
+        role: "ADMIN",
+    }
     try {
-        const response = await api.post(`${config.public.API}/super-admin/account`, {
-            query: JSON.stringify(values),
+        const response = await api.post(`${config.public.API}/user/user`, {
+            query: JSON.stringify(query),
         })
         if (response.status === STATUS.CREATED) {
             $toast.success(response.data.message);

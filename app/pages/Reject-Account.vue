@@ -7,9 +7,9 @@
                 <p class="card-text">{{ user.description }}</p>
 
                 <button type="button" class="btn btn-outline-danger btn-sm me-2"
-                    @click="reject(user)">Reject</button>
-                <button type="button" class="btn btn-success btn-sm" @click="accept(user)">
-                    Accept
+                    @click="moveTouser(user)">Move to user</button>
+                <button type="button" class="btn btn-success btn-sm" @click="deleteuser(user)">
+                    Delete
                 </button>
             </div>
         </div>
@@ -26,7 +26,7 @@ import Confirmation from '../../modal/Confirmation.vue';
 
 const users = ref([]);
 const modal = ref({
-    isConfirmation: false,
+    isConfirmation : false,
     message: null,
     reject: null,
 });
@@ -35,23 +35,23 @@ const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 
 
-const reject = (user) => {
+const moveTouser = (user) => {
     modal.value.isConfirmation = true;
-    modal.value.message = `you want to reject ${user.companyName}`;
+    modal.value.message = `you want to move to ${user.companyName}`;
     modal.value._id = user._id;
-    modal.value.reject = rejectUser;
+    modal.value.reject = pendingUser;
 }
-const accept = (user) => {
+const deleteuser = (user) => {
     modal.value.isConfirmation = true;
-    modal.value.message = `you want to accept ${user.companyName}`;
+    modal.value.message = `you want to delete ${user.companyName}`;
     modal.value._id = user._id;
-    modal.value.reject = acceptUser;
+    modal.value.reject = userDelete;
 }
 
-const acceptUser = async (_id) => {
+const pendingUser = async (_id) => {
     try {
         const projection = {
-            status: "ACCEPT",
+            status: "PENDING",
         }
         const response = await api.post(`${config.public.API}/user/user/${_id}`, {
             projection: JSON.stringify(projection),
@@ -63,11 +63,11 @@ const acceptUser = async (_id) => {
     } catch (error) {
         console.log(error);
     }
-}
-const rejectUser = async (_id) => {
+} 
+const userDelete = async (_id) => {
     try {
         const projection = {
-            status: "REJECT",
+            status: "DELETE",
         }
         const response = await api.post(`${config.public.API}/user/user/${_id}`, {
             projection: JSON.stringify(projection),
@@ -79,12 +79,12 @@ const rejectUser = async (_id) => {
     } catch (error) {
         console.log(error);
     }
-}
+} 
 
 
 const init = async () => {
     try {
-        const query = { role: 'ADMIN', status: 'PENDING' }
+        const query = { role: 'ADMIN', status: 'REJECT' }
         const res = await api.get(`${config.public.API}/user/users`, {
             params: { query: JSON.stringify(query) }
         })
