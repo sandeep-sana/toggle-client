@@ -17,6 +17,10 @@ const sidebars = [
         name: 'Dashboard',
         path: '/dashboard',
     },
+    {
+        name: 'Role',
+        path: '/role',
+    },
     
 ]
 const init = () => {
