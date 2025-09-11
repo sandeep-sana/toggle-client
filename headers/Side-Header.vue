@@ -17,12 +17,14 @@ import STATUS from "~~/status";
 import api from "~~/api.config";
 import { ref, onMounted } from "vue";
 import draggable from "vuedraggable";
-import { subDomain, session } from "~~/function";
+import { subDomain, session, logout } from "~~/function";
+import { useGlobalStore } from "~/stores/global";
 
 const _id = ref(null);
 const modules = ref([]);
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
+const globalStore = useGlobalStore();
 
 const updateModules = async () => {
     try {
@@ -32,8 +34,8 @@ const updateModules = async () => {
         const response = await api.post(`${config.public.API}/user/user/${_id.value}`, {
             projection: JSON.stringify(projection),
         });
-        if(response.status === STATUS.OK){
-            $toast.success(response.data.message);
+        if (response.status === STATUS.OK) {
+            // $toast.success(response.data.message);
         }
     } catch (error) {
         console.log(error);
@@ -42,6 +44,10 @@ const updateModules = async () => {
 
 watch(modules, async () => {
     await updateModules();
+})
+
+watch(globalStore.isSideHeader, () => {
+    console.log(globalStore)
 })
 
 const init = async () => {

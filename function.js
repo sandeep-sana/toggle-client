@@ -1,25 +1,13 @@
 import { useRouter, useRoute } from 'vue-router'
 
 export function useAuth() {
-    const router = useRouter()
 
-    const logout = () => {
-        localStorage.removeItem('_id')
-        router.push('/')
-    }
-    const session = () => {
-        const _id = localStorage.getItem('_id');
-        if (!_id) {
-            router.push('/login');
-        }
-        return _id;
-    }
     const login = (_id) => {
         localStorage.setItem('_id', _id);
         router.push('/dashboard')
     }
 
-    return { logout, session, login }
+    return { login }
 }
 
 export function subDomain() {
@@ -35,10 +23,26 @@ export function subDomain() {
     return subdomain || null;
 }
 export const session = () => {
+    const router = useRouter();
     const _id = localStorage.getItem('_id');
     if (!_id) {
-        router.push('/login');
+        router.push('/');
     }
     return _id;
 }
 
+export const activeInactive = (type, value) => {
+    if (type === "role") {
+        if (value) {
+            return "Active";
+        } else {
+            return "Inactive"
+        }
+    }
+    return
+}
+export const logout = () => {
+    const router = useRouter();
+    localStorage.removeItem('_id')
+    router.push('/')
+}

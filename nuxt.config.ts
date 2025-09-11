@@ -1,4 +1,5 @@
 export default defineNuxtConfig({
+  srcDir: 'app',
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   devServer:{
@@ -8,6 +9,7 @@ export default defineNuxtConfig({
     'bootstrap/dist/css/bootstrap.min.css',
     'bootstrap-icons/font/bootstrap-icons.css',
     'vue3-toastify/dist/index.css',
+    '~/assets/css/common.css',
   ],
   plugins:[
     '~/plugins/toastify.client.js',
@@ -19,4 +21,7 @@ export default defineNuxtConfig({
       DOMAIN: process.env.DOMAIN,
     },
   },
+  modules: [
+    '@pinia/nuxt',
+  ],
 })

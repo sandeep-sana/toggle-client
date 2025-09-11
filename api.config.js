@@ -23,7 +23,7 @@ api.interceptors.request.use(
       } else {
         delete config.headers["dbName"];
       }
-      const _id = session();
+      const _id = localStorage.getItem('_id');
       if(_id){
         config.headers["_id"] = _id;
       }else{
