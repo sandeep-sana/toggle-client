@@ -2,10 +2,8 @@
 
 </template>
 <script setup>
-import { useAuth } from '../../function';
+import { session } from '../../function';
 
-const router = useRouter();
-const { session } = useAuth();
 
 onMounted(session);
 </script>

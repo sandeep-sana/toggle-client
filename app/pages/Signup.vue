@@ -92,7 +92,10 @@ const config = useRuntimeConfig();
 const { handleSubmit, isSubmitting } = useForm({});
 
 const signup = handleSubmit(async (values) => {
-    const query = { ...values, role: 'ADMIN' };
+    const query = {
+        ...values,
+        role: "SYSTEM_ADMIN",
+    }
     try {
         const response = await api.post(`${config.public.API}/user/user`, {
             query: JSON.stringify(query),

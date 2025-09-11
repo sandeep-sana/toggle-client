@@ -12,10 +12,11 @@
 <script setup>
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import ToastContainer from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import ToastContainer from "vue3-toastify";
 import HomeHeader from "~~/headers/Home-Header.vue";
 import SideHeader from "~~/headers/Side-Header.vue";
+
 const route = useRoute();
 const ACCESS = ["/", "/login", "/signup"];
 const showHomeHeader = computed(() => ACCESS.includes(route.fullPath));
