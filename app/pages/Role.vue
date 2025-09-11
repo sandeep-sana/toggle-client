@@ -19,6 +19,7 @@ import FormModal from '../../modal/FormModal.vue'
 import api from '~~/api.config'
 import STATUS from '~~/status';
 
+const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 
 
@@ -46,10 +47,12 @@ const addRole = () => {
 }
 
 const saveRole = async (values) => {
-    console.log('✅ Role saved:', values)
     const response = await api.post(`${config.public.API}/role/role`, {
         query: JSON.stringify(values)
     })
+    if(response.status === STATUS.CREATED){
+        $toast.success(response.data.message);
+    }
 }
 
 const init = async () => {
