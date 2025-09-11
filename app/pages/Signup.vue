@@ -55,7 +55,7 @@ const { handleSubmit, isSubmitting } = useForm({});
 const signup = handleSubmit(async (values) => {
     const query = {
         ...values,
-        role: "ADMIN",
+        role: "SYSTEM_ADMIN",
     }
     try {
         const response = await api.post(`${config.public.API}/user/user`, {

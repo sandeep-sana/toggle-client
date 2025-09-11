@@ -17,7 +17,7 @@
 <script setup>
 import STATUS from '~~/status';
 import api from '~~/api.config';
-import { useAuth } from '../../function';
+import { session } from '../../function';
 import { ref, reactive, onMounted } from 'vue';
 import Confirmation from '../../modal/Confirmation.vue';
 
@@ -27,7 +27,6 @@ const modal = ref({
     message: null,
     reject: null,
 });
-const { session } = useAuth();
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 

@@ -1,39 +1,56 @@
 <template>
-    <component v-if="currentComponent" :is="currentComponent" />
+    <div>
+        <draggable v-model="modules" item-key="name" animation="200">
+            <template #item="{ element }">
+                <button class="m-2 p-2 bg-blue-500 text-white rounded"
+                    @click="$router.push(`/${element.toLowerCase()}`)">
+                    {{ element.toLowerCase() }}
+                </button>
+            </template>
+        </draggable>
+        <button @click="logout">Logout</button>
+    </div>
 </template>
 
 <script setup>
 import STATUS from "~~/status";
 import api from "~~/api.config";
-import { subDomain, useAuth } from "~~/function";
-import { ref, computed, onMounted, defineAsyncComponent } from "vue";
+import { ref, onMounted } from "vue";
+import draggable from "vuedraggable";
+import { subDomain, session } from "~~/function";
 
-
-const role = ref(null);
-const dbName = ref(null);
-const { session } = useAuth();
+const _id = ref(null);
+const modules = ref([]);
+const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
-const componentMap = {
-    SUPERADMIN: defineAsyncComponent(() => import("../common/Super-Admin-Side-Header.vue")),
-    ADMIN: defineAsyncComponent(() => import("../common/Customer-Header.vue")),
-};
 
-const normalizeRole = (r) => (r ? String(r).replace(/[^A-Za-z0-9]/g, "") : "");
+const updateModules = async () => {
+    try {
+        const projection = {
+            modules: modules.value,
+        }
+        const response = await api.post(`${config.public.API}/user/user/${_id.value}`, {
+            projection: JSON.stringify(projection),
+        });
+        if(response.status === STATUS.OK){
+            $toast.success(response.data.message);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
 
-const currentComponent = computed(() => {
-    const key = normalizeRole(role.value);
-    return componentMap[key]
-});
+watch(modules, async () => {
+    await updateModules();
+})
 
 const init = async () => {
     try {
-        const domain = subDomain();
-        dbName.value = domain;
-        const _id = session();
-        console.log(_id)
-        const res = await api.get(`${config.public.API}/user/user/${_id}`);
+        subDomain();
+        _id.value = session();
+        const res = await api.get(`${config.public.API}/user/user/${_id.value}`);
         if (res.status === STATUS.OK && res.data?.user?.role) {
-            role.value = res.data.user.role;
+            modules.value = res.data.user.modules;
         }
     } catch (err) {
         console.error(err);

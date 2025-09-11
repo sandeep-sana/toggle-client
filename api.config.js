@@ -1,5 +1,5 @@
 import axios from "axios";
-import { subDomain } from "./function";
+import { subDomain, session } from "./function";
 
 const api = axios.create({
   baseURL: process.env.API,
@@ -21,7 +21,13 @@ api.interceptors.request.use(
       if (dbName) {
         config.headers["dbName"] = dbName;
       } else {
-        delete config.headers["dbName"]; // don’t send empty header
+        delete config.headers["dbName"];
+      }
+      const _id = session();
+      if(_id){
+        config.headers["_id"] = _id;
+      }else{
+        delete config.headers["_id"];
       }
     }
     return config;
