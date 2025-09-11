@@ -31,12 +31,7 @@ const init = async () => {
         dbName.value = domain;
         const _id = session();
         console.log(_id)
-        const res = await api.get(`${config.public.API}/user/user`,{
-            params:{
-                dbName: dbName.value,
-                _id: _id,
-            }
-        });
+        const res = await api.get(`${config.public.API}/user/user/${_id}`);
         if (res.status === STATUS.OK && res.data?.user?.role) {
             role.value = res.data.user.role;
         }
