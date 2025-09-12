@@ -1,59 +1,212 @@
 <template>
-    <div class="position-absolute">
-        <div>
-            <h1>Layout Control</h1>
-            <div>
-                <label for="position">Header Position</label>
-                <select name="position" v-model="layout.position" @change="save">
-                    <option value="top">Top</option>
-                    <option value="left">Left</option>
-                    <option value="right">Right</option>
-                </select>
-            </div>
-        </div>
+  <!-- Minimal floating control (expands on click) -->
+  <div class="layout-fab" :class="{ open: isOpen }" role="region" aria-label="Layout control">
+    <div class="fab-shell" ref="shell">
+      <!-- Compact button (icon + optional label when open) -->
+      <button
+        class="fab-toggle"
+        type="button"
+        :aria-expanded="isOpen"
+        :aria-controls="ids.panel"
+        @click="toggle"
+        title="Header layout"
+      >
+        <!-- Header layout icon: top bar + content -->
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="3" rx="1" />
+          <rect x="3" y="9.5" width="10" height="8" rx="1.5" opacity=".35" />
+        </svg>
+        <span class="fab-label" v-if="isOpen">Header Position</span>
+      </button>
+
+      <div class="divider" v-if="isOpen" aria-hidden="true"></div>
+
+      <!-- Inline expanding content (not a popover) -->
+      <div class="fab-content" :id="ids.panel">
+        <select
+          id="position"
+          name="position"
+          class="mini-select"
+          v-model="layout.position"
+          @change="save"
+        >
+          <option value="top">Top</option>
+          <option value="left">Left</option>
+          <option value="right">Right</option>
+        </select>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup>
+/* === Your original functionality (unchanged) === */
 import api from '~~/api.config';
 import STATUS from '~~/status';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-
-const props = defineProps({
-    layout: { type: Object },
-});
+const props = defineProps({ layout: { type: Object } });
 const emit = defineEmits(['layoutChange']);
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 
-const save = async () => {
-    const projection = {
-        layout: props.layout,
-    }
-    try {
-        const response = await api.post(`${config.public.API}/user/update`, {
-            projection: JSON.stringify(projection),
-        });
-        if (response.status === STATUS.OK) {
-            $toast.success(response.data.message);
-        }
+const isOpen = ref(false);
+const shell = ref(null);
+const uid = Math.random().toString(36).slice(2);
+const ids = { panel: `layout-panel-${uid}` };
 
-    } catch (error) {
-        console.log(error);
-    }
-}
+function toggle() { isOpen.value = !isOpen.value; }
+function onKeydown(e) { if (e.key === 'Escape' && isOpen.value) isOpen.value = false; }
+function onClickOutside(e) { if (shell.value && !shell.value.contains(e.target)) isOpen.value = false; }
+
+const save = async () => {
+  const projection = { layout: props.layout };
+  try {
+    const res = await api.post(`${config.public.API}/user/update`, { projection: JSON.stringify(projection) });
+    if (res.status === STATUS.OK) $toast.success(res.data.message);
+  } catch (err) { console.log(err); }
+};
 
 const init = async () => {
-    try {
-        const response = await api.get(`${config.public.API}/user/fetch`);
-        if (response.status === STATUS.OK) {
-            emit('layoutChange', response.data.user.layout);
-        }
+  try {
+    const res = await api.get(`${config.public.API}/user/fetch`);
+    if (res.status === STATUS.OK) emit('layoutChange', res.data.user.layout);
+  } catch (err) { console.log(err); }
+};
 
-    } catch (error) {
-        console.log(error);
-    }
+onMounted(() => {
+  init();
+  document.addEventListener('keydown', onKeydown);
+  document.addEventListener('click', onClickOutside, true);
+});
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown);
+  document.removeEventListener('click', onClickOutside, true);
+});
+</script>
+
+<style scoped>
+/* -------- Minimal + Elegant -------- */
+.layout-fab {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1060;
+  color: #111;
+  font-family: inherit;
 }
 
-onMounted(init);
-</script>
+/* White pill container that expands horizontally when open */
+.fab-shell {
+  --radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  gap: 8px;
+  padding: 4px;
+  width: 48px;                    /* closed */
+  background: #fff;
+  border: 1px solid #e5e7eb;      /* subtle border */
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  overflow: hidden;
+  transition: width .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.open .fab-shell {
+  width: 300px;
+  box-shadow: 0 8px 28px rgba(0,0,0,.10);
+  border-color: #e5e7eb;
+}
+
+/* Button area */
+.fab-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 10px;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  color: #111;
+  cursor: pointer;
+}
+.fab-toggle:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+/* Simple, crisp icon */
+.icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  fill: currentColor; /* header bar uses fill; content rect has opacity */
+}
+
+/* Optional label when open */
+.fab-label {
+  font-size: 13px;
+  color: #6b7280; /* muted */
+  font-weight: 600;
+}
+
+/* Thin divider only visible when open */
+.divider {
+  width: 1px;
+  height: 24px;
+  background: #e5e7eb;
+}
+
+/* Inline expanding content */
+.fab-content {
+  display: grid;
+  align-items: center;
+  grid-auto-flow: column;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(6px);
+  pointer-events: none;
+  transition: opacity .14s ease, transform .14s ease;
+}
+.open .fab-content {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* Minimal select */
+.mini-select {
+  height: 32px;
+  min-width: 80px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #111;
+  font-size: 14px;
+  line-height: 1.2;
+}
+.mini-select:focus {
+  outline: 2px solid #111;
+  outline-offset: 1px;
+  border-color: #111;
+}
+
+/* A11y label */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden; clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; border: 0; padding: 0; margin: -1px;
+}
+
+/* Mobile: keep it tidy */
+@media (max-width: 480px) {
+  .open .fab-shell { width: min(92vw, 340px); }
+  .fab-shell { height: 42px; }
+  .fab-toggle { height: 34px; }
+  .mini-select { min-width: 140px; }
+}
+</style>
