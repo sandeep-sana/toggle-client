@@ -1,16 +1,22 @@
 <template>
-  <div class="flex gap-10">
+  <div class="flex flex-col md:flex-row gap-6">
     <!-- Available Modules -->
-    <div class="flex-1 border p-4 rounded">
-      <h2>Available Modules</h2>
+    <div class="flex-1 bg-white border rounded-2xl shadow-sm p-5">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+        Available Modules
+      </h2>
       <draggable 
         v-model="availableModules" 
         :group="{ name: 'modules', pull: 'clone', put: true }" 
         item-key="name"
-        class="space-y-2"
+        class="space-y-3 min-h-[200px] bg-gray-50 rounded-lg p-3"
       >
         <template #item="{ element }">
-          <div class="p-2 border rounded cursor-pointer bg-gray-100">
+          <div
+            class="p-3 rounded-lg border border-gray-200 bg-gray-100 hover:bg-gray-200 
+                   transition cursor-pointer text-sm font-medium text-gray-700 shadow-sm"
+          >
             {{ element }}
           </div>
         </template>
@@ -18,16 +24,22 @@
     </div>
 
     <!-- Active Modules -->
-    <div class="flex-1 border p-4 rounded">
-      <h2>Active Modules</h2>
+    <div class="flex-1 bg-white border rounded-2xl shadow-sm p-5">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+        Active Modules
+      </h2>
       <draggable 
         v-model="modules" 
         :group="{ name: 'modules', pull: true, put: true }" 
         item-key="name"
-        class="space-y-2"
+        class="space-y-3 min-h-[200px] bg-green-50 rounded-lg p-3"
       >
         <template #item="{ element }">
-          <div class="p-2 border rounded cursor-pointer bg-green-100">
+          <div
+            class="p-3 rounded-lg border border-green-200 bg-green-100 hover:bg-green-200 
+                   transition cursor-pointer text-sm font-medium text-green-800 shadow-sm"
+          >
             {{ element }}
           </div>
         </template>
@@ -35,6 +47,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';

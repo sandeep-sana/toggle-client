@@ -19,8 +19,8 @@
 import STATUS from '~~/status';
 import api from '~~/api.config';
 import { ref, onMounted } from 'vue';
+import FormModal from '~~/modal/FormModal.vue';
 import { useGlobalStore } from '~/stores/global';
-
 
 
 const config = useRuntimeConfig();
@@ -148,7 +148,7 @@ const init = async () => {
     try {
         const response = await api.get(`${config.public.API}/role/roles`);
         if (response.status === STATUS.OK) {
-            roles.value = response.data.roles;
+            roles.value = response.data.departments;
         }
     } catch (error) {
         console.log(error);
