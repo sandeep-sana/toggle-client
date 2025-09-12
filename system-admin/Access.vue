@@ -41,7 +41,7 @@ import { ref, onMounted, watch } from 'vue';
 import draggable from "vuedraggable";
 import api from '~~/api.config';
 import STATUS from '~~/status';
-import { MODULE } from '../../constant/module';
+import { MODULE } from '../constant/module';
 import { useGlobalStore } from "~/stores/global";
 
 const modules = ref([]);               // User active modules

@@ -1,4 +1,5 @@
 <template>
+    <h1>Accept Account</h1>
     <div class="d-flex flex-wrap gap-3">
         <div v-for="user in users" :key="user._id" class="card" style="width: 18rem;">
             <div class="card-body">
@@ -21,6 +22,8 @@
 <script setup>
 import STATUS from '~~/status';
 import api from '~~/api.config';
+import { ROLE } from '../constant/role';
+import { USER_STATUS} from "../constant/user";
 import { ref, reactive, onMounted } from 'vue';
 import Confirmation from '../../modal/Confirmation.vue';
 
@@ -68,7 +71,7 @@ const createDatabase = async (_id) => {
 
 const init = async () => {
     try {
-        const query = { role: 'SYSTEM_ADMIN', status: 'ACCEPT' }
+        const query = { role: ROLE.SYSTEM_ADMIN, status: USER_STATUS.ACCEPT }
         const res = await api.get(`${config.public.API}/user/users`, {
             params: { query: JSON.stringify(query) }
         })

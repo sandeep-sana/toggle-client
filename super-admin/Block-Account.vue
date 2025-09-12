@@ -1,4 +1,5 @@
 <template>
+    <h1>Block Accounts</h1>
     <div class="d-flex flex-wrap gap-3">
         <div v-for="user in users" :key="user._id" class="card" style="width: 18rem;">
             <div class="card-body">
@@ -19,6 +20,8 @@ import STATUS from '~~/status';
 import api from '~~/api.config';
 import { ref, reactive, onMounted } from 'vue';
 import Confirmation from '../../modal/Confirmation.vue';
+import { ROLE } from '../constant/role';
+import { USER_STATUS } from '~~/constant/user';
 
 const users = ref([]);
 const modal = ref({
@@ -40,7 +43,7 @@ const moveTouser = (user) => {
 const pendingUser = async (_id) => {
     try {
         const projection = {
-            status: "PENDING",
+            status: USER_STATUS.PENDING,
         }
         const response = await api.post(`${config.public.API}/user/user/${_id}`, {
             projection: JSON.stringify(projection),
@@ -57,7 +60,7 @@ const pendingUser = async (_id) => {
 
 const init = async () => {
     try {
-        const query = { role: 'SYSTEM_ADMIN', status: 'BLOCK' }
+        const query = { role: ROLE.SYSTEM_ADMIN, status: USER_STATUS.BLOCK }
         const res = await api.get(`${config.public.API}/user/users`, {
             params: { query: JSON.stringify(query) }
         })

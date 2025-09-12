@@ -121,6 +121,8 @@ import STATUS from '~~/status';
 import api from '~~/api.config';
 import { ref, reactive, computed, onMounted } from 'vue';
 import Confirmation from '../../modal/Confirmation.vue';
+import { ROLE } from '../constant/role';
+import { USER_STATUS } from '~~/constant/user';
 
 const users = ref([]);
 const loading = ref(false);
@@ -171,9 +173,9 @@ const openAccept = (user) => {
 };
 
 const acceptUser = async (_id) => {
-  processing.id = _id; processing.type = 'ACCEPT';
+  processing.id = _id; processing.type = USER_STATUS.ACCEPT;
   try {
-    const projection = { status: 'ACCEPT' };
+    const projection = { status: USER_STATUS.ACCEPT };
     const response = await api.post(`${config.public.API}/user/user/${_id}`, {
       projection: JSON.stringify(projection),
     });
@@ -191,9 +193,9 @@ const acceptUser = async (_id) => {
 };
 
 const rejectUser = async (_id) => {
-  processing.id = _id; processing.type = 'REJECT';
+  processing.id = _id; processing.type = USER_STATUS.REJECT;
   try {
-    const projection = { status: 'REJECT' };
+    const projection = { status: USER_STATUS.REJECT };
     const response = await api.post(`${config.public.API}/user/user/${_id}`, {
       projection: JSON.stringify(projection),
     });
@@ -213,7 +215,7 @@ const rejectUser = async (_id) => {
 const init = async () => {
   loading.value = true;
   try {
-    const query = { role: 'SYSTEM_ADMIN', status: 'PENDING' };
+    const query = { role: ROLE.SYSTEM_ADMIN, status: USER_STATUS.PENDING };
     const res = await api.get(`${config.public.API}/user/users`, {
       params: { query: JSON.stringify(query) }
     });

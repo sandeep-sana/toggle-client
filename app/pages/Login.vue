@@ -88,7 +88,7 @@ const login = handleSubmit(async (values) => {
       console.log(response);
       localStorage.setItem('_id', response.data.user._id);
       $toast.success(response.data.message);
-      router.push('/dashboard');
+      router.push(`/${response.data.user.role.toLowerCase()}-dashboard`);
     }
   } catch (error) {
     $toast.error(error.response.data.message);

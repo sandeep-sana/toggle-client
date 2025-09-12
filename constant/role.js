@@ -1,0 +1,4 @@
+export const ROLE = {
+    SUPER_ADMIN: "SUPER-ADMIN",
+    SYSTEM_ADMIN: "SYSTEM-ADMIN",
+}

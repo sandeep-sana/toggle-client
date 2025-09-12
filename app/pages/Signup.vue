@@ -13,7 +13,7 @@
 
                         <div class="form-floating mb-3 col-6">
                             <Field name="domain" as="input" type="text" class="form-control" id="domain"
-                                placeholder="Domain" rules="required|nospace|alphabate|min:3|max:12" />
+                                placeholder="Domain" rules="required|nospace|nouppercase|alphabate|min:3|max:12" />
                             <label :class="`${values.domain? 'fix-top': ''}`" for="domain">Domain</label>
                             <ErrorMessage name="domain" class="error-message" />
                         </div>
@@ -83,6 +83,7 @@
 <script setup>
 import api from '~~/api.config';
 import STATUS from '~~/status';
+import {ROLE} from "../../constant/role";
 
 import { Field, ErrorMessage, useForm } from 'vee-validate';
 
@@ -95,7 +96,7 @@ const { handleSubmit, isSubmitting, values } = useForm({});
 const signup = handleSubmit(async (values) => {
     const query = {
         ...values,
-        role: "SYSTEM_ADMIN",
+        role: ROLE.SYSTEM_ADMIN,
     }
     try {
         const response = await api.post(`${config.public.API}/user/user`, {

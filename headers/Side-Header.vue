@@ -2,10 +2,10 @@
     <!-- Parent div that controls layout -->
     <div :class="layout.position">
         <div class="custom-header p-4">
-            <draggable v-model="modules" item-key="name" animation="200">
+            <draggable v-model="sideHeader.user.modules" item-key="name" animation="200">
                 <template #item="{ element }">
                     <button class="m-2 p-2 bg-blue-500 text-white rounded"
-                        @click="$router.push(`/${element.toLowerCase()}`)">
+                        @click="$router.push(`/${sideHeader.user.role.toLowerCase()}-${element.toLowerCase()}`)">
                         {{ element.toLowerCase() }}
                     </button>
                 </template>
@@ -20,7 +20,7 @@
 <script setup>
 import STATUS from "~~/status";
 import api from "~~/api.config";
-import { ref, onMounted, computed } from "vue";
+import { onMounted, reactive } from "vue";
 import draggable from "vuedraggable";
 import { subDomain } from "~~/function";
 import { useGlobalStore } from "~/stores/global";
@@ -28,30 +28,29 @@ const props = defineProps({
     layout: { type: Object }
 });
 
-const _id = ref(null);
-const modules = ref([]);
-const router = useRouter();
-const { $toast } = useNuxtApp();
+const sideHeader = reactive({
+    user: {
+        modules: [],
+    }
+});
 const config = useRuntimeConfig();
-const { $logout, $session } = useNuxtApp();
 const globalStore = useGlobalStore();
-const layoutType = ref("top");  // Default layout type (top, left, right)
+const { $logout, $session } = useNuxtApp();
 
 const updateModules = async () => {
     try {
-        const projection = { modules: modules.value };
-        const response = await api.post(`${config.public.API}/user/user/${_id.value}`, {
+        const projection = { modules: sideHeader.user.modules };
+        const response = await api.post(`${config.public.API}/user/user/${sideHeader.user._id}`, {
             projection: JSON.stringify(projection),
         });
         if (response.status === STATUS.OK) {
-            // $toast.success(response.data.message);
         }
     } catch (error) {
         console.log(error);
     }
 };
 
-watch(modules, async () => {
+watch(sideHeader.user.modules, async () => {
     await updateModules();
 })
 
@@ -62,10 +61,10 @@ watch(() => globalStore.isSideHeader, async() => {
 const init = async () => {
     try {
         subDomain();
-        _id.value = $session();
-        const res = await api.get(`${config.public.API}/user/user/${_id.value}`);
-        if (res.status === STATUS.OK && res.data?.user?.role) {
-            modules.value = res.data.user.modules;
+        sideHeader.user._id = $session();
+        const res = await api.get(`${config.public.API}/user/user/${sideHeader.user._id}`);
+        if (res.status === STATUS.OK) {
+            sideHeader.user = res.data.user;
         }
     } catch (err) {
         console.error(err);
@@ -73,28 +72,6 @@ const init = async () => {
 };
 
 onMounted(init);
-
-// Computed class based on the layout type (top, left, right)
-const headerClass = computed(() => {
-    return {
-        'header-top': layoutType.value === 'top',
-        'header-left': layoutType.value === 'left',
-        'header-right': layoutType.value === 'right',
-        'dynamic-header': true
-    };
-});
-
-// Dynamic layout change (use this to change header placement)
-const changeLayout = (newLayout) => {
-    layoutType.value = newLayout;
-};
-
-// Logout functionality
-const logout = () => {
-    // Add logout logic
-    console.log("Logging out...");
-    $toast.success("Logged out successfully.");
-};
 </script>
 <style scoped>
 /* General styles for custom header */

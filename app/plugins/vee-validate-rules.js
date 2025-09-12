@@ -13,6 +13,12 @@ defineRule('nospace', (value) => {
   }
   return true
 })
+defineRule('nouppercase', (value) => {
+  if (/[A-Z]/.test(value)) {
+    return 'Uppercase letters are not allowed';
+  }
+  return true;
+});
 
 defineRule('email', (value) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
