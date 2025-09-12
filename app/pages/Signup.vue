@@ -14,7 +14,7 @@
                         <div class="form-floating mb-3 col-6">
                             <Field name="domain" as="input" type="text" class="form-control" id="domain"
                                 placeholder="Domain" rules="required|nospace|alphabate|min:3|max:12" />
-                            <label for="domain">Domain</label>
+                            <label :class="`${values.domain? 'fix-top': ''}`" for="domain">Domain</label>
                             <ErrorMessage name="domain" class="error-message" />
                         </div>
 
@@ -22,7 +22,7 @@
                         <div class="form-floating mb-3 col-6">
                             <Field name="firstName" as="input" type="text" class="form-control" id="firstName"
                                 placeholder="First Name" rules="required|nospace|alphabate|min:3|max:50" />
-                            <label for="firstName">First Name</label>
+                            <label :class="`${values.firstName? 'fix-top': ''}`" for="firstName">First Name</label>
                             <ErrorMessage name="firstName" class="error-message" />
                         </div>
 
@@ -30,7 +30,7 @@
                         <div class="form-floating mb-3 col-6">
                             <Field name="lastName" as="input" type="text" class="form-control" id="lastName"
                                 placeholder="Last Name" rules="required|nospace|alphabate|min:3|max:50" />
-                            <label for="lastName">Last Name</label>
+                            <label :class="`${values.lastName? 'fix-top': ''}`" for="lastName">Last Name</label>
                             <ErrorMessage name="lastName" class="error-message" />
                         </div>
 
@@ -38,7 +38,7 @@
                         <div class="form-floating mb-3 col-6">
                             <Field name="companyName" as="input" type="text" class="form-control" id="companyName"
                                 placeholder="Company Name" rules="required|min:3|max:50" />
-                            <label for="companyName">Company Name</label>
+                            <label :class="`${values.companyName? 'fix-top': ''}`" for="companyName">Company Name</label>
                             <ErrorMessage name="companyName" class="error-message" />
                         </div>
 
@@ -46,16 +46,15 @@
                         <div class="form-floating mb-3 col-6">
                             <Field name="email" as="input" type="email" class="form-control" id="email"
                                 placeholder="Company Email" rules="required|nospace|email" />
-                            <label for="email">Company Email</label>
+                            <label :class="`${values.email? 'fix-top': ''}`" for="email">Company Email</label>
                             <ErrorMessage name="email" class="error-message" />
                         </div>
                         <div class="form-floating mb-3 col-6">
                             <Field name="email" as="input" type="email" class="form-control" id="email"
                                 placeholder="Company Email" rules="required|nospace|email" />
-                            <label for="email">Phone No</label>
+                            <label :class="`${values.email? 'fix-top': ''}`" for="email">Phone No</label>
                             <ErrorMessage name="email" class="error-message" />
                         </div>
-
                         <!-- Description -->
                         <div class="form-floating mb-3 col-12">
                             <Field name="description" as="textarea" class="form-control text-area-block"
@@ -63,7 +62,7 @@
                                 placeholder="Description"
                                 rules="required"
                                 />
-                                <label for="description">Description</label>
+                                <label :class="`${values.description? 'fix-top': ''}`" for="description">Description</label>
                                 <ErrorMessage name="description" class="error-message" />
                         </div>
 
@@ -84,13 +83,14 @@
 <script setup>
 import api from '~~/api.config';
 import STATUS from '~~/status';
+
 import { Field, ErrorMessage, useForm } from 'vee-validate';
 
 const router = useRouter();
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
-const { handleSubmit, isSubmitting } = useForm({});
 
+const { handleSubmit, isSubmitting, values } = useForm({});
 
 const signup = handleSubmit(async (values) => {
     const query = {
@@ -137,7 +137,7 @@ const signup = handleSubmit(async (values) => {
     color: #0d6efd;
     /* highlight color */
     font-size: 0.8rem;
-    transform: translateY(-1rem) translateX(-0.2rem);
+    /* transform: translateY(-0.6rem) translateX(-0.2rem); */
     background: #fff;
     padding: 0 4px;
     border-radius: 4px;
