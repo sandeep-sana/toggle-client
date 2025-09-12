@@ -82,7 +82,7 @@ const userDelete = async (_id) => {
 
 const init = async () => {
     try {
-        const query = { role: 'ADMIN', status: 'REJECT' }
+        const query = { role: 'SYSTEM_ADMIN', status: 'REJECT' }
         const res = await api.get(`${config.public.API}/user/users`, {
             params: { query: JSON.stringify(query) }
         })

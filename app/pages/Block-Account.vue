@@ -57,7 +57,7 @@ const pendingUser = async (_id) => {
 
 const init = async () => {
     try {
-        const query = { role: 'ADMIN', status: 'BLOCK' }
+        const query = { role: 'SYSTEM_ADMIN', status: 'BLOCK' }
         const res = await api.get(`${config.public.API}/user/users`, {
             params: { query: JSON.stringify(query) }
         })
