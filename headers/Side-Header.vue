@@ -4,7 +4,7 @@
         <div class="custom-header p-4">
             <draggable v-model="sideHeader.user.modules" item-key="name" animation="200">
                 <template #item="{ element }">
-                    <button class="m-2 p-2 bg-blue-500 text-white rounded"
+                    <button class="m-2 p-2 bg-blue-500 rounded"
                         @click="$router.push(`/${sideHeader.user.role.toLowerCase()}-${element.toLowerCase()}`)">
                         {{ element.toLowerCase() }}
                     </button>
@@ -74,71 +74,152 @@ const init = async () => {
 onMounted(init);
 </script>
 <style scoped>
-/* General styles for custom header */
+/* ---------- Base header container ---------- */
 .custom-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    border-radius: 15px;
-    background: #f8f9fa;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px;
-    transition: all 0.3s ease;
-    padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.08);
+  transition: width .25s ease, height .25s ease, padding .25s ease, gap .25s ease, background .25s ease;
+  padding: 14px;
 }
 
+/* Stop overriding Tailwind button colors */
 .custom-header button {
-    border: none;
-    outline: none;
-    background-color: transparent;
-    color: black!important;
-    text-transform: capitalize;
+  border: none;
+  outline: none;
+  text-transform: capitalize;
+  background: none;
 }
 
-/* For left layout (vertical sidebar) */
-.left .custom-header {
-    width: 250px;
-    flex-direction: column;
-    justify-content: flex-start;
-    height: 100vh;
+/* Make module buttons feel clickable (keeps Tailwind bg/text) */
+.custom-header button.bg-blue-500 {
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+.custom-header button.bg-blue-500:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(59, 130, 246, 0.35);
+}
+.custom-header button.bg-blue-500:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
 }
 
-/* For right layout (vertical sidebar) */
+/* ---------- Position variants ---------- */
+
+/* Left & Right = vertical sidebar */
+.left .custom-header,
 .right .custom-header {
-    width: 250px;
-    flex-direction: column;
-    justify-content: flex-start;
-    height: 100vh;
+  flex-direction: column;
+  align-items: stretch;
+  width: 280px;
+  min-height: 100vh;
+  height: 100vh;
+  padding: 18px 14px;
+  gap: 8px;
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
 }
 
-/* For top layout (horizontal header) */
+/* Make module buttons full-width in vertical menus */
+.left .custom-header button.bg-blue-500,
+.right .custom-header button.bg-blue-500 {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 14px; /* complements your Tailwind p-2 */
+}
+
+/* Logout sticks to bottom in vertical */
+.left .custom-header .logout-btn,
+.right .custom-header .logout-btn {
+  margin-top: auto;
+  width: 100%;
+}
+
+/* Top = horizontal header */
 .top .custom-header {
-    width: 100%;
-    flex-direction: row;
-    justify-content: center;
-    height: auto;
+  width: 100%;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 12px;
+  height: auto;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  backdrop-filter: saturate(160%) blur(6px);
 }
 
-/* Button and logout styling */
-.custom-header button {
-    margin: 5px;
+/* In top layout, push Logout to the far end */
+.top .custom-header .logout-btn {
+  margin-left: auto;
 }
 
+/* ---------- Logout button ---------- */
 .logout-btn {
-    margin-left: 20px;
-    padding: 8px 16px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  padding: 10px 16px;
+  background-color: #ef4444; /* Tailwind red-500 */
+  /* color: #fff; */
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, opacity .15s ease;
 }
-
 .logout-btn:hover {
-    background-color: #c82333;
+  background-color: #dc2626; /* red-600 */
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+  transform: translateY(-1px);
+}
+.logout-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
 }
 
-/* Add transition when switching layouts */
-.custom-header {
-    transition: flex-direction 0.3s ease, width 0.3s ease;
+/* ---------- Drag & scroll polish ---------- */
+/* SortableJS classes (vuedraggable) */
+.sortable-chosen {
+  opacity: 0.95;
+}
+.sortable-ghost {
+  opacity: 0.6;
+  transform: scale(0.995);
+}
+
+/* Subtle custom scrollbar for sidebars */
+.left .custom-header,
+.right .custom-header {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent; /* slate-300 */
+}
+.left .custom-header::-webkit-scrollbar,
+.right .custom-header::-webkit-scrollbar {
+  width: 8px;
+}
+.left .custom-header::-webkit-scrollbar-thumb,
+.right .custom-header::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 768px) {
+  .left .custom-header,
+  .right .custom-header {
+    width: 88vw;
+    border-radius: 0 14px 14px 0;
+  }
+  .top .custom-header {
+    gap: 6px 8px;
+    padding: 12px;
+  }
 }
 </style>
+

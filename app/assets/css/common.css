@@ -30,6 +30,11 @@
     padding-top: .6rem!important;
 }
 
+.pending-wrapper
+{
+    width: calc(100vw - 300px);
+}
+
 .form-control:not(:placeholder-shown) {
   background-color: #e6f7ff; /* Change background color or any style */
   border-color: #80b3ff; /* Change border color */

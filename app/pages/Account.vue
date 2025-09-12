@@ -12,14 +12,14 @@
               class="form-control form-control-sm"
               placeholder="Search company or email…"
               :disabled="loading"
-              aria-label="Search blocked users by company or email"
+              aria-label="Search pending users by company or email"
             />
           </div>
         </div>
 
         <!-- Right: Title + Counter + Refresh -->
         <div class="right d-flex align-items-center gap-3">
-          <h6 class="title mb-0">Blocked Accounts</h6>
+          <h6 class="title mb-0">Pending Admin Requests</h6>
           <span class="counter-chip">{{ users.length }}</span>
           <button class="btn btn-sm btn-light" @click="refresh" :disabled="loading">
             <span v-if="!loading">Refresh</span>
@@ -37,14 +37,18 @@
       <!-- Empty state -->
       <div v-if="!loading && filteredUsers.length === 0" class="empty-state text-center py-5">
         <div class="empty-emoji">🗂️</div>
-        <h5 class="mt-3 mb-1 text-white">No matching accounts</h5>
+        <h5 class="mt-3 mb-1 text-white">No matching requests</h5>
         <p class="text-muted mb-0">Try a different search, or click Refresh.</p>
       </div>
 
       <!-- Cards Grid -->
       <div class="cards-container">
         <div class="row g-4" v-if="!loading && filteredUsers.length > 0">
-          <div v-for="user in filteredUsers" :key="user._id" class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div
+            v-for="user in filteredUsers"
+            :key="user._id"
+            class="col-12 col-sm-6 col-md-4 col-lg-3"
+          >
             <div class="card user-card h-100">
               <div class="card-body d-flex flex-column">
                 <div class="identity d-flex align-items-center gap-3 mb-2">
@@ -64,17 +68,21 @@
                 <div class="mt-auto d-flex gap-2">
                   <button
                     type="button"
-                    class="btn btn-outline-secondary btn-sm flex-fill"
-                    @click="moveTouser(user)"
+                    class="btn btn-outline-danger btn-sm flex-fill"
+                    @click="openReject(user)"
                     :disabled="isProcessing(user._id)"
                   >
-                    <span
-                      v-if="processing.id === user._id && processing.type === 'MOVE'"
-                      class="spinner-border spinner-border-sm me-1"
-                      role="status"
-                      aria-hidden="true"
-                    ></span>
-                    Move to user
+                    <span v-if="processing.id === user._id && processing.type === 'REJECT'" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Reject
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-success btn-sm flex-fill"
+                    @click="openAccept(user)"
+                    :disabled="isProcessing(user._id)"
+                  >
+                    <span v-if="processing.id === user._id && processing.type === 'ACCEPT'" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Accept
                   </button>
                 </div>
               </div>
@@ -95,6 +103,7 @@
                 <div class="skeleton skeleton-text w-75 mb-3"></div>
                 <div class="d-flex gap-2">
                   <div class="skeleton skeleton-btn flex-fill"></div>
+                  <div class="skeleton skeleton-btn flex-fill"></div>
                 </div>
               </div>
             </div>
@@ -112,22 +121,21 @@ import STATUS from '~~/status';
 import api from '~~/api.config';
 import { ref, reactive, computed, onMounted } from 'vue';
 import Confirmation from '../../modal/Confirmation.vue';
-import { ROLE } from '../constant/role';
-import { USER_STATUS } from '~~/constant/user';
 
 const users = ref([]);
 const loading = ref(false);
 const search = ref('');
-const processing = reactive({ id: null, type: null }); // 'MOVE' | null
+const processing = reactive({ id: null, type: null }); // 'ACCEPT' | 'REJECT' | null
 
 const modal = ref({
   isConfirmation: false,
   message: null,
-  reject: null,
-  _id: null
+  _id: null,
+  reject: null
 });
+
 const config = useRuntimeConfig();
-const { $toast, $session } = useNuxtApp();
+const { $session, $toast } = useNuxtApp();
 
 const initials = (value = '') =>
   value
@@ -149,27 +157,53 @@ const filteredUsers = computed(() => {
   );
 });
 
-const moveTouser = (user) => {
+const openReject = (user) => {
   modal.value.isConfirmation = true;
-  modal.value.message = `Do you want to move “${user.companyName || user.email}” back to pending?`;
+  modal.value.message = `Do you want to reject “${user.companyName || user.email}”?`;
   modal.value._id = user._id;
-  modal.value.reject = pendingUser;
+  modal.value.reject = rejectUser;
+};
+const openAccept = (user) => {
+  modal.value.isConfirmation = true;
+  modal.value.message = `Do you want to accept “${user.companyName || user.email}”?`;
+  modal.value._id = user._id;
+  modal.value.reject = acceptUser;
 };
 
-const pendingUser = async (_id) => {
-  processing.id = _id; processing.type = 'MOVE';
+const acceptUser = async (_id) => {
+  processing.id = _id; processing.type = 'ACCEPT';
   try {
-    const projection = { status: USER_STATUS.PENDING };
+    const projection = { status: 'ACCEPT' };
     const response = await api.post(`${config.public.API}/user/user/${_id}`, {
       projection: JSON.stringify(projection),
     });
     if (response.status === STATUS.OK) {
-      $toast.success(response.data.message);
-      users.value = users.value.filter(user => user._id != _id);
+      $toast.success(response.data.message || 'User accepted.');
+      users.value = users.value.filter(u => u._id !== _id);
     }
   } catch (error) {
-    console.log(error);
-    $toast.error('Failed to move. Please try again.');
+    console.error(error);
+    $toast.error('Failed to accept. Please try again.');
+  } finally {
+    processing.id = null; processing.type = null;
+    modal.value.isConfirmation = false;
+  }
+};
+
+const rejectUser = async (_id) => {
+  processing.id = _id; processing.type = 'REJECT';
+  try {
+    const projection = { status: 'REJECT' };
+    const response = await api.post(`${config.public.API}/user/user/${_id}`, {
+      projection: JSON.stringify(projection),
+    });
+    if (response.status === STATUS.OK) {
+      $toast.success(response.data.message || 'User rejected.');
+      users.value = users.value.filter(u => u._id !== _id);
+    }
+  } catch (error) {
+    console.error(error);
+    $toast.error('Failed to reject. Please try again.');
   } finally {
     processing.id = null; processing.type = null;
     modal.value.isConfirmation = false;
@@ -179,7 +213,7 @@ const pendingUser = async (_id) => {
 const init = async () => {
   loading.value = true;
   try {
-    const query = { role: ROLE.SYSTEM_ADMIN, status: USER_STATUS.BLOCK };
+    const query = { role: 'SYSTEM_ADMIN', status: 'PENDING' };
     const res = await api.get(`${config.public.API}/user/users`, {
       params: { query: JSON.stringify(query) }
     });
@@ -284,7 +318,7 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-/* Buttons */
+/* Buttons (B/W only) */
 .btn-dark { border-radius: 10px; }
 .btn-outline-dark { border-radius: 10px; }
 .btn-light { border-radius: 10px; }
@@ -293,7 +327,7 @@ onMounted(async () => {
 .empty-state .empty-emoji { font-size: 40px; }
 .empty-state p { color: var(--muted) !important; }
 
-/* Skeletons */
+/* Skeletons (neutral grays) */
 .skeleton-card { border-radius: 16px; }
 .skeleton {
   position: relative; border-radius: 8px; background: #eee; overflow: hidden;
