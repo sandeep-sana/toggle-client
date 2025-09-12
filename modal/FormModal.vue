@@ -31,18 +31,35 @@
 </template>
 
 <script setup>
-import { Field, ErrorMessage, useForm } from 'vee-validate'
+import { Field, ErrorMessage, useForm } from "vee-validate"
+import { computed } from "vue"
 
 const props = defineProps({
   modal: { type: Object, required: true },
 })
 
-const { handleSubmit } = useForm({})
+// build initial values from modal.fields
+const initialValues = computed(() => {
+  const values = {}
+  props.modal.fields?.forEach((f) => {
+    values[f.name] = f.value ?? "" // default to empty if not provided
+  })
+  return values
+})
+
+const { handleSubmit, resetForm } = useForm({
+  initialValues: initialValues.value,
+})
+
+// reset when modal fields change (editRole vs addRole)
+watch(initialValues, (newValues) => {
+  resetForm({ values: newValues })
+})
 
 const submit = handleSubmit(async (values) => {
   props.modal.isConfirmation = false
-  if (typeof props.modal.save === 'function') {
-    props.modal.save({...values, _id: props.modal._id ?? null})
+  if (typeof props.modal.save === "function") {
+    props.modal.save({ ...values, _id: props.modal._id ?? null })
   }
 })
 </script>

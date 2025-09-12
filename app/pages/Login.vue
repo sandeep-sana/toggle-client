@@ -70,7 +70,7 @@ import { subDomain } from '~~/function';
 
 const dbName = ref(null);
 const router = useRouter();
-const { $toast } = useNuxtApp();
+const { $toast } = useNuxtApp();    
 const config = useRuntimeConfig();
 const { handleSubmit, isSubmitting, values } = useForm({});
 

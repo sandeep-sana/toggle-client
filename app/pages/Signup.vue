@@ -86,6 +86,7 @@ import STATUS from '~~/status';
 
 import { Field, ErrorMessage, useForm } from 'vee-validate';
 
+const router = useRouter();
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 
@@ -101,9 +102,11 @@ const signup = handleSubmit(async (values) => {
             query: JSON.stringify(query),
         });
         if (response.status === STATUS.CREATED) {
+            router.push('');
             $toast.success(response.data.message);
         }
     } catch (error) {
+        console.log(error)
         $toast.error(error.response.data.message);
     }
 });

@@ -21,4 +21,7 @@ export default defineNuxtConfig({
       DOMAIN: process.env.DOMAIN,
     },
   },
+  modules: [
+    '@pinia/nuxt',
+  ],
 })
