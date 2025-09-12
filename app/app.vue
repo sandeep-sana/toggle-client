@@ -2,7 +2,7 @@
   <div>
     <ToastContainer />
     <HomeHeader v-if="showHomeHeader" />
-    <SideHeader v-if="showSideHeader" />
+    <SideHeader v-if="showSideHeader" :layout="layout" />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
@@ -21,4 +21,10 @@ const route = useRoute();
 const ACCESS = ["/", "/login", "/signup"];
 const showHomeHeader = computed(() => ACCESS.includes(route.fullPath));
 const showSideHeader = computed(() => !ACCESS.includes(route.fullPath));
+
+const layout= reactive({
+  position: 'right',
+  width: 20 || 'auto',
+  height: 100 || 'auto',
+})
 </script>

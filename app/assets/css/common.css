@@ -1,29 +1,49 @@
 .form-floating > label {
-  transform: translateY(0.9rem) translateX(1.8rem) !important;
+  transform: translateY(0.9rem) translateX(1.8rem)!important;
   color: #fff;
   height: auto;
   padding: 2px;
   background-color: transparent;
 }
 
-.form-control
-{
-    position: relative;
-    margin-bottom: 15px!important;
+.form-control {
+  position: relative;
+  margin-bottom: 15px !important;
 }
 
 .form-floating > input:focus ~ label {
-  transform: translateY(-0.8rem) translateX(0.9rem) !important;
+  transform: translateY(-0.5rem) translateX(1.6rem)!important;
   padding: 2px;
   background-color: #353535;
   font-size: 13px;
 }
 
-.error-message
+.row .form-floating .fix-top {
+  transform: translateY(-0.5rem) translateX(1.6rem)!important;
+  padding: 2px!important;
+  background-color: #353535;
+  font-size: 13px;
+}
+
+.form-floating>.form-control:not(:placeholder-shown)
 {
-    position: absolute;
-    bottom: -10px;
-    color: #e13232;
-    left: 20px;
-    font-size: 14px;
+    padding-top: .6rem!important;
+}
+
+.form-control:not(:placeholder-shown) {
+  background-color: #e6f7ff; /* Change background color or any style */
+  border-color: #80b3ff; /* Change border color */
+}
+
+.error-message {
+  position: absolute;
+  bottom: -10px;
+  color: #e13232;
+  left: 20px;
+  font-size: 14px;
+}
+
+.form-floating>textarea:not(:placeholder-shown)~label::after
+{
+    background-color: transparent!important;
 }
