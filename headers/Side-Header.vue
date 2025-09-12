@@ -44,7 +44,7 @@ const updateModules = async () => {
             projection: JSON.stringify(projection),
         });
         if (response.status === STATUS.OK) {
-            $toast.success(response.data.message);
+            // $toast.success(response.data.message);
         }
     } catch (error) {
         console.log(error);
