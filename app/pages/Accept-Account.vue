@@ -68,7 +68,7 @@ const createDatabase = async (_id) => {
 
 const init = async () => {
     try {
-        const query = { role: 'ADMIN', status: 'ACCEPT' }
+        const query = { role: 'SYSTEM_ADMIN', status: 'ACCEPT' }
         const res = await api.get(`${config.public.API}/user/users`, {
             params: { query: JSON.stringify(query) }
         })
