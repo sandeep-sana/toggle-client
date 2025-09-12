@@ -1,5 +1,5 @@
 import axios from "axios";
-import { subDomain, session } from "./function";
+import { subDomain } from "./function";
 
 const api = axios.create({
   baseURL: process.env.API,

@@ -2,8 +2,8 @@
 
 </template>
 <script setup>
-import { session } from '../../function';
+const { $session } = useNuxtApp();
 
 
-onMounted(session);
+onMounted($session);
 </script>

@@ -6,7 +6,7 @@ export const useGlobalStore = defineStore('global', {
   }),
   actions: {
     setIsSideHeader(status) {
-      this.isLogin = status;  
+      this.isSideHeader = status;  
     },
   },
 });

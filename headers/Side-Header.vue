@@ -8,7 +8,7 @@
                 </button>
             </template>
         </draggable>
-        <button @click="logout">Logout</button>
+        <button @click="$logout">Logout</button>
     </div>
 </template>
 
@@ -17,14 +17,15 @@ import STATUS from "~~/status";
 import api from "~~/api.config";
 import { ref, onMounted } from "vue";
 import draggable from "vuedraggable";
-import { subDomain, session, logout } from "~~/function";
 import { useGlobalStore } from "~/stores/global";
-
+import { subDomain } from "~~/function";
 const _id = ref(null);
 const modules = ref([]);
+const router = useRouter();
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 const globalStore = useGlobalStore();
+const { $logout, $session } = useNuxtApp();
 
 const updateModules = async () => {
     try {
@@ -46,14 +47,14 @@ watch(modules, async () => {
     await updateModules();
 })
 
-watch(globalStore.isSideHeader, () => {
-    console.log(globalStore)
+watch(() => globalStore.isSideHeader, async() => {
+    await init();
 })
 
 const init = async () => {
     try {
         subDomain();
-        _id.value = session();
+        _id.value = $session();
         const res = await api.get(`${config.public.API}/user/user/${_id.value}`);
         if (res.status === STATUS.OK && res.data?.user?.role) {
             modules.value = res.data.user.modules;

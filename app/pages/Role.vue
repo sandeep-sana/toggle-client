@@ -1,14 +1,14 @@
 <template>
     <div>
         <h1>Role</h1>
-        <button type="button" @click="activeHirarchy">Apply</button>
+        <button v-if="!user.isHierarchy" type="button" @click="activeHierarchy">Apply</button>
         <button type="button" @click="addRole">Add Role</button>
         <div v-for="(role, roleIndex) in roles">
             <p>{{ roleIndex }}</p>
             <p>
                 {{ role.name }}
             </p>
-            <p><button type="button" @click="statusRole(role)">{{ activeInactive('role', role.status) }}</button></p>
+            <p ><button type="button" @click="statusRole(role)">{{ $activeInactive('role', role.status) }}</button></p>
             <p><button type="button" @click="editRole(role)">edit</button></p>
         </div>
     </div>
@@ -19,14 +19,13 @@
 import STATUS from '~~/status';
 import api from '~~/api.config';
 import { ref, onMounted } from 'vue';
-import { activeInactive } from '~~/function';
 import { useGlobalStore } from '~/stores/global';
-import FormModal from '../../modal/FormModal.vue';
 
-const { $toast } = useNuxtApp();
+
+
 const config = useRuntimeConfig();
 const globalStore = useGlobalStore();
-
+const { $fetchUser, $toast, $activeInactive } = useNuxtApp();
 
 const modal = ref({
     isConfirmation: false,
@@ -35,6 +34,9 @@ const modal = ref({
     save: null,
 });
 const roles = ref([]);
+const user = ref({
+    isHierarchy: false,
+});
 
 const resetModal = () => {
     modal.value = {
@@ -123,16 +125,18 @@ const statusRole = async (role) => {
     }
 }
 
-const activeHirarchy = async () => {
+const activeHierarchy = async () => {
     try {
         const projection = {
-            $addToSet: { modules: { $each: ['HIRARCHY'] } },
+            $addToSet: { modules: { $each: ['HIERARCHY'] } },
+            isHierarchy: true,
         }
         const response = await api.post(`${config.public.API}/user/update`, {
             projection: JSON.stringify(projection),
         });
         if (response.status === STATUS.OK) {
             globalStore.setIsSideHeader(!globalStore.isSideHeader);
+            user.value.isHierarchy = true;
         }
 
     } catch (error) {
@@ -151,5 +155,8 @@ const init = async () => {
     }
 }
 
-onMounted(init);
+onMounted(async () => {
+    await init();
+    user.value = await $fetchUser();
+});
 </script>

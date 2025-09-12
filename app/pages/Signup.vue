@@ -89,8 +89,8 @@ import { Field, ErrorMessage, useForm } from 'vee-validate';
 const router = useRouter();
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
-
 const { handleSubmit, isSubmitting } = useForm({});
+
 
 const signup = handleSubmit(async (values) => {
     const query = {
