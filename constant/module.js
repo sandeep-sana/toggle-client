@@ -1,3 +1,3 @@
 export const MODULE = {
-    LIST: ["DEPARTMENT", "ROLE"]
+    LIST: ["DASHBOARD", "ACCESS", "DEPARTMENT", "ROLE"]
 }
