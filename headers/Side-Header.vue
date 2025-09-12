@@ -4,8 +4,8 @@
         <div class="custom-header p-4">
             <draggable v-model="sideHeader.user.modules" item-key="name" animation="200">
                 <template #item="{ element }">
-                    <button class="m-2 p-2 bg-blue-500 rounded"
-                        @click="$router.push(`/${sideHeader.user.role.toLowerCase()}-${element.toLowerCase()}`)">
+                    <button class="m-2 p-2 bg-blue-500 text-white rounded"
+                        @click="$router.push(`/${sideHeader.user.role.toLowerCase()}/${element.toLowerCase()}`)">
                         {{ element.toLowerCase() }}
                     </button>
                 </template>
