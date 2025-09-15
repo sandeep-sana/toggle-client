@@ -2,7 +2,7 @@ export default defineNuxtConfig({
   srcDir: 'app',
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  devServer:{
+  devServer: {
     port: 4000,
   },
   css: [
@@ -10,8 +10,10 @@ export default defineNuxtConfig({
     'bootstrap-icons/font/bootstrap-icons.css',
     'vue3-toastify/dist/index.css',
     '~/assets/css/common.css',
+    'vue-multiselect/dist/vue-multiselect.css',
+    '@vuepic/vue-datepicker/dist/main.css',
   ],
-  plugins:[
+  plugins: [
     '~/plugins/toastify.client.js',
   ],
   runtimeConfig: {
@@ -24,4 +26,14 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
   ],
+  app: {
+    head: {
+      script: [
+        {
+          src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js',
+          // defer: true,
+        },
+      ]
+    }
+  }
 })

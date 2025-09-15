@@ -2,11 +2,11 @@ export function subDomain() {
     const host = window.location.hostname;
     const parts = host.split(".");
     if (parts.length < 2) {
-        return null;
+        return "toggle";
     }
     const subdomain = parts[0];
     if (subdomain === process.env.DOMAIN) {
-        return null;
+        return "toggle";
     }
-    return subdomain || null;
+    return subdomain || "toggle";
 }

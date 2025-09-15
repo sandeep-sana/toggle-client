@@ -1,14 +1,9 @@
 <template>
-  <div
-    class="container-fluid position-relative d-flex p-0 justify-content-end sign-back"
-    style="width: 60vw; height: 80vh; margin-top: 5vh; border-radius: 15px; overflow: hidden;"
-  >
+  <div class="container-fluid position-relative d-flex p-0 justify-content-end sign-back"
+    style="width: 60vw; height: 80vh; margin-top: 5vh; border-radius: 15px; overflow: hidden;">
     <!-- Background Image -->
-    <img
-      src="assets/images/signupd.jpg"
-      class="img-fluid image-back h-100 w-100 object-fit-cover"
-      alt="Signup background"
-    />
+    <img src="assets/images/signupd.jpg" class="img-fluid image-back h-100 w-100 object-fit-cover"
+      alt="Signup background" />
 
     <!-- Glassmorphic Card -->
     <div class="col-md-6 d-flex align-items-center glass-card justify-content-center position-relative shadow-lg">
@@ -19,31 +14,17 @@
           <div class="row">
             <!-- Email -->
             <div class="form-floating mb-3 col-12">
-              <Field
-                name="email"
-                as="input"
-                type="text"
-                class="form-control"
-                id="email"
-                placeholder="Email"
-                rules="required|nospace|email"
-              />
-              <label :class="`${values.email? 'fix-top': ''}`" for="email">Email</label>
+              <Field name="email" as="input" type="text" class="form-control" id="email" placeholder="Email"
+                rules="required|nospace|email" />
+              <label :class="`${values.email ? 'fix-top' : ''}`" for="email">Email</label>
               <ErrorMessage name="email" class="error-message" />
             </div>
 
             <!-- Password -->
             <div class="form-floating mb-3 col-12">
-              <Field
-                name="password"
-                as="input"
-                type="password"
-                class="form-control"
-                id="password"
-                placeholder="Password"
-                rules="required|nospace|min:5"
-              />
-              <label :class="`${values.password? 'fix-top': ''}`" for="password">Password</label>
+              <Field name="password" as="input" type="password" class="form-control" id="password"
+                placeholder="Password" rules="required|nospace|min:5" />
+              <label :class="`${values.password ? 'fix-top' : ''}`" for="password">Password</label>
               <ErrorMessage name="password" class="error-message" />
             </div>
           </div>
@@ -67,10 +48,11 @@ import api from '~~/api.config';
 import STATUS from '~~/status';
 import { useRouter } from 'vue-router';
 import { subDomain } from '~~/function';
+import { ROLE } from '~~/constant/role';
 
 const dbName = ref(null);
 const router = useRouter();
-const { $toast } = useNuxtApp();    
+const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 const { handleSubmit, isSubmitting, values } = useForm({});
 
@@ -85,10 +67,21 @@ const login = handleSubmit(async (values) => {
     });
 
     if (response.status === STATUS.OK) {
-      console.log(response);
-      localStorage.setItem('_id', response.data.user._id);
       $toast.success(response.data.message);
-      router.push(`/${response.data.user.role.toLowerCase()}-dashboard`);
+
+      const dbName = subDomain();
+      const { role, _id, domain } = response.data.user;
+      const rolePath = `/${role.toLowerCase()}/dashboard`;
+      localStorage.setItem('_id', _id);
+      if (dbName === 'toggle') {
+        if (role === ROLE.SUPER_ADMIN) {
+          router.push(rolePath);
+        } else {
+          window.location.href = `${config.public.AUTH}${domain}.${config.public.DOMAIN}`;
+        }
+      } else {
+        router.push(rolePath);
+      }
     }
   } catch (error) {
     $toast.error(error.response.data.message);
@@ -125,8 +118,8 @@ onMounted(init);
 }
 
 /* Label floating outside the input */
-.form-control:focus ~ .custom-label,
-.form-control:not(:placeholder-shown) ~ .custom-label {
+.form-control:focus~.custom-label,
+.form-control:not(:placeholder-shown)~.custom-label {
   color: #0d6efd;
   font-size: 0.8rem;
   transform: translateY(-0.8rem) translateX(-0.2rem);

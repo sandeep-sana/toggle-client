@@ -19,6 +19,13 @@ defineRule('nouppercase', (value) => {
   }
   return true;
 });
+defineRule('nonumber', (value) => {
+  if (/\d/.test(value)) {
+    return 'Numbers are not allowed';
+  }
+  return true;
+});
+
 
 defineRule('email', (value) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/

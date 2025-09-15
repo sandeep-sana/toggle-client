@@ -1,18 +1,41 @@
 <template>
-    <!-- Parent div that controls layout -->
-    <div :class="layout.position">
-        <div class="custom-header p-4">
-            <draggable v-model="sideHeader.user.modules" item-key="name" animation="200">
+  <!-- Parent div that controls layout -->
+  <div :class="layout.position">
+    <div class="custom-header p-4">
+      <draggable :group="{ name: 'custom' }" v-model="sideHeader.user.modules" item-key="name" animation="200">
+        <template #item="{ element }">
+          <button class="m-2 p-2 bg-blue-500 text-black rounded"
+            @click="$router.push(`/${sideHeader.user.role.toLowerCase()}/${element.toLowerCase()}`)">
+            {{ element.toLowerCase() }}
+          </button>
+        </template>
+      </draggable>
+      <div class="accordion accordion-flush" id="accordionFlushExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+              Masters
+            </button>
+          </h2>
+          <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+            data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              <draggable :group="{ name: 'master' }" v-model="sideHeader.user.masters" item-key="name" animation="200">
                 <template #item="{ element }">
-                    <button class="m-2 p-2 bg-blue-500 text-white rounded"
-                        @click="$router.push(`/${sideHeader.user.role.toLowerCase()}/${element.toLowerCase()}`)">
-                        {{ element.toLowerCase() }}
-                    </button>
+                  <button class="m-2 p-2 bg-blue-500 text-black rounded"
+                    @click="$router.push(`/${sideHeader.user.role.toLowerCase()}/master/${element._id}`)">
+                    {{ element.name.toLowerCase() }}
+                  </button>
                 </template>
-            </draggable>
-            <button @click="$logout" class="logout-btn">Logout</button>
+              </draggable>
+            </div>
+          </div>
         </div>
+      </div>
+      <button @click="$logout" class="logout-btn">Logout</button>
     </div>
+  </div>
 </template>
 
 
@@ -25,50 +48,74 @@ import draggable from "vuedraggable";
 import { subDomain } from "~~/function";
 import { useGlobalStore } from "~/stores/global";
 const props = defineProps({
-    layout: { type: Object }
+  layout: { type: Object }
 });
 
 const sideHeader = reactive({
-    user: {
-        modules: [],
-    }
+  user: {
+    modules: [],
+    masters:[],
+  }
 });
 const config = useRuntimeConfig();
 const globalStore = useGlobalStore();
 const { $logout, $session } = useNuxtApp();
 
 const updateModules = async () => {
-    try {
-        const projection = { modules: sideHeader.user.modules };
-        const response = await api.post(`${config.public.API}/user/user/${sideHeader.user._id}`, {
-            projection: JSON.stringify(projection),
-        });
-        if (response.status === STATUS.OK) {
-        }
-    } catch (error) {
-        console.log(error);
+  try {
+    const projection = { modules: sideHeader.user.modules };
+    const response = await api.post(`${config.public.API}/user/user/${sideHeader.user._id}`, {
+      projection: JSON.stringify(projection),
+    });
+    if (response.status === STATUS.OK) {
     }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 watch(sideHeader.user.modules, async () => {
-    await updateModules();
+  await updateModules();
 })
 
-watch(() => globalStore.isSideHeader, async() => {
-    await init();
+watch(() => globalStore.isSideHeader, async () => {
+  await init();
 })
+watch(() => globalStore.isMaster, async () => {
+  await initMasters();
+})
+
+const initMasters = async () => {
+  try {
+    const projection = {
+      name: 1,
+    }
+    const response = await api.get(`${config.public.API}/master/fetchs`, {
+      params: {
+        projection: JSON.stringify(projection),
+      }
+    });
+    if (response.status === STATUS.OK) {
+      sideHeader.user.masters = response.data.masters;
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 const init = async () => {
-    try {
-        subDomain();
-        sideHeader.user._id = $session();
-        const res = await api.get(`${config.public.API}/user/user/${sideHeader.user._id}`);
-        if (res.status === STATUS.OK) {
-            sideHeader.user = res.data.user;
-        }
-    } catch (err) {
-        console.error(err);
+  try {
+    subDomain();
+    sideHeader.user._id = $session();
+    const res = await api.get(`${config.public.API}/user/user/${sideHeader.user._id}`);
+    if (res.status === STATUS.OK) {
+      sideHeader.user = res.data.user;
     }
+    await initMasters();
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 onMounted(init);
@@ -100,10 +147,12 @@ onMounted(init);
   box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
   transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
 }
+
 .custom-header button.bg-blue-500:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(59, 130, 246, 0.35);
 }
+
 .custom-header button.bg-blue-500:active {
   transform: translateY(0);
   box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
@@ -132,7 +181,8 @@ onMounted(init);
   width: 100%;
   justify-content: flex-start;
   text-align: left;
-  padding-left: 14px; /* complements your Tailwind p-2 */
+  padding-left: 14px;
+  /* complements your Tailwind p-2 */
 }
 
 /* Logout sticks to bottom in vertical */
@@ -164,7 +214,8 @@ onMounted(init);
 /* ---------- Logout button ---------- */
 .logout-btn {
   padding: 10px 16px;
-  background-color: #ef4444; /* Tailwind red-500 */
+  background-color: #ef4444;
+  /* Tailwind red-500 */
   /* color: #fff; */
   border: none;
   border-radius: 10px;
@@ -173,11 +224,14 @@ onMounted(init);
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
   transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, opacity .15s ease;
 }
+
 .logout-btn:hover {
-  background-color: #dc2626; /* red-600 */
+  background-color: #dc2626;
+  /* red-600 */
   box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
   transform: translateY(-1px);
 }
+
 .logout-btn:active {
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
@@ -188,6 +242,7 @@ onMounted(init);
 .sortable-chosen {
   opacity: 0.95;
 }
+
 .sortable-ghost {
   opacity: 0.6;
   transform: scale(0.995);
@@ -197,12 +252,15 @@ onMounted(init);
 .left .custom-header,
 .right .custom-header {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent; /* slate-300 */
+  scrollbar-color: #cbd5e1 transparent;
+  /* slate-300 */
 }
+
 .left .custom-header::-webkit-scrollbar,
 .right .custom-header::-webkit-scrollbar {
   width: 8px;
 }
+
 .left .custom-header::-webkit-scrollbar-thumb,
 .right .custom-header::-webkit-scrollbar-thumb {
   background: #cbd5e1;
@@ -211,15 +269,16 @@ onMounted(init);
 
 /* ---------- Small screens ---------- */
 @media (max-width: 768px) {
+
   .left .custom-header,
   .right .custom-header {
     width: 88vw;
     border-radius: 0 14px 14px 0;
   }
+
   .top .custom-header {
     gap: 6px 8px;
     padding: 12px;
   }
 }
 </style>
-

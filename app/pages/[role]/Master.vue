@@ -44,12 +44,14 @@
 </template>
 
 <script setup>
-import { Field, ErrorMessage, useForm } from "vee-validate";
-import Modal from "../modal/Modal.vue";
-import api from "~~/api.config";
 import STATUS from "~~/status";
+import api from "~~/api.config";
+import Modal from "../modal/Modal.vue";
+import { useGlobalStore } from '~/stores/global';
+import { Field, ErrorMessage, useForm } from "vee-validate";
 
 const config = useRuntimeConfig();
+const globalStore = useGlobalStore();
 
 const master = reactive({
     isShow: false,
@@ -59,7 +61,6 @@ const { $toast } = useNuxtApp();
 const { handleSubmit } = useForm();
 
 const addMaster = handleSubmit(async (values) => {
-    console.log("Form submitted:", values);
     const query = {
         ...values,
     }
@@ -70,6 +71,7 @@ const addMaster = handleSubmit(async (values) => {
         if (response.status === STATUS.CREATED) {
             master.lists.push(response.data.master);
             $toast.success(response.data.message);
+            globalStore.setIsMaster(!globalStore.isMaster);
         }
     } catch (error) {
         console.log(error);

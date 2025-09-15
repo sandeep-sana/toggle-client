@@ -33,6 +33,9 @@ const layout = ref({
 })
 
 const flexDirectionClass = computed(() => {
+  if(!layout.value?.position){
+    layout.value = { position: 'top'};
+  }
   switch (layout.value.position) {
     case 'top':
       return 'flex-column';
