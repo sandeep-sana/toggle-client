@@ -4,6 +4,7 @@ const STATUS = {
     CREATED: 201,          // Resource created
     ACCEPTED: 202,         // Request accepted, processing
     NO_CONTENT: 204,       // Request successful, but no content
+    NOT_MODIFIED: 304,
     BAD_REQUEST: 400,      // Client-side error (e.g., invalid input)
     UNAUTHORIZED: 401,     // Authentication required
     FORBIDDEN: 403,        // Server understood but refuses action

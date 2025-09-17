@@ -25,29 +25,14 @@
 
     <Modal v-if="tableReactive.isAdd">
         <template #header>
+        
             <h2 class="text-xl font-bold text-blue-600">Add Master</h2>
         </template>
         <template #body>
             <form @submit="saveMaster">
                 <div class="mb-3" v-for="field in table.master.fields">
-                    <label for="name" class="block font-medium mb-1">{{ field.columnName }}</label>
-                    <!-- ONLY FOR STRING -->
-                    <template v-if="field.dataType === DATA_TYPE.STRING">
-                        <Field :name="`${field.columnName}`" as="input" type="text"
-                            class="w-full border rounded px-3 py-2" :placeholder="field.columnName"
-                            :rules="handleValidation(field)" />
-                    </template>
-                    <!-- ONLY FOR NUMBER -->
-                    <template v-else-if="field.dataType === DATA_TYPE.NUMBER">
-                        <Field :name="`${field.columnName}`" as="input" type="number"
-                            class="w-full border rounded px-3 py-2" :placeholder="field.columnName" rules="" />
-                    </template>
-                    <!-- ONLY FOR DATE -->
-                    <template v-else-if="field.dataType === DATA_TYPE.DATE">
-                        <VueDatePicker :name="`${field.columnName}`" :enable-time-picker="false"
-                            class="w-full border rounded px-3 py-2" format="yyyy-MM-dd" auto-apply />
-                    </template>
-                    <ErrorMessage :name="`${field.columnName}`" class="text-red-500 text-sm mt-1" />
+                    <TableField :field="field"/>
+                    
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" @click="tableReactive.isAdd = false" class="px-4 py-2 bg-gray-200 rounded">
@@ -67,6 +52,7 @@ import { ref } from 'vue';
 import STATUS from '~~/status';
 import api from '~~/api.config';
 import Modal from '../modal/Modal.vue';
+import TableField from './TableField.vue';
 import { DATA_TYPE } from '~~/constant/master';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import { handleValidation } from '../common/common';
@@ -75,6 +61,7 @@ import { ErrorMessage, Field, useForm } from 'vee-validate';
 const lists = ref([]);
 const tableReactive = reactive({
     isAdd: false,
+    masterBindingRule: {},
 });
 const route = useRoute();
 const updateList = ref({});
@@ -117,7 +104,6 @@ const addList = async () => {
 const init = async () => {
     try {
         const response = await api.get(`${config.public.API}/dynamicMaster/fetchs/${_id.value}`);
-        console.log(response)
         if (response.status === STATUS.OK) {
             lists.value = response.data.dynamicMasters;
         }
@@ -126,8 +112,24 @@ const init = async () => {
         console.log(error);
     }
 }
+// const initMasterBindingRule = async () => {
+//     try {
+//         const response = await api.get(`${config.public.API}/masterBindingRule/fetch/${_id.value}`);
+//         console.log(response)
+        
+//         if (response.status === STATUS.OK) {
+//             tableReactive.masterBindingRule = response.data.masterBindingRule;
+//         }
 
-onMounted(init);
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
+onMounted(async() => {
+    await init();
+    // await initMasterBindingRule();
+});
 
 const saveMaster = handleSubmit(async (values) => {
   

@@ -13,17 +13,19 @@ export const MASTER = {
         { label: 'True', value: true },
         { label: 'False', value: false },
     ],
-    VALIDATION: [
-        'required',
-        'nospace',
-        'nouppercase',
-        'nonumber',
-        'email',
-        'number',
-        'alphabate',
-        'min',
-        'max',
-    ]
+    VALIDATION: {
+        String: [
+            'required',
+            'nospace',
+            'nouppercase',
+            'nonumber',
+            'email',
+            'number',
+            'alphabate',
+            'min',
+            'max',
+        ]
+    }
 }
 
 export const DATA_TYPE = {
