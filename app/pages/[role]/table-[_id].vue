@@ -1,6 +1,7 @@
 <template>
-    <div>
-        <h1>Table</h1>
+  <div class="container my-5">
+    <!-- Page Title -->
+    <h1 class="text-center text-primary mb-4">Table Configuration</h1>
 
         <form @submit="onSubmit">
             <div class="mb-3">
@@ -132,13 +133,14 @@
 </template>
 
 <script setup>
-import STATUS from "~~/status";
-import api from "~~/api.config";
-import { useRoute } from "vue-router";
 import { computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import Multiselect from "vue-multiselect";
 import { DATA_TYPE, MASTER } from "../../../constant/master";
 import { Field, ErrorMessage, useForm } from "vee-validate";
+import api from "~~/api.config";
+import STATUS from "~~/status";
+import { MASTER } from "../../../constant/master";
 
 const route = useRoute();
 const { $toast } = useNuxtApp();
@@ -156,12 +158,12 @@ const defaultField = {
     max: null,
 };
 
-// Vee-Validate form setup
+// Form setup with vee-validate
 const { handleSubmit, isSubmitting, setValues, values } = useForm({
-    initialValues: {
-        name: "",
-        fields: [defaultField],
-    },
+  initialValues: {
+    name: "",
+    fields: [defaultField],
+  },
 });
 
 const addRow = (columnName=null) => {
@@ -171,15 +173,15 @@ const addRow = (columnName=null) => {
     });
 };
 
+// Remove Row
 const removeRow = (index) => {
-    setValues({
-        ...values,
-        fields: values.fields.filter((_, i) => i !== index),
-    });
+  setValues({
+    ...values,
+    fields: values.fields.filter((_, i) => i !== index),
+  });
 };
 
-
-// Init API data
+// API Data Initialization
 const init = async () => {
     try {
         const response = await api.get(
@@ -221,7 +223,7 @@ onMounted(async () => {
     removeRow(0);
 });
 
-// Submit
+// Submit Form
 const onSubmit = handleSubmit(async (values) => {
     try {
 
@@ -240,6 +242,7 @@ const onSubmit = handleSubmit(async (values) => {
     }
 });
 
+// Add Tag to Enum
 const addTag = (rowIndex, newTag) => {
     const updatedFields = [...values.fields];
     if (!Array.isArray(updatedFields[rowIndex].enum)) {
@@ -310,3 +313,61 @@ const manageDataType = (fieldIndex) => {
 }
 
 </script>
+
+<style scoped>
+/* Global Container */
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 30px;
+}
+
+/* Form Styling */
+.form-control {
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+
+button {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* Table Styling */
+.table {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.table td {
+  padding: 8px;
+}
+
+/* Button Styling */
+.btn-outline-success {
+  font-size: 14px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Error Styling */
+.text-danger {
+  font-size: 12px;
+  font-weight: 400;
+}
+</style>
