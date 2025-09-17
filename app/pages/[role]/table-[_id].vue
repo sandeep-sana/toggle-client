@@ -9,9 +9,9 @@
                     placeholder="Enter name" rules="required|nospace|min:5" />
                 <ErrorMessage name="name" class="text-red-500 text-sm mt-1" />
             </div>
-            <button type="button" class="bg-green-500 text-white px-2 py-1 rounded mr-2" @click="addRow">
-                ➕
-            </button>
+            <button type="button" class="bg-green-500 text-white px-2 py-1 rounded mr-2" @click="addRow">➕</button>
+            <button type="button" class="bg-green-500 text-white px-2 py-1 rounded mr-2" @click="addRow('createdAt')">CreatedAt</button>
+            <button type="button" class="bg-green-500 text-white px-2 py-1 rounded mr-2" @click="addRow('updatedAt')">UpdatedAt</button>
             <table>
                 <thead>
                     <tr>
@@ -21,6 +21,10 @@
                         <th>Default</th>
                         <th>Unique</th>
                         <th>Enum</th>
+                        <th>Validation</th>
+                        <th>Min</th>
+                        <th>Max</th>
+                        <th>Depended Master</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -30,13 +34,13 @@
                         <td>{{ fieldIndex + 1 }}</td>
                         <td>
                             <Field :name="`fields[${fieldIndex}].columnName`" as="input" type="text"
-                                class="form-control" placeholder="Column Name" rules="required|nonumber" />
+                                class="form-control" placeholder="Column Name" rules="required|nonumber" :disabled="['createdAt', 'updatedAt'].includes(values.fields[fieldIndex].columnName)" />
                             <ErrorMessage :name="`fields[${fieldIndex}].columnName`"
                                 class="error-message text-red-500 text-sm" />
                         </td>
                         <td>
                             <Field :name="`fields[${fieldIndex}].dataType`" as="select" class="form-control"
-                                rules="required">
+                                rules="required" @change="manageDataType(fieldIndex)">
                                 <option v-for="dataType in MASTER.DATATYPE" :key="dataType.value"
                                     :value="dataType.value">
                                     {{ dataType.label }}
@@ -45,14 +49,24 @@
                             <ErrorMessage :name="`fields[${fieldIndex}].dataType`"
                                 class="error-message text-red-500 text-sm" />
                         </td>
-                        <td>
+                        <td v-if="values.fields[fieldIndex].dataType === DATA_TYPE.BOOLEAN">
+                            <Field :name="`fields[${fieldIndex}].default`" as="select" class="form-control">
+                                <option v-for="dataType in MASTER.BOOLEAN" :key="dataType.value"
+                                    :value="dataType.value">
+                                    {{ dataType.label }}
+                                </option>
+                            </Field>
+                            <ErrorMessage :name="`fields[${fieldIndex}].default`"
+                                class="error-message text-red-500 text-sm" />
+                        </td>
+                        <td v-else>
                             <Field :name="`fields[${fieldIndex}].default`" as="input" type="text" class="form-control"
-                                placeholder="Column Name" rules="nonumber" />
+                                placeholder="Column Name" rules="nonumber" @change="manageDefault(fieldIndex)" />
                             <ErrorMessage :name="`fields[${fieldIndex}].default`"
                                 class="error-message text-red-500 text-sm" />
                         </td>
                         <td>
-                            <Field :name="`fields[${fieldIndex}].unique`" as="select" class="form-control" rules="">
+                            <Field :name="`fields[${fieldIndex}].unique`" as="select" class="form-control" rules="" :disabled="values.fields[fieldIndex].default != null">
                                 <option v-for="dataType in MASTER.UNIQUE" :key="dataType.value" :value="dataType.value">
                                     {{ dataType.label }}
                                 </option>
@@ -64,15 +78,42 @@
                             <Field :name="`fields[${fieldIndex}].enum`" v-slot="{ value, handleChange, errorMessage }">
                                 <Multiselect :model-value="value" @update:model-value="handleChange" :options="[]"
                                     :multiple="true" :close-on-select="false" placeholder="Pick some" :taggable="true"
-                                    @tag="newTag => addTag(fieldIndex, newTag)" />
+                                    @tag="newTag => addTag(fieldIndex, newTag)" @remove="manageEnum(fieldIndex)" />
                                 <span v-if="errorMessage" class="text-red-500 text-sm">{{ errorMessage }}</span>
                             </Field>
                         </td>
-
-
-
-
-
+                        <td>
+                            <Field :name="`fields[${fieldIndex}].validation`" v-slot="{ value, handleChange, errorMessage }">
+                                <Multiselect :model-value="value" @update:model-value="handleChange" :options="MASTER.VALIDATION"
+                                    :multiple="true" :close-on-select="false" placeholder="Pick some" :taggable="true"
+                                    />
+                                <span v-if="errorMessage" class="text-red-500 text-sm">{{ errorMessage }}</span>
+                            </Field>
+                        </td>
+                        <td v-if="values.fields[fieldIndex].validation && values.fields[fieldIndex].validation.length && values.fields[fieldIndex].validation.includes('min')">
+                            <Field :name="`fields[${fieldIndex}].min`" as="input" type="number" class="form-control"
+                                placeholder="Column Name" />
+                            <ErrorMessage :name="`fields[${fieldIndex}].min`"
+                                class="error-message text-red-500 text-sm" />
+                        </td>
+                        <td v-else>----</td>
+                        <td v-if="values.fields[fieldIndex].validation && values.fields[fieldIndex].validation.length && values.fields[fieldIndex].validation.includes('max')">
+                            <Field :name="`fields[${fieldIndex}].max`" as="input" type="number" class="form-control"
+                                placeholder="Column Name" />
+                            <ErrorMessage :name="`fields[${fieldIndex}].max`"
+                                class="error-message text-red-500 text-sm" />
+                        </td>
+                        <td v-else>----</td>
+                        <td>
+                            <Field :name="`fields[${fieldIndex}].ref`" as="select" class="form-control" rules="">
+                                <option value="">No Master</option>
+                                <option v-for="master in values.dependedMasters" :key="master" :value="master">
+                                    {{ master }}
+                                </option>
+                            </Field>
+                            <ErrorMessage :name="`fields[${fieldIndex}].ref`"
+                                class="error-message text-red-500 text-sm" />
+                        </td>
                         <td>
                             <button v-if="values.fields.length > 1" type="button"
                                 class="bg-red-500 text-white px-2 py-1 rounded" @click="removeRow(fieldIndex)">
@@ -96,10 +137,11 @@ import api from "~~/api.config";
 import { useRoute } from "vue-router";
 import { computed, onMounted } from "vue";
 import Multiselect from "vue-multiselect";
-import { MASTER } from "../../../constant/master";
+import { DATA_TYPE, MASTER } from "../../../constant/master";
 import { Field, ErrorMessage, useForm } from "vee-validate";
 
 const route = useRoute();
+const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
 const _id = computed(() => route.params._id);
 
@@ -109,6 +151,9 @@ const defaultField = {
     dataType: "String",
     unique: null,
     enum: [],
+    ref: null,
+    min: null,
+    max: null,
 };
 
 // Vee-Validate form setup
@@ -119,10 +164,10 @@ const { handleSubmit, isSubmitting, setValues, values } = useForm({
     },
 });
 
-const addRow = () => {
+const addRow = (columnName=null) => {
     setValues({
         ...values,
-        fields: [...(values.fields || []), { ...defaultField }],
+        fields: [{ ...defaultField, columnName: columnName }, ...(values.fields || [])],
     });
 };
 
@@ -143,28 +188,51 @@ const init = async () => {
         if (response.status === STATUS.OK) {
             setValues({
                 ...response.data.master,
-                fields: response.data.master.fields?.length
-                    ? response.data.master.fields
-                    : [defaultField],
+                fields: JSON.parse(JSON.stringify(response.data.master.fields)),
             });
         }
     } catch (error) {
         console.log(error);
     }
 };
-onMounted(init);
+const initMasters = async () => {
+    try {
+        const response = await api.get(`${config.public.API}/master/fetchs`);
+        if (response.status === STATUS.OK) {
+            console.log(response)
+            setValues({
+                ...values,
+                dependedMasters: response.data.masters?.length
+                    ? response.data.masters
+                        .filter(master => master._id !== _id.value)  // Fix the filter condition
+                        .map(master => master.name)                  // Map to get only names
+                    : [],
+            });
+
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
+onMounted(async () => {
+    await init();
+    await initMasters();
+    addRow();
+    removeRow(0);
+});
 
 // Submit
 const onSubmit = handleSubmit(async (values) => {
     try {
+
         const response = await api.post(
             `${config.public.API}/master/update/${_id.value}`,
             {
                 projection: JSON.stringify(values),
             }
         );
-        if (response.status === STATUS.OK) {
-            console.log("Saved successfully:", response.data);
+        if (response.status === STATUS.CREATED) {
+            $toast.success(response.data.message);
             setValues(values);
         }
     } catch (error) {
@@ -177,6 +245,10 @@ const addTag = (rowIndex, newTag) => {
     if (!Array.isArray(updatedFields[rowIndex].enum)) {
         updatedFields[rowIndex].enum = [];
     }
+    const defaultType = values.fields[rowIndex].default;
+    if (defaultType) {
+        updatedFields[rowIndex].enum = [...updatedFields[rowIndex].enum, defaultType];
+    }
     updatedFields[rowIndex].enum = [...updatedFields[rowIndex].enum, newTag];
     setValues({
         ...values,
@@ -184,5 +256,57 @@ const addTag = (rowIndex, newTag) => {
     });
 };
 
+const manageDefault = (fieldIndex) => {
+    if (fieldIndex >= 0) {
+        const defaultType = values.fields[fieldIndex].default;
+        const enumType = values.fields[fieldIndex].enum;
+        if (enumType.length && defaultType) {
+            const updatedFields = [...values.fields];
+            if (!Array.isArray(updatedFields[fieldIndex].enum)) {
+                updatedFields[fieldIndex].enum = [];
+            }
+            updatedFields[fieldIndex].enum = [...updatedFields[fieldIndex].enum, defaultType];
+            setValues({
+                ...values,
+                fields: updatedFields,
+            });
+        }
+    }
+}
+
+const manageEnum = (fieldIndex) => {
+    if (fieldIndex >= 0) {
+        const defaultType = values.fields[fieldIndex].default;
+        const enumType = values.fields[fieldIndex].enum;
+        if (defaultType) {
+            const type = enumType.includes(defaultType);
+            if (!type) {
+                const updatedFields = [...values.fields];
+                if (!Array.isArray(updatedFields[fieldIndex].enum)) {
+                    updatedFields[fieldIndex].enum = [];
+                }
+                updatedFields[fieldIndex].enum = [...updatedFields[fieldIndex].enum, defaultType];
+                setValues({
+                    ...values,
+                    fields: updatedFields,
+                });
+            }
+        }
+    }
+}
+const manageDataType = (fieldIndex) => {
+    const dataType = values.fields[fieldIndex].dataType;
+    const updatedFields = [...values.fields];
+    if (dataType === DATA_TYPE.BOOLEAN) {
+        updatedFields[fieldIndex].default = false;
+       updatedFields[fieldIndex].unique = 'false';
+    }else{
+        updatedFields[fieldIndex].default = null;
+    }
+    setValues({
+        ...values,
+        fields: updatedFields,
+    });
+}
 
 </script>

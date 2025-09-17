@@ -11,7 +11,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ list.name }}</h5>
                         <button type="button" @click="$router.push(`/system-admin/table-${list._id}`)">Schema</button>
-                        <button type="button">Delete</button>
+                        <button type="button" @click="masterDelete(list._id);">Delete</button>
                     </div>
                 </div>
             </div>
@@ -98,4 +98,17 @@ const init = async () => {
     }
 }
 onMounted(init);
+
+const masterDelete = async(_id) => {
+    try {
+        const response = await api.delete(`${config.public.API}/master/delete/${_id}`);
+        if (response.status === STATUS.OK) {
+            $toast.success(response.data.message);
+            master.lists =  master.lists.filter(list => list._id != _id);
+        }
+        
+    } catch (error) {
+        console.log(error);
+    }
+}
 </script>

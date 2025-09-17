@@ -13,112 +13,105 @@
         <tbody>
             <tr v-for="(list, listIndex) in lists" :key="listIndex">
                 <td v-for="field in table.master.fields" :key="field.columnName">
-                    <!-- when string -->
-                    <template v-if="field.dataType === DATA_TYPE.STRING">
-                        <!-- case one: enum dropdown -->
-                        <template v-if="field.enum && field.enum.length">
-                            <template v-if="disabledId === list._id">
-                                <Field :name="`${updateList}.${field.columnName}`" as="select" class="form-control"
-                                    v-model="updateList[field.columnName]">
-                                    <option v-for="e in field.enum" :key="e" :value="e">{{ e }}</option>
-                                </Field>
-                                <ErrorMessage :name="`${updateList}.${field.columnName}`" class="error-message" />
-                            </template>
-                            <template v-else>
-                                <Field :name="`${listIndex}.${field.columnName}`" as="select" class="form-control"
-                                    v-model="list[field.columnName]" disabled>
-                                    <option v-for="e in field.enum" :key="e" :value="e">{{ e }}</option>
-                                </Field>
-                                <ErrorMessage :name="`${listIndex}.${field.columnName}`" class="error-message" />
-                            </template>
-                        </template>
-                        <!-- case two: plain string input -->
-                        <template v-else>
-                            <template v-if="disabledId === list._id">
-                                <Field :name="`${updateList}.${field.columnName}`" as="input" class="form-control"
-                                    v-model="updateList[field.columnName]">
-                                </Field>
-                                <ErrorMessage :name="`${updateList}.${field.columnName}`" class="error-message" />
-                            </template>
-                            <template v-else>
-                                <Field :name="`${listIndex}.${field.columnName}`" as="input" class="form-control"
-                                    v-model="list[field.columnName]" disabled>
-                                </Field>
-                                <ErrorMessage :name="`${listIndex}.${field.columnName}`" class="error-message" />
-                            </template>
-                        </template>
-                    </template>
-
-                    <!-- when boolean -->
-                    <template v-else-if="field.dataType === DATA_TYPE.BOOLEAN">
-                        <Field :name="`${listIndex}.${field.columnName}`" type="checkbox"
-                            v-model="list[field.columnName]" :disabled="disabledId != list._id" />
-                    </template>
-
-                    <!-- when number -->
-                    <template v-else-if="field.dataType === DATA_TYPE.NUMBER">
-                        <Field :name="`${listIndex}.${field.columnName}`" as="input" type="number" class="form-control"
-                            v-model="list[field.columnName]" :disabled="disabledId != list._id" />
-                    </template>
-                    <template v-else-if="field.dataType === DATA_TYPE.DATE">
-                        <VueDatePicker v-model="list[field.columnName]" :enable-time-picker="false"
-                            format="yyyy-MM-dd" auto-apply />
-                    </template>
+                    {{ list[field.columnName] }}
                 </td>
                 <td>
-                    <template v-if="disabledId === list._id">
-                        <button type="button" @click="saveMaster(updateList)">Save</button>
-                        <button type="button" @click="disabledId = null">Cancel</button>
-                    </template>
-                    <template v-else>
-                        <button type="button" @click="editMaster(list)">Edit</button>
-                    </template>
+                    <button type="button" @click="editMaster(list)">Edit</button>
+                    <button type="button" @click="deleteMaster(list._id)">Delete</button>
                 </td>
             </tr>
         </tbody>
     </table>
+
+    <Modal v-if="tableReactive.isAdd">
+        <template #header>
+            <h2 class="text-xl font-bold text-blue-600">Add Master</h2>
+        </template>
+        <template #body>
+            <form @submit="saveMaster">
+                <div class="mb-3" v-for="field in table.master.fields">
+                    <label for="name" class="block font-medium mb-1">{{ field.columnName }}</label>
+                    <!-- ONLY FOR STRING -->
+                    <template v-if="field.dataType === DATA_TYPE.STRING">
+                        <Field :name="`${field.columnName}`" as="input" type="text"
+                            class="w-full border rounded px-3 py-2" :placeholder="field.columnName"
+                            :rules="handleValidation(field)" />
+                    </template>
+                    <!-- ONLY FOR NUMBER -->
+                    <template v-else-if="field.dataType === DATA_TYPE.NUMBER">
+                        <Field :name="`${field.columnName}`" as="input" type="number"
+                            class="w-full border rounded px-3 py-2" :placeholder="field.columnName" rules="" />
+                    </template>
+                    <!-- ONLY FOR DATE -->
+                    <template v-else-if="field.dataType === DATA_TYPE.DATE">
+                        <VueDatePicker :name="`${field.columnName}`" :enable-time-picker="false"
+                            class="w-full border rounded px-3 py-2" format="yyyy-MM-dd" auto-apply />
+                    </template>
+                    <ErrorMessage :name="`${field.columnName}`" class="text-red-500 text-sm mt-1" />
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" @click="tableReactive.isAdd = false" class="px-4 py-2 bg-gray-200 rounded">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </template>
+    </Modal>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import api from '~~/api.config';
-import { DATA_TYPE } from '~~/constant/master';
-import { ErrorMessage, Field } from 'vee-validate';
-import VueDatePicker from '@vuepic/vue-datepicker';
 import STATUS from '~~/status';
+import api from '~~/api.config';
+import Modal from '../modal/Modal.vue';
+import { DATA_TYPE } from '~~/constant/master';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import { handleValidation } from '../common/common';
+import { ErrorMessage, Field, useForm } from 'vee-validate';
+
 const lists = ref([]);
-const updateList = ref({});
-const disabledId = ref(null);
+const tableReactive = reactive({
+    isAdd: false,
+});
 const route = useRoute();
+const updateList = ref({});
 const props = defineProps({
     table: { type: Object },
-})
+});
+
+const disabledId = ref(null);
+const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
+const { handleSubmit, setValues, values } = useForm();
 const _id = computed(() => route.params._id);
 
 const addList = async () => {
-    const newRow = {}
-    //   props.table.master.fields.forEach(f => {
-    //     if (f.dataType === DATA_TYPE.BOOLEAN) {
-    //       newRow[f.columnName] = false
-    //     } else {
-    //       newRow[f.columnName] = f.default || ''
+    tableReactive.isAdd = true;
+    // const newRow = {}
+    // //   props.table.master.fields.forEach(f => {
+    // //     if (f.dataType === DATA_TYPE.BOOLEAN) {
+    // //       newRow[f.columnName] = false
+    // //     } else {
+    // //       newRow[f.columnName] = f.default || ''
+    // //     }
+    // //   })
+    // const query = {
+    //     ...newRow
+    // }
+    // try {
+    //     const response = await api.post(`${config.public.API}/dynamicMaster/add/${_id.value}`, {
+    //         query: JSON.stringify(query),
+    //     });
+    //     console.log(response)
+    //     if (response.status === STATUS.CREATED) {
+    //         lists.value.unshift(response.data.dynamicMaster);
     //     }
-    //   })
-    const query = {
-        ...newRow
-    }
-    try {
-        const response = await api.post(`${config.public.API}/dynamicMaster/add/${_id.value}`, {
-            query: JSON.stringify(query),
-        });
-        console.log(response)
-        if (response.status === STATUS.CREATED) {
-            lists.value.unshift(response.data.dynamicMaster);
-        }
-    } catch (error) {
-        console.log(error);
-    }
+    // } catch (error) {
+    //     console.log(error);
+    // }
 }
 
 const init = async () => {
@@ -136,25 +129,50 @@ const init = async () => {
 
 onMounted(init);
 
-const saveMaster = async (list) => {
+const saveMaster = handleSubmit(async (values) => {
+  
     try {
-        disabledId.value = list._id;
-        const projection = {
-            ...list
+        if (values?._id) {
+            const response = await api.post(`${config.public.API}/dynamicMaster/update/${_id.value}/${values._id}`, {
+                projection: JSON.stringify(values),
+            });
+            if (response.status === STATUS.OK) {
+                $toast.success(response.data.message);
+                lists.value = lists.value.map(list =>  list._id === values._id ? values : list);
+            }
+        } else {
+            const response = await api.post(`${config.public.API}/dynamicMaster/add/${_id.value}`, {
+                query: JSON.stringify(values),
+            });
+            if (response.status === STATUS.CREATED) {
+                $toast.success(response.data.message);
+                lists.value.unshift(response.data.dynamicMaster);
+            }
         }
-        const response = await api.post(`${config.public.API}/dynamicMaster/update/${_id.value}/${list._id}`, {
-            projection: JSON.stringify(projection),
-        });
+    } catch (error) {
+        console.log(error);
+    } finally {
+        tableReactive.isAdd = false;
+    }
+})
+
+const editMaster = (list) => {
+    tableReactive.isAdd = true;
+    setValues({
+        ...list,
+    })
+    // disabledId.value = list._id;
+    // updateList.value = JSON.parse(JSON.stringify(list));
+}
+const deleteMaster = async (_listId) => {
+    try {
+        const response = await api.delete(`${config.public.API}/dynamicMaster/delete/${_id.value}/${_listId}`);
         if (response.status === STATUS.OK) {
-            console.log(response);
+            $toast.success(response.data.message);
+            lists.value = lists.value.filter(list => list._id != _listId);
         }
     } catch (error) {
         console.log(error);
     }
-}
-
-const editMaster = (list) => {
-    disabledId.value = list._id;
-    updateList.value = JSON.parse(JSON.stringify(list));
 }
 </script>

@@ -6,8 +6,23 @@ export const MASTER = {
         { label: 'Date', value: 'Date' },
     ],
     UNIQUE: [
+        { label: 'True', value: 'true' },
+        { label: 'False', value: 'false' },
+    ],
+    BOOLEAN: [
         { label: 'True', value: true },
-        { label: 'False', value: null },
+        { label: 'False', value: false },
+    ],
+    VALIDATION: [
+        'required',
+        'nospace',
+        'nouppercase',
+        'nonumber',
+        'email',
+        'number',
+        'alphabate',
+        'min',
+        'max',
     ]
 }
 
