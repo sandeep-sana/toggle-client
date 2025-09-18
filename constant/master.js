@@ -4,6 +4,7 @@ export const MASTER = {
         { label: 'Boolean', value: 'Boolean' },
         { label: 'Number', value: 'Number' },
         { label: 'Date', value: 'Date' },
+        { label: 'Array', value: 'Array' },
     ],
     UNIQUE: [
         { label: 'True', value: 'true' },
