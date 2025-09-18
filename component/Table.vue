@@ -29,7 +29,7 @@
             <h2 class="text-xl font-bold text-blue-600">Add Master</h2>
         </template>
         <template #body>
-            <form @submit="saveMaster">
+            <form @submit.prevent="saveMaster">
                 <div class="mb-3" v-for="field in table.master.fields">
                     <TableField :field="field"/>
                     

@@ -11,10 +11,10 @@
                 <ErrorMessage name="name" class="text-red-500 text-sm mt-1" />
             </div>
             <button type="button" class="bg-green-500 text-white px-2 py-1 rounded mr-2" @click="addRow()">➕</button>
-            <button type="button" class="bg-green-500 text-white px-2 py-1 rounded mr-2"
+            <!-- <button type="button" class="bg-green-500 text-white px-2 py-1 rounded mr-2"
                 @click="addRow('createdAt')">CreatedAt</button>
             <button type="button" class="bg-green-500 text-white px-2 py-1 rounded mr-2"
-                @click="addRow('updatedAt')">UpdatedAt</button>
+                @click="addRow('updatedAt')">UpdatedAt</button> -->
             <table>
                 <thead>
                     <tr>
@@ -162,7 +162,6 @@ import { DATA_TYPE, MASTER } from "../../../constant/master";
 import { Field, ErrorMessage, useForm } from "vee-validate";
 import api from "~~/api.config";
 import STATUS from "~~/status";
-import { MASTER } from "../../../constant/master";
 
 const route = useRoute();
 const { $toast } = useNuxtApp();
