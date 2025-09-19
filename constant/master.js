@@ -30,8 +30,9 @@ export const MASTER = {
 }
 
 export const DATA_TYPE = {
-    STRING: 'String',
-    BOOLEAN: 'Boolean',
-    NUMBER: 'Number',
-    DATE: 'Date',
+    STRING: 'STRING',
+    BOOLEAN: 'BOOLEAN',
+    NUMBER: 'NUMBER',
+    DATE: 'DATE',
+    ARRAY: 'ARRAY',
 }
