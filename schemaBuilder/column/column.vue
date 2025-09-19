@@ -1,19 +1,24 @@
 <template>
-    <div class="columnValue-card card shadow-sm" @click="edit">
+    <div class="columnValue-card card shadow-sm" @click="(event) => edit(event)" v-if="currentCol">
         <div class="card-body">
-            {{ schema.columns[columnIndex].columnName }}
-            <template v-if="Array.isArray(columnValue)">
+            {{ currentCol.columnName }}
+
+            <p>-------------</p>
+            <template v-if="currentCol.type === 'ARRAY'">
                 <div @drop="handleDrop" @dragover="handleDragOver" class="editor-canvas">
                     <div class="schema-content">
-                        <div class="w-100" v-for="(subColumnValue, subColumnKey) in columnValue" :key="columnKey">
-                            <Column :columnValue="subColumnValue" :columnKey="columnKey" :subColumnKey="subColumnKey"
-                                :schema="schema" />
+                        <div class="w-100" v-for="(subCol, subIndex) in (currentCol.columns || [])"
+                            :key="[...path, subIndex].join('-')">
+                            <!-- recursive call with extended path -->
+                            <Column :schema="schema" :path="[...path, subIndex]" />
                         </div>
                     </div>
                 </div>
             </template>
+            <p>-------------</p>
         </div>
     </div>
+
     <div class="action-buttons">
         <button @click="remove" class="btn btn-danger remove-btn">
             Remove
@@ -22,53 +27,64 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { computed } from 'vue'
+import { ADD_COLUMN } from '../constant'
+defineOptions({ name: 'Column' })
 
 const props = defineProps({
-    schema: { type: Object },
-    columnIndex: { type: Number },
-    subColumnKey: { type: String },
-});
+    schema: { type: Object, required: true },
+    // e.g. top-level = [columnIndex], nested = [columnIndex, subIndex, ...]
+    path: { type: Array, required: true },
+})
 
-const schema = reactive(props.schema);
-
-// Edit function
-const edit = () => {
-    if (props.subColumnKey) {
-        schema.property = props.columnValue[props.subColumnKey];
-    } else {
-        schema.property = schema.columns[props.columnIndex];
+/** Resolve the current column from schema using the path */
+const currentCol = computed(() => {
+    let list = props.schema?.columns
+    let col = null
+    for (const idx of props.path) {
+        if (!Array.isArray(list) || idx < 0 || idx >= list.length) return null
+        col = list[idx]
+        list = col?.columns
     }
-};
+    return col
+})
 
-// Remove function (for now, just a placeholder for functionality)
+/** Remove the current column from its parent list */
 const remove = () => {
-    schema.columns.splice(Number(props.columnIndex), 1);
-};
+    if (!props.path.length) return
+    const parentPath = props.path.slice(0, -1)
+    const idx = props.path[props.path.length - 1]
 
-// Dragover handler to allow dropping
-const handleDragOver = (event) => {
-    event.preventDefault();
-};
-
-const handleDrop = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const type = event.dataTransfer.getData('type');
-
-    switch (type) {
-        case "ADD_FIELD":
-            const subColumnValue = `columnValue${Object.keys(props.columnValue || []).length}`;
-            const newField = {
-                [subColumnValue]: { type: "String" },
-            };
-            props.columnValue.push(newField);
-            break;
-        default:
-            break;
+    let list = props.schema.columns
+    for (const i of parentPath) {
+        if (!Array.isArray(list) || i < 0 || i >= list.length) return
+        const parentCol = list[i]
+        list = parentCol.columns
     }
-};
+    if (Array.isArray(list) && idx >= 0 && idx < list.length) list.splice(idx, 1)
+}
 
+const edit = (event) => {
+    event.stopPropagation();
+    // whatever you want to do with the selected node
+    // e.g., expose it on schema for an editor drawer
+    props.schema.property = currentCol.value
+}
+
+const handleDragOver = (e) => e.preventDefault()
+
+const handleDrop = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const col = currentCol.value
+    if (!col || col.type !== 'ARRAY') return
+
+    const type = e.dataTransfer?.getData('type')
+    if (type === 'ADD_FIELD') {
+        if (!Array.isArray(col.columns)) col.columns = []
+        col.columns.push(ADD_COLUMN)
+    }
+}
 </script>
 
 <style scoped>
@@ -133,17 +149,6 @@ const handleDrop = (event) => {
     font-size: 1rem;
     border-radius: 5px;
     font-weight: bold;
-}
-
-/* Edit Button Styling */
-.edit-btn {
-    background-color: #28a745;
-    border: none;
-    color: white;
-}
-
-.edit-btn:hover {
-    background-color: #218838;
 }
 
 /* Remove Button Styling */
