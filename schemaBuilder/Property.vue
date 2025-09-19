@@ -12,12 +12,44 @@
             <div class="form-group">
                 <label for="type" class="form-label">Data Type</label>
                 <Field name="type" rules="required" as="select" v-model="schema.property.type" id="type"
-                    class="form-input" @change="handleData()">
+                    class="form-input" @change="manageDataType">
                     <option value="" disabled>Select Data Type</option>
                     <option v-for="dataType in DATA_TYPE" :key="dataType.value" :value="dataType.value">{{
                         dataType.label }}</option>
                 </Field>
                 <ErrorMessage name="type" class="error-message" />
+            </div>
+            <template v-if="schema.property.type === 'NUMBER'">
+                <div class="form-group">
+                    <label for="default" class="form-label">Default</label>
+                    <Field name="default" rules="required" as="input" type="number" v-model="schema.property.default"
+                        id="default" class="form-input" @change="manageDefault" />
+                    <ErrorMessage name="default" class="error-message" />
+                </div>
+            </template>
+            <template v-else-if="schema.property.type === 'BOOLEAN'">
+                <div class="form-group">
+                    <label for="default" class="form-label">Default</label>
+                    <Field name="default" rules="required" as="select" v-model="schema.property.default" id="default"
+                        class="form-input" @change="manageDefault">
+                        <option v-for="boolean in BOOLEAN" :value="boolean.value">{{ boolean.label }}</option>
+                    </Field>
+                    <ErrorMessage name="default" class="error-message" />
+                </div>
+            </template>
+            <template v-else>
+                <div class="form-group">
+                    <label for="default" class="form-label">Default</label>
+                    <Field name="default" rules="required" as="input" type="text" v-model="schema.property.default"
+                        id="default" class="form-input" @change="manageDefault" />
+                    <ErrorMessage name="default" class="error-message" />
+                </div>
+            </template>
+            <div class="form-group">
+                <label for="enum" class="form-label">Enum</label>
+                <Multiselect id="enum" v-model="schema.property.enum" :options="[]" :multiple="true"
+                    :close-on-select="false" placeholder="Add or pick values" :taggable="true"
+                    @tag="newTag => addTag(newTag)" @remove="removeEnumTag" />
             </div>
 
             <button type="button" class="submit-btn" @click="delete schema.property">close</button>
@@ -26,9 +58,10 @@
 </template>
 
 <script setup>
-import { DATA_TYPE } from './constant';
-import { defineProps, reactive, watch } from 'vue';
-import { ErrorMessage, Field, useForm } from 'vee-validate';
+import { BOOLEAN, DATA_TYPE } from './constant';
+import Multiselect from "vue-multiselect";
+import { defineProps, reactive } from 'vue';
+import { ErrorMessage, Field } from 'vee-validate';
 
 const props = defineProps({
     schema: { type: Object, required: true },
@@ -36,35 +69,53 @@ const props = defineProps({
 
 const schema = reactive(props.schema);
 
-const { handleSubmit, values, setValues } = useForm({
-    initialValues: { columnName: '', type: '' },
-});
-
-// Submit handler
-const submit = handleSubmit((values) => {
-    const targetColumn = Object.keys(schema.property);
-    const newColumnName = values.columnName;
-    const newColumnValue = { type: values.type };
-
-    if (schema.columns && schema.columns[targetColumn]) {
-        delete schema.columns[targetColumn];
-        schema.columns[newColumnName] = newColumnValue;
-        schema.property = null;
+const addTag = (newTag) => {
+    const defaultType = schema.property.default;
+    if (defaultType) {
+        schema.property.enum = [...schema.property.enum, defaultType];
+    } else if (defaultType != newTag) {
+        schema.property.enum = [...schema.property.enum, newTag];
     }
-});
-const handleData = () => {
-    if (values.type === 'Array') {
-        const targetColumn = Object.keys(schema.property);
-        const newColumnName = values.columnName;
-        const newColumnValue = [];
+}
 
-        if (schema.columns && schema.columns[targetColumn]) {
-            delete schema.columns[targetColumn];
-            schema.columns[newColumnName] = newColumnValue;
-            schema.property = null;
+const removeEnumTag = () => {
+    const defaultType = schema.property.default;
+    const enumType = schema.property.enum;
+    if (defaultType) {
+        const type = enumType.includes(defaultType);
+        if (!type) {
+            if (!Array.isArray(schema.property.enum)) {
+                schema.property.enum = [];
+            }
+            schema.property.enum = [...schema.property.enum, defaultType];
         }
     }
 }
+
+const manageDefault = () => {
+    const defaultType = schema.property.default;
+    const enumType = schema.property.enum;
+    const type = enumType.includes(defaultType);
+    if (!type) {
+        if (enumType.length && defaultType) {
+            if (!Array.isArray(schema.property.enum)) {
+                schema.property.enum = [];
+            }
+            schema.property.enum = [...schema.property.enum, defaultType];
+        }
+    }
+}
+
+const manageDataType = () => {
+    const dataType = schema.property.dataType;
+    if (dataType === 'NUMBER') {
+        schema.property.default = 0;
+    } else if (dataType === 'BOOLEAN') {
+        schema.property.default = false;
+    }
+
+}
+
 </script>
 
 <style scoped>

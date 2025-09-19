@@ -78,11 +78,15 @@ const handleDrop = (e) => {
     e.stopPropagation()
     const col = currentCol.value
     if (!col || col.type !== 'ARRAY') return
-
     const type = e.dataTransfer?.getData('type')
     if (type === 'ADD_FIELD') {
         if (!Array.isArray(col.columns)) col.columns = []
-        col.columns.push(ADD_COLUMN)
+        col.columns.push({
+            columnName: 'columnName',
+            type: 'STRING',
+            default: null,
+            enum: [],
+        })
     }
 }
 </script>

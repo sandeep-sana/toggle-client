@@ -31,7 +31,7 @@ const schema = toRef(props, 'schema')
 const handleDrop = (event) => {
   event.preventDefault()
   const type = event.dataTransfer?.getData('type')
-
+    
   switch (type) {
     case 'ADD_FIELD': {
       if (!Array.isArray(schema.value.columns)) schema.value.columns = []
