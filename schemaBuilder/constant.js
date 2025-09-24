@@ -6,14 +6,9 @@ export const DATA_TYPE = [
     { label: "Array", value: "ARRAY" },
 ]
 
-export const ADD_COLUMN = {
-    columnName: 'columnName',
-    type: 'STRING',
-    default: null,
-    enum: [],
-}
+
 
 export const BOOLEAN = [
-    { label: "True", value: true },
-    { label: "False", value: false },
+    { label: "true", value: true },
+    { label: "false", value: false },
 ]

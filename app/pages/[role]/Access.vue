@@ -45,8 +45,8 @@
               class="dropzone dropzone-neutral"
               ghost-class="drag-ghost" chosen-class="drag-chosen" drag-class="drag-dragging">
               <template #item="{ element }">
-                <button type="button" class="chip chip-neutral text-start" @click="addModule(element)" :title="element">
-                  <span class="text-truncate">{{ element }}</span>
+                <button type="button" class="chip chip-neutral text-start" @click="addModule(element.value)" :title="element.label">
+                  <span class="text-truncate">{{ element.label }}</span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                   </svg>
@@ -85,8 +85,8 @@
               class="dropzone dropzone-accent"
               ghost-class="drag-ghost" chosen-class="drag-chosen" drag-class="drag-dragging">
               <template #item="{ element }">
-                <button type="button" class="chip chip-accent text-start" @click="removeModule(element)" :title="element">
-                  <span class="text-truncate">{{ element }}</span>
+                <button type="button" class="chip chip-accent text-start" @click="removeModule(element.value)" :title="element.label">
+                  <span class="text-truncate">{{ element.label }}</span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <path d="M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                   </svg>
@@ -114,53 +114,152 @@ import STATUS from '~~/status';
 import { MODULE } from '../../../constant/module';
 import { useGlobalStore } from '~/stores/global';
 
-const modules = ref([]);
-const availableModules = ref([]);
+const modules = ref([]);            // Active modules
+const availableModules = ref([]);   // Available modules
 const search = ref('');
 const searchOpen = ref(false);
 const config = useRuntimeConfig();
 const { $toast } = useNuxtApp();
 const globalStore = useGlobalStore();
 
+/**
+ * Search filter
+ */
 const filteredAvailable = computed(() => {
   const q = search.value.toLowerCase();
-  return q ? availableModules.value.filter(m => m.toLowerCase().includes(q)) : availableModules.value;
+  return q
+    ? availableModules.value.filter(m =>
+        m.label.toLowerCase().includes(q)
+      )
+    : availableModules.value;
 });
 
+/**
+ * Init user’s active modules
+ */
 const init = async () => {
   try {
     const r = await api.get(`${config.public.API}/user/fetch`);
     if (r.status === STATUS.OK) {
-      modules.value = r.data.user.modules || [];
-      availableModules.value = MODULE.LIST.filter(m => !modules.value.includes(m));
-    }
-  } catch (e) { console.log(e); }
-};
-onMounted(init);
+      modules.value = (r.data.user.modules || []).map(m => ({
+        label: m.label || m, // support old string data
+        value: m.value || m,
+        path: m.path || '',
+      }));
 
+      // filter out already active ones from default list
+      availableModules.value = MODULE.LIST.filter(m =>
+        !modules.value.some(active => active.value === m.value)
+      );
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+/**
+ * Fetch masters and add to available list
+ */
+const initMaster = async () => {
+  try {
+    const projection = { name: 1 };
+    const response = await api.get(`${config.public.API}/master/fetchs`, {
+      params: { projection: JSON.stringify(projection) },
+    });
+    if (response.status === STATUS.OK) {
+      response.data.masters.forEach(el => {
+        const masterObj = { label: el.name, value: el._id, path: 'master' };
+
+        // only add if not already in modules or available
+        if (
+          !modules.value.some(m => m.value === masterObj.value) &&
+          !availableModules.value.some(m => m.value === masterObj.value)
+        ) {
+          availableModules.value.push(masterObj);
+        }
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+/**
+ * Save updates
+ */
 const updateModule = async () => {
   try {
     const r = await api.post(`${config.public.API}/user/update`, {
-    projection: JSON.stringify({ modules: modules.value }),
+      projection: JSON.stringify({ modules: modules.value }),
     });
     if (r.status === STATUS.OK) {
       $toast.success(r.data.message);
       globalStore.setIsSideHeader(!globalStore.isSideHeader);
     }
-  } catch (e) { console.log(e); }
+  } catch (e) {
+    console.log(e);
+  }
 };
 
-watch(modules, async (active) => {
-  availableModules.value = MODULE.LIST.filter(m => !active.includes(m));
-  await updateModule();
-}, { deep: true });
+/**
+ * Watch changes in active modules → update available
+ */
+watch(
+  modules,
+  async active => {
+    availableModules.value = [
+      ...MODULE.LIST,
+      ...availableModules.value.filter(m => m.path === 'master'), // keep masters
+    ].filter(m => !active.some(a => a.value === m.value));
 
-function addModule(name) { if (!modules.value.includes(name)) modules.value = [...modules.value, name]; }
-function removeModule(name) { modules.value = modules.value.filter(m => m !== name); }
-function addAll() { modules.value = [...MODULE.LIST]; }
-function clearAll() { modules.value = []; }
-function toggleSearch() { if (!searchOpen.value) searchOpen.value = true; else if (search.value) search.value = ''; else searchOpen.value = false; }
+    await updateModule();
+  },
+  { deep: true }
+);
+
+/**
+ * Helpers
+ */
+function addModule(value) {
+  const mod =
+    availableModules.value.find(m => m.value === value) ||
+    MODULE.LIST.find(m => m.value === value);
+  if (mod && !modules.value.some(m => m.value === value)) {
+    modules.value = [...modules.value, mod];
+  }
+}
+
+function removeModule(value) {
+  modules.value = modules.value.filter(m => m.value !== value);
+}
+
+function addAll() {
+  // add default LIST + keep masters that aren’t active
+  modules.value = [
+    ...MODULE.LIST,
+    ...availableModules.value.filter(m => m.path === 'master'),
+  ];
+}
+
+function clearAll() {
+  modules.value = [];
+}
+
+function toggleSearch() {
+  if (!searchOpen.value) searchOpen.value = true;
+  else if (search.value) search.value = '';
+  else searchOpen.value = false;
+}
+
+/**
+ * Mount
+ */
+onMounted(async () => {
+  await init();
+  await initMaster();
+});
 </script>
+
 
 <style scoped>
 .panel{min-height:420px}

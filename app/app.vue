@@ -9,6 +9,7 @@
       </NuxtLayout>
     </div>
     <HeaderSetting :layout="layout" @layoutChange="layoutChange"/>
+    <TaskList />
   </div>
 </template>
 
@@ -17,9 +18,10 @@ import { computed } from "vue";
 import { useRoute } from "vue-router";
 import "vue3-toastify/dist/index.css";
 import ToastContainer from "vue3-toastify";
+import HeaderSetting from "../setting/Header.vue";
+import TaskList from "../setting/TaskList.vue";
 import HomeHeader from "~~/headers/Home-Header.vue";
 import SideHeader from "~~/headers/Side-Header.vue";
-import HeaderSetting from "../setting/Header.vue";
 
 const route = useRoute();
 const ACCESS = ["/", "/login", "/signup"];

@@ -15,7 +15,7 @@ export const MASTER = {
         { label: 'False', value: false },
     ],
     VALIDATION: {
-        String: [
+        STRING: [
             'required',
             'nospace',
             'nouppercase',

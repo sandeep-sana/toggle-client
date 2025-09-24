@@ -17,7 +17,7 @@
 import { reactive } from 'vue';
 import Fields from './Fields.vue';
 import Editor from './Editor.vue';
-import Property from '../../../schemaBuilder/Property.vue';
+import Property from './Property.vue';
 import api from '~~/api.config';
 import STATUS from '~~/status';
 

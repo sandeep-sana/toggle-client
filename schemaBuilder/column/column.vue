@@ -28,7 +28,6 @@
 
 <script setup>
 import { computed } from 'vue'
-import { ADD_COLUMN } from '../constant'
 defineOptions({ name: 'Column' })
 
 const props = defineProps({
@@ -87,6 +86,9 @@ const handleDrop = (e) => {
             default: null,
             enum: [],
         })
+    } else if (type === 'ADD_TYPE') {
+        if (!Array.isArray(col.columns)) col.columns = []
+        col.columns = [{ type: 'STRING', }]
     }
 }
 </script>

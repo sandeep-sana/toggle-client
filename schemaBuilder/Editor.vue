@@ -1,13 +1,9 @@
 <template>
   <div class="editor-container">
     <div @drop="handleDrop" @dragover="handleDragOver" class="editor-canvas">
-        <p>-----------</p>
+      <p>-----------</p>
       <div class="schema-content">
-        <div
-          class="w-100"
-          v-for="(col, columnIndex) in (schema.columns || [])"
-          :key="col.id ?? columnIndex"
-        >
+        <div class="w-100" v-for="(col, columnIndex) in (schema.columns || [])" :key="col.id ?? columnIndex">
           <!-- Top-level Column -->
           <Column :schema="schema" :path="[columnIndex]" />
         </div>
@@ -20,23 +16,37 @@
 <script setup>
 import { toRef } from 'vue'
 import Column from './column/column.vue';
-import { ADD_COLUMN } from './constant';
 
 const props = defineProps({
   schema: { type: Object, required: true },
 })
 // keep reactivity to the incoming object
+const { $toast } = useNuxtApp();
 const schema = toRef(props, 'schema')
 
 const handleDrop = (event) => {
   event.preventDefault()
   const type = event.dataTransfer?.getData('type')
-    
+  console.log(type)
+
   switch (type) {
     case 'ADD_FIELD': {
       if (!Array.isArray(schema.value.columns)) schema.value.columns = []
-      schema.value.columns.push(ADD_COLUMN)
+      schema.value.columns.push(
+        {
+          columnName: 'columnName',
+          type: 'STRING',
+          default: null,
+          enum: [],
+        }
+      )
       break
+    }
+    case 'ADD_TYPE': {
+      // if (!Array.isArray(schema.value.columns)) schema.value.columns = []
+      // schema.value.columns.push(ADD_TYPE)
+      // break
+      $toast.info('Sorry you can not drop here')
     }
     default:
       break

@@ -5,7 +5,7 @@
             <div class="form-group">
                 <label for="columnName" class="form-label">Column Name</label>
                 <Field name="columnName" rules="required" as="input" type="text" v-model="schema.property.columnName"
-                    id="columnName" class="form-input" />
+                    id="columnName" class="form-input" :disabled="schema.property.columnName === undefined" />
                 <ErrorMessage name="columnName" class="error-message" />
             </div>
 
@@ -51,6 +51,12 @@
                     :close-on-select="false" placeholder="Add or pick values" :taggable="true"
                     @tag="newTag => addTag(newTag)" @remove="removeEnumTag" />
             </div>
+            <div class="form-group">
+                <label for="enum" class="form-label">Validation</label>
+                <Multiselect id="validation" v-model="schema.property.validation"
+                    :options="MASTER.VALIDATION[schema.property.type] || []" :multiple="true" :close-on-select="false"
+                    placeholder="Pick some" :taggable="true" />
+            </div>
 
             <button type="button" class="submit-btn" @click="delete schema.property">close</button>
         </div>
@@ -62,6 +68,7 @@ import { BOOLEAN, DATA_TYPE } from './constant';
 import Multiselect from "vue-multiselect";
 import { defineProps, reactive } from 'vue';
 import { ErrorMessage, Field } from 'vee-validate';
+import { MASTER } from '~~/constant/master';
 
 const props = defineProps({
     schema: { type: Object, required: true },
@@ -71,10 +78,10 @@ const schema = reactive(props.schema);
 
 const addTag = (newTag) => {
     const defaultType = schema.property.default;
-    if (defaultType) {
-        schema.property.enum = [...schema.property.enum, defaultType];
-    } else if (defaultType != newTag) {
+    if (defaultType != newTag) {
         schema.property.enum = [...schema.property.enum, newTag];
+    } else if (defaultType) {
+        schema.property.enum = [...schema.property.enum, defaultType];
     }
 }
 
@@ -107,7 +114,7 @@ const manageDefault = () => {
 }
 
 const manageDataType = () => {
-    const dataType = schema.property.dataType;
+    const dataType = schema.property.type;
     if (dataType === 'NUMBER') {
         schema.property.default = 0;
     } else if (dataType === 'BOOLEAN') {

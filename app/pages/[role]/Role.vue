@@ -3,14 +3,24 @@
         <h1>Role</h1>
         <button v-if="!user.isHierarchy" type="button" @click="activeHierarchy">Apply</button>
         <button type="button" @click="addRole">Add Role</button>
-        <div v-for="(role, roleIndex) in roles">
-            <p>{{ roleIndex }}</p>
-            <p>
-                {{ role.name }}
-            </p>
-            <p ><button type="button" @click="statusRole(role)">{{ $activeInactive('role', role.status) }}</button></p>
-            <p><button type="button" @click="editRole(role)">edit</button></p>
-        </div>
+        <table>
+            <thead>
+                <th>Sr No</th>
+                <th>name</th>
+                <th>action</th>
+            </thead>
+            <tbody>
+                <tr v-for="(role, roleIndex) in roles">
+                    <td>{{ roleIndex++ }}</td>
+                    <td>{{ role.name }}</td>
+                    <td>
+                        <button type="button" @click="statusRole(role)">{{ $activeInactive('role', role.status)
+                            }}</button>
+                        <button type="button" @click="editRole(role)">edit</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <FormModal v-if="modal.isConfirmation" :modal="modal" />
 </template>
@@ -25,7 +35,7 @@ import { useGlobalStore } from '~/stores/global';
 
 const config = useRuntimeConfig();
 const globalStore = useGlobalStore();
-const { $fetchUser, $toast, $activeInactive } = useNuxtApp();
+const { $fetchUser, $toast, $activeInactive, $speak } = useNuxtApp();
 
 const modal = ref({
     isConfirmation: false,
@@ -85,6 +95,7 @@ const saveRole = async (values) => {
     if (response.status === STATUS.CREATED) {
         roles.value.push(values)
         resetModal();
+        $speak(response.data.message);
         $toast.success(response.data.message);
     }
 }
@@ -148,7 +159,7 @@ const init = async () => {
     try {
         const response = await api.get(`${config.public.API}/role/roles`);
         if (response.status === STATUS.OK) {
-            roles.value = response.data.departments;
+            roles.value = response.data.roles;
         }
     } catch (error) {
         console.log(error);

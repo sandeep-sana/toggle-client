@@ -74,6 +74,10 @@ const { $toast } = useNuxtApp();
 const { handleSubmit } = useForm();
 
 const addMaster = handleSubmit(async (values) => {
+    console.log(values.name)
+    if(['users', 'user'].includes(values.name.toLowerCase())){
+        return $toast.warning('Please change the master name')
+    }
     const query = { ...values }
     try {
         const response = await api.post(`${config.public.API}/master/add`, {

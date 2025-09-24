@@ -2,8 +2,11 @@
 system admin dashboard
 </template>
 <script setup>
-const { $session } = useNuxtApp();
+const { $session, $speak } = useNuxtApp();
 
 
-onMounted($session);
+onMounted(() => {
+    $session();
+    $speak('hello')
+});
 </script>

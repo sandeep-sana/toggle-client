@@ -6,6 +6,12 @@
       class="drag-item">
       Add Column
     </div>
+    <div 
+      draggable="true" 
+      @dragstart="(event) => handleDragStart(event, 'ADD_TYPE')" 
+      class="drag-item">
+      Add Type
+    </div>
   </div>
 </template>
 

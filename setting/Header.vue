@@ -1,8 +1,15 @@
 <template>
-  <!-- Minimal floating control (expands on click) -->
-  <div class="layout-fab" :class="{ open: isOpen }" role="region" aria-label="Layout control">
+  <div
+    class="layout-fab"
+    :class="{ open: isOpen }"
+    role="region"
+    aria-label="Layout control"
+    draggable="true"
+    @dragstart="dragStart"
+    @dragend="dragEnd"
+    :style="{ top: position.y + 'px', left: position.x + 'px' }"
+  >
     <div class="fab-shell" ref="shell">
-      <!-- Compact button (icon + optional label when open) -->
       <button
         class="fab-toggle"
         type="button"
@@ -11,17 +18,13 @@
         @click="toggle"
         title="Header layout"
       >
-        <!-- Header layout icon: top bar + content -->
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
           <rect x="3" y="4" width="18" height="3" rx="1" />
           <rect x="3" y="9.5" width="10" height="8" rx="1.5" opacity=".35" />
         </svg>
         <span class="fab-label" v-if="isOpen">Header Position</span>
       </button>
-
       <div class="divider" v-if="isOpen" aria-hidden="true"></div>
-
-      <!-- Inline expanding content (not a popover) -->
       <div class="fab-content" :id="ids.panel">
         <select
           id="position"
@@ -40,9 +43,8 @@
 </template>
 
 <script setup>
-/* === Your original functionality (unchanged) === */
-import api from '~~/api.config';
 import STATUS from '~~/status';
+import api from '~~/api.config';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 const props = defineProps({ layout: { type: Object } });
@@ -59,6 +61,23 @@ function toggle() { isOpen.value = !isOpen.value; }
 function onKeydown(e) { if (e.key === 'Escape' && isOpen.value) isOpen.value = false; }
 function onClickOutside(e) { if (shell.value && !shell.value.contains(e.target)) isOpen.value = false; }
 
+// ---- Draggable state ----
+const position = ref({ x: 1480, y: 16 }); // default position (top-left)
+let offset = { x: 0, y: 0 };
+
+const dragStart = (event) => {
+  offset.x = event.clientX - position.value.x;
+  offset.y = event.clientY - position.value.y;
+};
+
+const dragEnd = (event) => {
+  position.value = {
+    x: event.clientX - offset.x,
+    y: event.clientY - offset.y,
+  };
+};
+
+// ---- Save / Load ----
 const save = async () => {
   const projection = { layout: props.layout };
   try {
@@ -85,18 +104,16 @@ onBeforeUnmount(() => {
 });
 </script>
 
+
+
 <style scoped>
-/* -------- Minimal + Elegant -------- */
 .layout-fab {
   position: fixed;
-  top: 16px;
-  right: 16px;
   z-index: 1060;
   color: #111;
   font-family: inherit;
 }
 
-/* White pill container that expands horizontally when open */
 .fab-shell {
   --radius: 12px;
   display: inline-flex;
@@ -118,7 +135,6 @@ onBeforeUnmount(() => {
   border-color: #e5e7eb;
 }
 
-/* Button area */
 .fab-toggle {
   display: inline-flex;
   align-items: center;
@@ -135,8 +151,6 @@ onBeforeUnmount(() => {
   outline: 2px solid #111;
   outline-offset: 2px;
 }
-
-/* Simple, crisp icon */
 .icon {
   width: 20px;
   height: 20px;
@@ -144,22 +158,16 @@ onBeforeUnmount(() => {
   stroke-width: 1.5;
   fill: currentColor; /* header bar uses fill; content rect has opacity */
 }
-
-/* Optional label when open */
 .fab-label {
   font-size: 13px;
   color: #6b7280; /* muted */
   font-weight: 600;
 }
-
-/* Thin divider only visible when open */
 .divider {
   width: 1px;
   height: 24px;
   background: #e5e7eb;
 }
-
-/* Inline expanding content */
 .fab-content {
   display: grid;
   align-items: center;
@@ -175,8 +183,6 @@ onBeforeUnmount(() => {
   transform: translateX(0);
   pointer-events: auto;
 }
-
-/* Minimal select */
 .mini-select {
   height: 32px;
   min-width: 80px;
@@ -193,16 +199,12 @@ onBeforeUnmount(() => {
   outline-offset: 1px;
   border-color: #111;
 }
-
-/* A11y label */
 .visually-hidden {
   position: absolute !important;
   height: 1px; width: 1px;
   overflow: hidden; clip: rect(1px, 1px, 1px, 1px);
   white-space: nowrap; border: 0; padding: 0; margin: -1px;
 }
-
-/* Mobile: keep it tidy */
 @media (max-width: 480px) {
   .open .fab-shell { width: min(92vw, 340px); }
   .fab-shell { height: 42px; }

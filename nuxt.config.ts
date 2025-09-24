@@ -9,12 +9,15 @@ export default defineNuxtConfig({
     'bootstrap/dist/css/bootstrap.min.css',
     'bootstrap-icons/font/bootstrap-icons.css',
     'vue3-toastify/dist/index.css',
+    '~/assets/css/index.css',
     '~/assets/css/common.css',
     'vue-multiselect/dist/vue-multiselect.css',
     '@vuepic/vue-datepicker/dist/main.css',
+    'remixicon/fonts/remixicon.css',
   ],
   plugins: [
     '~/plugins/toastify.client.js',
+    '~/plugins/vue-tippy.js', 
   ],
   runtimeConfig: {
     public: {

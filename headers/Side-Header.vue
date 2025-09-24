@@ -5,12 +5,12 @@
       <draggable :group="{ name: 'custom' }" v-model="sideHeader.user.modules" item-key="name" animation="200">
         <template #item="{ element }">
           <button class="m-2 p-2 bg-blue-500 text-black rounded"
-            @click="$router.push(`/${sideHeader.user.role.toLowerCase()}/${element.toLowerCase()}`)">
-            {{ element.toLowerCase() }}
+            @click="$router.push(`/${sideHeader.user.role.toLowerCase()}${element.path ? '/' + element.path.toLowerCase() : ''}/${element.value.toLowerCase()}`)">
+            {{ element.label.toLowerCase() }}
           </button>
         </template>
       </draggable>
-      <div class="accordion accordion-flush" id="accordionFlushExample">
+      <!-- <div class="accordion accordion-flush" id="accordionFlushExample">
         <div class="accordion-item">
           <h2 class="accordion-header" id="flush-headingOne">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -25,14 +25,15 @@
                 <template #item="{ element }">
                   <button class="m-2 p-2 bg-blue-500 text-black rounded"
                     @click="$router.push(`/${sideHeader.user.role.toLowerCase()}/master/${element._id}`)">
-                    {{ element.name.toLowerCase() }}
+                    {{ element }}
+                    {{ element.label.toLowerCase() }}
                   </button>
                 </template>
               </draggable>
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
       <button @click="$logout" class="logout-btn">Logout</button>
     </div>
   </div>
@@ -54,7 +55,7 @@ const props = defineProps({
 const sideHeader = reactive({
   user: {
     modules: [],
-    masters:[],
+    masters: [],
   }
 });
 const config = useRuntimeConfig();
