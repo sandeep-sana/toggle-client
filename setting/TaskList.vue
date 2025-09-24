@@ -18,6 +18,18 @@
 <script setup>
 const { $speak } = useNuxtApp();
 
+const initTasks = async() => {
+    try {
+        
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+onMounted(async() => {
+    await initTasks();
+})
+
 </script>
 
 
