@@ -4,6 +4,7 @@ export const useGlobalStore = defineStore('global', {
   state: () => ({
     isSideHeader: false, 
     isMaster: false,
+    isLogin: false,
   }),
   actions: {
     setIsSideHeader(status) {
@@ -11,6 +12,9 @@ export const useGlobalStore = defineStore('global', {
     },
     setIsMaster(status){
       this.isMaster = status;
+    },
+    setIsLogin(status){
+      this.isLogin = status;
     }
   },
 });

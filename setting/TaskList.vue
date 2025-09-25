@@ -2,12 +2,15 @@
   <div class="task-container">
     <h1>Task List</h1>
     <div class="task">
-      <ul class="task-item">
-        <li @click="$speak('aapko is task ko complete karna hoga!')">
-          <p>1.</p>
-          <p class="task-name">Task Name ukf kjhdskjf hksdfhskfh kjhsdfkj</p>
-          <p class="pending" >
+      <ul class="task-item" v-for="(task, taskIndex) in taskList.tasks">
+        <li @click="speaker(task)">
+          <p>{{ ++taskIndex }}.</p>
+          <p class="task-name" v-tippy="`${task.name}`">{{task.name}}</p>
+          <p class="pending" v-if="!task.status">
             <i v-tippy="'pending task'" class="ri-information-line"></i>
+          </p>
+          <p class="complete" v-else>
+            <i v-tippy="'completed task'" class="ri-checkbox-circle-line"></i>
           </p>
         </li>
       </ul>
@@ -16,19 +19,102 @@
 </template>
 
 <script setup>
-const { $speak } = useNuxtApp();
+import STATUS from '~~/status';
+import { onMounted } from 'vue';
+import api from '~~/api.config';
+import { useRouter, useRoute } from 'vue-router';
+import { useGlobalStore } from '~/stores/global';
 
-const initTasks = async() => {
-    try {
-        
-    } catch (error) {
-        console.log(error);
+const route = useRoute();
+const router = useRouter();
+const config = useRuntimeConfig();
+const globalStore = useGlobalStore();
+const { $speak, $session } = useNuxtApp();
+
+const taskList = reactive({
+  tasks: [],
+  user: null,
+})
+
+const initTasks = async () => {
+  try {
+    const query = {
+      userId: $session(),
     }
+    const response = await api.get(`${config.public.API}/task/fetchs`, {
+      params: {
+        query: JSON.stringify(query),
+      }
+    });
+    if (response.status === STATUS.OK) {
+      taskList.tasks = response.data.task.tasks;
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
+}
+const initUser = async () => {
+  try {
+    const response = await api.get(`${config.public.API}/user/fetch`);
+    if (response.status === STATUS.OK) {
+      taskList.user = response.data.user;
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-onMounted(async() => {
-    await initTasks();
+const updateTask = async(task) => {
+  try {
+    const query = {
+      'tasks._id': task._id,
+    }
+    const projection = {
+      $set: { "tasks.$.status": true } 
+    }
+    const response = await api.post(`${config.public.API}/task/update`,{
+      query: JSON.stringify(query),
+      projection: JSON.stringify(projection),
+    });
+    
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+watch(() => globalStore.isLogin, async () => {
+  await initUser();
+  await initTasks();
 })
+
+watch(route, async(newRoute) => {
+  console.log(newRoute)  // Log the entire route object
+  taskList.tasks.forEach(async task => {
+    if(task.path){
+      if(newRoute.path.includes(task.path)){
+        await updateTask(task);
+        task.status = true;
+      }
+    }
+  })
+})
+
+onMounted(async () => {
+  await initUser();
+  await initTasks();
+})
+
+const speaker = (task) => {
+  console.log(taskList)
+  if(!task.status){
+    $speak(task.name)
+    if(task.path){
+      router.push(`/${taskList.user.role.toLowerCase()}/${task.path}`)
+    }
+  }
+} 
 
 </script>
 
@@ -57,7 +143,6 @@ onMounted(async() => {
   border: 1px solid var(--border-color);
   width: 90%;
   height: calc(100% - 42px);
-  display: flex;
   margin: auto;
   border-radius: 10px;
 }
@@ -65,7 +150,8 @@ onMounted(async() => {
 .task-item {
   color: var(--text-color);
   width: 100%;
-  padding: 10px;
+  padding: 0 10px;
+  margin: 0;
 }
 
 .task-item li {
@@ -93,10 +179,16 @@ onMounted(async() => {
 }
 
 .task-icon {
-  font-size: 24px; /* Adjust icon size */
-  color: var(--text-color); /* Adjust color */
+  font-size: 24px;
+  /* Adjust icon size */
+  color: var(--text-color);
+  /* Adjust color */
 }
-.pending{
-    color: var(--pending-color);
+
+.pending {
+  color: var(--pending-color);
+}
+.complete {
+  color: var(--complete-color);
 }
 </style>

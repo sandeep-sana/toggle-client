@@ -43,17 +43,19 @@
 
 <script setup>
 import { ref } from 'vue';
-import { Field, ErrorMessage, useForm } from 'vee-validate';
 import api from '~~/api.config';
 import STATUS from '~~/status';
 import { useRouter } from 'vue-router';
 import { subDomain } from '~~/function';
 import { ROLE } from '~~/constant/role';
+import { useGlobalStore } from '~/stores/global';
+import { Field, ErrorMessage, useForm } from 'vee-validate';
 
 const dbName = ref(null);
 const router = useRouter();
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
+const globalStore = useGlobalStore();
 const { handleSubmit, isSubmitting, values } = useForm({});
 
 const login = handleSubmit(async (values) => {
@@ -73,6 +75,7 @@ const login = handleSubmit(async (values) => {
       const { role, _id, domain } = response.data.user;
       const rolePath = `/${role.toLowerCase()}/dashboard`;
       localStorage.setItem('_id', _id);
+      globalStore.setIsLogin(!globalStore.isLogin);
       if (dbName === 'toggle') {
         if (role === ROLE.SUPER_ADMIN) {
           router.push(rolePath);
@@ -84,6 +87,7 @@ const login = handleSubmit(async (values) => {
       }
     }
   } catch (error) {
+    console.log(error)
     $toast.error(error.response.data.message);
   }
 });

@@ -5,9 +5,11 @@
         <button type="button" @click="addRole">Add Role</button>
         <table>
             <thead>
-                <th>Sr No</th>
-                <th>name</th>
-                <th>action</th>
+                <tr>
+                    <th>Sr No</th>
+                    <th>name</th>
+                    <th>action</th>
+                </tr>
             </thead>
             <tbody>
                 <tr v-for="(role, roleIndex) in roles">
