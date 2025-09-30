@@ -7,6 +7,8 @@ export function subDomain() {
     const subdomain = parts[0];
     if (subdomain === process.env.DOMAIN) {
         return "toggle";
+    }else if(subdomain === "beta"){
+        return "toggle";
     }
     return subdomain || "toggle";
 }

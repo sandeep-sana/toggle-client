@@ -11,7 +11,15 @@
 </template>
 
 <script setup>
+import { defineProps } from 'vue';
 import Tools from './tools/Tools.vue';
+
+const props = defineProps({
+    form: { type: Object },
+})
+
+const form = reactive()
+
 </script>
 
 <style scoped>
@@ -19,8 +27,7 @@ import Tools from './tools/Tools.vue';
     display: flex;
 }
 
-.left {
-}
+.left {}
 
 .block {}
 

@@ -21,7 +21,7 @@
         </template>
         <template #body>
             <form @submit.prevent="addMaster">
-                <FormBuilder />
+                <FormBuilder :form="form"/>
                 <div class="d-flex justify-content-end gap-3">
                     <button type="button" @click="form.isShow = false" class="btn btn-secondary">
                         <i class="fa fa-times-circle"></i> Cancel
@@ -41,6 +41,7 @@ import FormBuilder from '../../../Builder/FormBuilder/FormBuilder.vue';
 
 const form = reactive({
     isShow: false,
+    blocks: [],
 })
 
 

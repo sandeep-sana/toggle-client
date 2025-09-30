@@ -58,15 +58,16 @@ export const FORM_BUILDER = {
             { label: 'Link', description: 'HTML <a> tag', icon: 'ri-link' },
         ],
         STRUCTURES: [
-            { label: 'Tabs', description: 'Break forms into tabs', icon: 'ri-text' },
-            { label: 'One Column', description: 'Single line text input', icon: 'ri-text' },
-            { label: 'One Column', description: 'Single line text input', icon: 'ri-text' },
-            { label: 'One Column', description: 'Single line text input', icon: 'ri-text' },
-            { label: 'One Column', description: 'Single line text input', icon: 'ri-text' },
-            { label: 'One Column', description: 'Single line text input', icon: 'ri-text' },
-            { label: 'One Column', description: 'Single line text input', icon: 'ri-text' },
-            { label: 'One Column', description: 'Single line text input', icon: 'ri-text' },
-            { label: 'One Column', description: 'Single line text input', icon: 'ri-text' },
+            { label: 'Tabs', description: 'Break forms into tabs', icon: 'ri-layout-4-fill' },
+            { label: 'Steps', description: 'Break forms into steps', icon: 'ri-steam-line' },
+            { label: 'Grid', description: 'Create complex layouts', icon: 'ri-layout-grid-fill' },
+            { label: 'Table', description: 'Organize data in rows and columns', icon: 'ri-table-fill' },
+            { label: 'Container', description: 'A container to group elements', icon: 'ri-rectangle-fill' },
+            { label: '2 columns', description: 'Two columns next to each other', icon: 'ri-layout-column-line' },
+            { label: '3 columns', description: 'Three columns next to each other', icon: 'ri-layout-vertical-line' },
+            { label: '4 columns', description: 'Four columns next to each other', icon: 'ri-rhythm-line' },
+            { label: 'List', description: 'Repeatable single element', icon: 'ri-list-ordered-2' },
+            { label: 'Nested list', description: 'Repeatable elements in an object', icon: 'ri-list-indefinite' },
         ]
     }
 }

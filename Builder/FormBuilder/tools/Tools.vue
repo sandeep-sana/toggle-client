@@ -5,7 +5,8 @@
         <Button @click="tools.activeTool = 'STRUCTURES'" class="col-lg-4">Structure</Button>
     </div>
     <div class="bottom">
-        <div v-for="tool in FORM_BUILDER.TOOLS[tools.activeTool]" class="blocks">
+        <div v-for="tool in FORM_BUILDER.TOOLS[tools.activeTool]" class="blocks"
+            @dragstart="(event) => handleDragStart(event, tool)" draggable="true">
             <div class="block-left">
                 <i :class="tool.icon"></i>
             </div>
@@ -19,6 +20,7 @@
 
 <script setup>
 import { FORM_BUILDER } from '../constant';
+import { handleDragStart } from '../function';
 const tools = reactive({
     activeTool: 'FIELDS',
 })
