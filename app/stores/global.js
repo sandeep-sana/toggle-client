@@ -2,19 +2,21 @@ import { defineStore } from 'pinia';
 
 export const useGlobalStore = defineStore('global', {
   state: () => ({
+    /**  */
     isSideHeader: false, 
     isMaster: false,
-    isLogin: false,
+    // isLogin: false,
   }),
   actions: {
+    /** */
     setIsSideHeader(status) {
       this.isSideHeader = status;  
     },
     setIsMaster(status){
       this.isMaster = status;
     },
-    setIsLogin(status){
-      this.isLogin = status;
-    }
+    // setIsLogin(status){
+    //   this.isLogin = status;
+    // },
   },
 });

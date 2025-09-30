@@ -110,9 +110,9 @@ const speaker = (task) => {
   console.log(taskList)
   if(!task.status){
     $speak(task.name)
-    if(task.path){
-      router.push(`/${taskList.user.role.toLowerCase()}/${task.path}`)
-    }
+    // if(task.path){
+    //   router.push(`/${taskList.user.role.toLowerCase()}/${task.path}`)
+    // }
   }
 } 
 
@@ -125,10 +125,10 @@ const speaker = (task) => {
   bottom: 5px;
   right: 5px;
   height: 300px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color-four);
   width: 300px;
   border-radius: 10px;
-  background: #0c234d;
+  background: var(--background-color-eight);
 }
 
 .task-container h1 {
@@ -140,7 +140,7 @@ const speaker = (task) => {
 }
 
 .task-container .task {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color-six);
   width: 90%;
   height: calc(100% - 42px);
   margin: auto;
@@ -148,7 +148,7 @@ const speaker = (task) => {
 }
 
 .task-item {
-  color: var(--text-color);
+  color: var(--text-color-one);
   width: 100%;
   padding: 0 10px;
   margin: 0;
@@ -157,7 +157,7 @@ const speaker = (task) => {
 .task-item li {
   margin: 5px 0;
   padding: 0;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color-eight);
   list-style: none;
   text-align: center;
   border-radius: 5px;
@@ -174,21 +174,21 @@ const speaker = (task) => {
 }
 
 .task-item li:hover {
-  background-color: var(--hover-background-color);
+  background-color: var(--hover-background-color-three);
   color: var(--hover-color);
 }
 
 .task-icon {
   font-size: 24px;
   /* Adjust icon size */
-  color: var(--text-color);
+  color: var(--text-color-one);
   /* Adjust color */
 }
 
 .pending {
-  color: var(--pending-color);
+  color: var(--pending-color-one);
 }
 .complete {
-  color: var(--complete-color);
+  color: var(--complete-color-one);
 }
 </style>

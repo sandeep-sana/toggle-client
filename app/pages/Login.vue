@@ -23,7 +23,7 @@
             <!-- Password -->
             <div class="form-floating mb-3 col-12">
               <Field name="password" as="input" type="password" class="form-control" id="password"
-                placeholder="Password" rules="required|nospace|min:5" />
+                placeholder="Password" rules="required|nospace" />
               <label :class="`${values.password ? 'fix-top' : ''}`" for="password">Password</label>
               <ErrorMessage name="password" class="error-message" />
             </div>
@@ -42,42 +42,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import api from '~~/api.config';
 import STATUS from '~~/status';
+import api from '~~/api.config';
+import { ROLE } from '~~/constant';
 import { useRouter } from 'vue-router';
-import { subDomain } from '~~/function';
-import { ROLE } from '~~/constant/role';
-import { useGlobalStore } from '~/stores/global';
 import { Field, ErrorMessage, useForm } from 'vee-validate';
 
-const dbName = ref(null);
 const router = useRouter();
-const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
-const globalStore = useGlobalStore();
 const { handleSubmit, isSubmitting, values } = useForm({});
+const { $toast, $speak, $fetchUser, $session } = useNuxtApp();
 
 const login = handleSubmit(async (values) => {
   const query = { ...values };
   try {
-    const response = await api.get(`${config.public.API}/user/user`, {
+    const response = await api.get(`${config.public.API}/user/fetch`, {
       params: {
         query: JSON.stringify(query),
-        dbName: dbName.value,
       }
     });
-
     if (response.status === STATUS.OK) {
       $toast.success(response.data.message);
-
-      const dbName = subDomain();
-      const { role, _id, domain } = response.data.user;
-      const rolePath = `/${role.toLowerCase()}/dashboard`;
+      $speak(response.data.message);
+      const { activeRole, _id, domain } = response.data.user;
+      const rolePath = `/${activeRole.toLowerCase()}/dashboard`;
       localStorage.setItem('_id', _id);
-      globalStore.setIsLogin(!globalStore.isLogin);
-      if (dbName === 'toggle') {
-        if (role === ROLE.SUPER_ADMIN) {
+      if (domain === 'toggle') {
+        if (activeRole === ROLE.SUPER_ADMIN) {
           router.push(rolePath);
         } else {
           window.location.href = `${config.public.AUTH}${domain}.${config.public.DOMAIN}`;
@@ -89,12 +80,31 @@ const login = handleSubmit(async (values) => {
   } catch (error) {
     console.log(error)
     $toast.error(error.response.data.message);
+    $speak(error.response.data.message);
   }
 });
 
-const init = () => {
-  const domain = subDomain();
-  dbName.value = domain;
+const init = async () => {
+  try {
+    let session = $session();
+    if (session) {
+      let user = await $fetchUser();
+      if (user) {
+        const rolePath = `/${user.activeRole.toLowerCase()}/dashboard`;
+        if (user.domain === 'toggle') {
+          if (user.activeRole === ROLE.SUPER_ADMIN) {
+            router.push(rolePath);
+          } else {
+            window.location.href = `${config.public.AUTH}${user.domain}.${config.public.DOMAIN}`;
+          }
+        } else {
+          router.push(rolePath);
+        }
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 onMounted(init);

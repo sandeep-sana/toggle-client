@@ -4,8 +4,9 @@
     <div class="custom-header p-4">
       <draggable :group="{ name: 'custom' }" v-model="sideHeader.user.modules" item-key="name" animation="200">
         <template #item="{ element }">
-          <button class="m-2 p-2 bg-blue-500 text-black rounded"
-            @click="$router.push(`/${sideHeader.user.role.toLowerCase()}${element.path ? '/' + element.path.toLowerCase() : ''}/${element.value.toLowerCase()}`)">
+          <button
+            :class="`m-2 p-2 bg-blue-500 rounded ${route.path.split(`${role}/`)[1].toLowerCase() === element.path.toLowerCase() ? 'active' : ''}`"
+            @click="$router.push(`/${sideHeader.user.activeRole.toLowerCase()}/${element.path.toLowerCase()}`)">
             {{ element.label.toLowerCase() }}
           </button>
         </template>
@@ -44,14 +45,16 @@
 <script setup>
 import STATUS from "~~/status";
 import api from "~~/api.config";
-import { onMounted, reactive } from "vue";
 import draggable from "vuedraggable";
+import { useRoute } from "vue-router";
 import { subDomain } from "~~/function";
+import { onMounted, reactive } from "vue";
 import { useGlobalStore } from "~/stores/global";
+
 const props = defineProps({
   layout: { type: Object }
 });
-
+const route = useRoute();
 const sideHeader = reactive({
   user: {
     modules: [],
@@ -61,6 +64,7 @@ const sideHeader = reactive({
 const config = useRuntimeConfig();
 const globalStore = useGlobalStore();
 const { $logout, $session } = useNuxtApp();
+const role = computed(() => route.params.role);
 
 const updateModules = async () => {
   try {
@@ -107,13 +111,14 @@ const initMasters = async () => {
 
 const init = async () => {
   try {
-    subDomain();
-    sideHeader.user._id = $session();
-    const res = await api.get(`${config.public.API}/user/user/${sideHeader.user._id}`);
-    if (res.status === STATUS.OK) {
-      sideHeader.user = res.data.user;
+    const _id = $session();
+    if (_id) {
+      const res = await api.get(`${config.public.API}/user/user/${_id}`);
+      if (res.status === STATUS.OK) {
+        sideHeader.user = res.data.user;
+      }
+      await initMasters();
     }
-    await initMasters();
   } catch (err) {
     console.error(err);
   }
@@ -128,7 +133,7 @@ onMounted(init);
   align-items: center;
   gap: 10px;
   border-radius: 14px;
-  background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+  background: var(--background-color-two);
   box-shadow: 0 6px 18px rgba(16, 24, 40, 0.08);
   transition: width .25s ease, height .25s ease, padding .25s ease, gap .25s ease, background .25s ease;
   padding: 14px;
@@ -145,30 +150,31 @@ onMounted(init);
 /* Make module buttons feel clickable (keeps Tailwind bg/text) */
 .custom-header button.bg-blue-500 {
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
-  transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+  color: var(--text-color-two);
 }
 
 .custom-header button.bg-blue-500:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(59, 130, 246, 0.35);
+  background-color: var(--hover-background-color-one);
 }
 
-.custom-header button.bg-blue-500:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+.custom-header button.bg-blue-500.active {
+  background-color: var(--hover-background-color-one);
 }
 
 /* ---------- Position variants ---------- */
 
 /* Left & Right = vertical sidebar */
+.left {
+  padding: 10px 0px 10px 10px;
+}
+
 .left .custom-header,
 .right .custom-header {
   flex-direction: column;
   align-items: stretch;
   width: 280px;
-  min-height: 100vh;
-  height: 100vh;
+  min-height: calc(100vh - 20px);
+  /* height: 100vh; */
   padding: 18px 14px;
   gap: 8px;
   overflow-y: auto;

@@ -1,8 +1,10 @@
 <template>
-    <div>
-        <h1>Role</h1>
-        <button v-if="!user.isHierarchy" type="button" @click="activeHierarchy">Apply</button>
-        <button type="button" @click="addRole">Add Role</button>
+    <div class="container">
+        <div class="header">
+            <h1>Role</h1>
+            <!-- <button v-if="!user.isHierarchy" type="button" @click="activeHierarchy">Apply</button> -->
+            <button type="button" @click="addRole">Add Role</button>
+        </div>
         <table>
             <thead>
                 <tr>
@@ -17,7 +19,7 @@
                     <td>{{ role.name }}</td>
                     <td>
                         <button type="button" @click="statusRole(role)">{{ $activeInactive('role', role.status)
-                            }}</button>
+                        }}</button>
                         <button type="button" @click="editRole(role)">edit</button>
                     </td>
                 </tr>
@@ -173,3 +175,24 @@ onMounted(async () => {
     user.value = await $fetchUser();
 });
 </script>
+
+<style scoped>
+.container {
+    padding: 10px;
+    background-color: var(--background-color-ten);
+    color: var(--text-colo-two);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: var(--background-color-two);
+    color: var(--text-color-one);
+    border-radius: 14px;
+}
+.header button{
+    padding: 8px 12px;
+    background-color: var(--background-color-three);
+}
+</style>
