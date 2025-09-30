@@ -19,7 +19,7 @@
           <h3>{{ matrix.label }}</h3>
           <div class="settings">
             <button type="button" @click="toggleSelect(index)">
-              <i class="ri-equalizer-2-fill"></i>
+              <i class="ri-more-2-fill"></i>
             </button>
 
             <!-- Settings Dropdown -->

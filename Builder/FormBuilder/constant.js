@@ -58,7 +58,7 @@ export const FORM_BUILDER = {
             { label: 'Link', description: 'HTML <a> tag', icon: 'ri-link' },
         ],
         STRUCTURES: [
-            { label: '2 columns', description: 'Two columns next to each other', icon: 'ri-text' },
+            { label: 'Tabs', description: 'Break forms into tabs', icon: 'ri-text' },
             { label: 'One Column', description: 'Single line text input', icon: 'ri-text' },
             { label: 'One Column', description: 'Single line text input', icon: 'ri-text' },
             { label: 'One Column', description: 'Single line text input', icon: 'ri-text' },
