@@ -6,7 +6,7 @@
     </div>
     <div class="bottom">
         <div v-for="tool in FORM_BUILDER.TOOLS[tools.activeTool]" class="blocks"
-            @dragstart="(event) => handleDragStart(event, tool)" draggable="true">
+            @dragstart="(event) => $onDragStart(event, tool)" draggable="true">
             <div class="block-left">
                 <i :class="tool.icon"></i>
             </div>
@@ -20,14 +20,18 @@
 
 <script setup>
 import { FORM_BUILDER } from '../constant';
-import { handleDragStart } from '../function';
+
+const { $onDragStart, } = useNuxtApp();
+
 const tools = reactive({
     activeTool: 'FIELDS',
 })
 </script>
 
 <style scoped>
-.top {}
+.top {
+    padding-right: 10px;
+}
 
 .top button {
     background-color: var(--background-color-two);
