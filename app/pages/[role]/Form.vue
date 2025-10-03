@@ -42,6 +42,7 @@ import FormBuilder from '../../../Builder/FormBuilder/FormBuilder.vue';
 const form = reactive({
     isShow: false,
     blocks: [],
+    name: '',
 })
 
 

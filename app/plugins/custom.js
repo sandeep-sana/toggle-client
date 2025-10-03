@@ -104,8 +104,9 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.provide("onMouseover", (event) => {
         event.currentTarget.style.border = "1px dashed green";
     });
-    nuxtApp.provide("onMouseout", (event) => {
-        event.currentTarget.style.border = "1px solid var(--border-color-one)";
+    nuxtApp.provide("onMouseout", (event, block, form) => {
+        if (form.property && block.id === form.property.id) return;
+        event.currentTarget.style.border = "1px solid var(--border-color-two)";
     });
     nuxtApp.provide("onDragover", (event) => {
         event.preventDefault();
@@ -118,8 +119,12 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.provide("onDrop", (event, form) => {
         event.preventDefault();
         const block = JSON.parse(event.dataTransfer.getData("application/json"));
-        form.blocks.push(block);
+        let id = `${block.is}_${form.blocks.length}`;
+        form.blocks.push({ ...block, id });
         speak(`${block.label} dropped`);
         event.currentTarget.style.border = "1px solid var(--border-color-one)";
+    });
+    nuxtApp.provide("onPropertyout", (id) => {
+        document.getElementById(id).style.border = "1px solid var(--border-color-two)";
     });
 });

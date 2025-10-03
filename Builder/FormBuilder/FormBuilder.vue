@@ -1,4 +1,17 @@
 <template>
+
+    <Form @submit="handleSubmit">
+        <div class="d-flex head">
+            <div class="form-name col-lg-2">
+                <Field class="field" as="input" type="text" v-model="form.name" name="name" placeholder="Name..."
+                    rules="required"></Field>
+                <ErrorMessage name="name"></ErrorMessage>
+            </div>
+            <div>
+                <button><i class="ri-save-2-fill"></i></button>
+            </div>
+        </div>
+    </Form>
     <div class="form-builder">
         <div class="left col-lg-2">
             <div class="block">
@@ -8,33 +21,127 @@
         <div class="editor-container" @dragover="(event) => $onDragover(event)"
             @dragleave="(event) => $onDragleave(event)" @drop="(event) => $onDrop(event, form)">
             <div class="row">
-                <div v-for="block in form.blocks" :key="block.id" :class="`col-lg-${block.size}`">
-                    <component :is="components[block.is]" :block="block"></component>
+                <div v-for="block in form.blocks" :key="block.id" :class="`position-relative col-lg-${block.size}`"
+                    @click="onProperty(block)">
+                    <div class="drag left"></div>
+                    <div class="drag top"></div>
+                    <component :is="components[block.is]" :block="block" :formBuilder="formBuilder" :form="form">
+                    </component>
+                    <div class="drag right"></div>
+                    <div class="drag bottom"></div>
                 </div>
             </div>
         </div>
-        <div class="property col-lg-3"></div>
+        <div class="col-lg-3">
+            <Property v-if="form.property" :form="form" />
+        </div>
     </div>
 </template>
 
 <script setup>
 import { defineProps } from 'vue';
 import Tools from './tools/Tools.vue';
+import Property from './Property.vue';
 import TextInput from './blocks/TextInput.vue';
+import { ErrorMessage, Field, Form } from 'vee-validate';
 
-const { $onMouseover, $onMouseout, $onDragover, $onDragleave, $onDrop } = useNuxtApp();
+const { $onDragover, $onDragleave, $onDrop, $onPropertyout, $speak, $toast } = useNuxtApp();
 
 const props = defineProps({
     form: { type: Object },
 })
 
 const components = { TextInput };
-
+const formBuilder = reactive({
+    isEditMode: true,
+});
 const form = reactive(props.form);
+
+const onProperty = (block) => {
+    if (form.property) {
+        $onPropertyout(JSON.parse(JSON.stringify(form.property.id)));
+    }
+    form.property = block;
+    $speak(`selected ${block.label}`);
+
+}
+
+const handleSubmit = () => {
+    if (form.blocks.length) {
+
+    } else {
+        $toast.info('Please drag any field');
+        $speak('Please drag any field');
+    }
+}
 
 </script>
 
 <style scoped>
+.drag {
+    position: absolute;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.drag.left {
+    background-color: green;
+    height: 100%;
+    width: 5px;
+    left: 5px;
+    top: 0px;
+}
+
+.drag.top {
+    background-color: green;
+    height: 5px;
+    width: calc(100% - 20px);
+    left: 10px;
+    top: 0px;
+}
+
+.drag.right {
+    background-color: green;
+    height: 100%;
+    width: 5px;
+    right: 5px;
+    top: 0px;
+}
+
+.drag.bottom {
+    background-color: green;
+    height: 5px;
+    width: calc(100% - 20px);
+    left: 10px;
+    bottom: 0px;
+}
+
+.head {
+    justify-content: space-between;
+}
+
+.head button {
+    border: 1px solid var(--border-color-one);
+    border-radius: 10px;
+    padding: 5px 10px;
+    background-color: var(--background-color-two);
+    color: var(--text-color-one);
+}
+
+.head button:hover {
+    background-color: var(--background-color-three);
+}
+
+.form-name .field {
+    border: 1px solid var(--border-color-one);
+    border-radius: 10px;
+    padding: 10px;
+    background-color: var(--background-color-two);
+    color: var(--text-color-one);
+    margin-bottom: 10px;
+    width: 100%;
+}
+
 .form-builder {
     display: flex;
 }
@@ -43,13 +150,12 @@ const form = reactive(props.form);
 
 .block {}
 
-.property {}
+
 
 .editor-container {
     flex-basis: 70%;
     border: 1px solid var(--border-color-one);
     border-radius: 10px;
-    cursor: crosshair;
     padding: 10px;
 }
 

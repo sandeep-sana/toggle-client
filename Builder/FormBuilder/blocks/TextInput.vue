@@ -1,7 +1,16 @@
 <template>
-    <div class="com">
+    <div class="com" @mouseover="(event) => $onMouseover(event, block)"
+        @mouseout="(event) => $onMouseout(event, block, form)" :id="block.id">
         <div>
-            <Field as="input" type="text" name="name" class="component"></Field>
+            <div class="head">
+                <div>
+                    <label for="name">{{ block.label }}</label>
+                </div>
+                <div>
+                    <i class="ri-close-fill" @click="onDelete(block.id)"></i>
+                </div>
+            </div>
+            <Field as="input" type="text" name="name" class="component" :disabled="formBuilder.isEditMode"></Field>
             <ErrorMessage name="name"></ErrorMessage>
         </div>
         <div class="box">
@@ -11,14 +20,24 @@
 </template>
 
 <script setup>
+// Remove this line
+// import { type } from 'os';
+
 import { ErrorMessage, Field } from 'vee-validate';
 import { reactive, onMounted, onBeforeUnmount } from 'vue';
 
+const { $onMouseover, $onMouseout, $speak, $onDragleave, $onDrop } = useNuxtApp();
+
 const props = defineProps({
     block: { type: Object },
+    formBuilder: { type: Object },
+    form: { type: Object },
 })
 
 const block = reactive(props.block);
+const form = reactive(props.form);
+// const formBuilder = reactive(props.formBuilder);
+
 let startX = 0;
 let isDragging = false;
 let startSize = 0;
@@ -40,6 +59,7 @@ const drag = (event) => {
     const newSize = startSize + sizeChange;
 
     if (newSize >= 1 && newSize <= 12) { // Set min/max size
+        $speak(`${block.label} size ${newSize}`);
         block.size = newSize;
     }
 };
@@ -55,10 +75,25 @@ onBeforeUnmount(() => {
     document.removeEventListener('mousemove', drag);
     document.removeEventListener('mouseup', stopDrag);
 });
+
+const onDelete = (id) => {
+    form.blocks = form.blocks.filter(b => b.id != id);
+    $speak(`${block.label} deleted`);
+}
 </script>
 <style scoped>
+.head {
+    display: flex;
+    justify-content: space-between;
+}
+
+.head i:hover {
+    background-color: var(--background-color-three);
+}
+
 .com {
     position: relative;
+    cursor: pointer;
 }
 
 .component {
@@ -73,7 +108,7 @@ onBeforeUnmount(() => {
 .box {
     position: absolute;
     right: -4px;
-    top: 25%;
+    top: 50%;
 }
 
 .sizing {
