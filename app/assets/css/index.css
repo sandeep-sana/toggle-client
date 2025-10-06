@@ -97,3 +97,11 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--background-color-three);   /* Darker on hover */
 }
+
+button{
+  background-color: var(--background-color-two);
+  color: var(--text-color-one);
+  border: 1px solid var(--border-color-one);
+  border-radius: 10px;
+  padding: 5px 10px;
+}

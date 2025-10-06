@@ -86,6 +86,10 @@ const onDelete = (id) => {
     display: flex;
     justify-content: space-between;
 }
+.head i{
+    z-index: 30;
+    position: relative;
+}
 
 .head i:hover {
     background-color: var(--background-color-three);
@@ -109,6 +113,7 @@ const onDelete = (id) => {
     position: absolute;
     right: -4px;
     top: 50%;
+    z-index: 30;
 }
 
 .sizing {

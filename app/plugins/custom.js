@@ -97,7 +97,13 @@ export default defineNuxtPlugin(nuxtApp => {
         synth.speak(utterance);
     };
     nuxtApp.provide("speak", speak);
-    nuxtApp.provide("onDragStart", (event, block) => {
+    nuxtApp.provide("onDragStart", (event, block, isSwap, swapBlockId) => {
+        if (isSwap !== undefined && isSwap !== null) {
+            event.dataTransfer.setData("isSwap", isSwap);
+        }
+        if (swapBlockId !== undefined && swapBlockId !== null) {
+            event.dataTransfer.setData("swapBlockId", swapBlockId);
+        }
         event.dataTransfer.setData("application/json", JSON.stringify(block));
         event.dataTransfer.effectAllowed = "move";
     });
@@ -116,15 +122,57 @@ export default defineNuxtPlugin(nuxtApp => {
         event.preventDefault();
         event.currentTarget.style.border = "1px solid var(--border-color-one)";
     });
-    nuxtApp.provide("onDrop", (event, form) => {
+    nuxtApp.provide("onDrop", (event, form, blockIndex, partnerBlockIndex) => {
+        console.log('blockIndex', blockIndex)
+        console.log('partnerBlockIndex', partnerBlockIndex)
         event.preventDefault();
+        event.stopPropagation();
+
         const block = JSON.parse(event.dataTransfer.getData("application/json"));
-        let id = `${block.is}_${form.blocks.length}`;
-        form.blocks.push({ ...block, id });
-        speak(`${block.label} dropped`);
-        event.currentTarget.style.border = "1px solid var(--border-color-one)";
+        let id = block.is + "_" + (crypto.randomUUID ? crypto.randomUUID() : Date.now());
+
+        if (partnerBlockIndex !== undefined && partnerBlockIndex !== null) {
+            const partnerBlock = form.blocks[partnerBlockIndex];
+            partnerBlock.size = Math.max(partnerBlock.size / 2, 3);
+            form.blocks.splice(blockIndex, 0, {
+                ...block,
+                id,
+                size: partnerBlock.size,
+            });
+            nuxtApp.$onDragItHereleave(event);
+        } else if (blockIndex !== undefined && blockIndex !== null) {
+            form.blocks.splice(blockIndex, 0, { ...block, id });
+            nuxtApp.$onDragItHereleave(event);
+        } else {
+            form.blocks.push({ ...block, id });
+            nuxtApp.$onDragItHereleave(event);
+        }
+
+        let isSwap = event.dataTransfer.getData("isSwap");
+        let swapBlockId = event.dataTransfer.getData("swapBlockId");
+        if (isSwap) {
+            if (swapBlockId !== undefined && swapBlockId !== null) {
+                console.log(swapBlockId)
+                form.blocks = form.blocks.filter( block => block.id != swapBlockId);
+            }
+        }
+
+        nuxtApp.$speak(`${block.label} dropped`);
     });
     nuxtApp.provide("onPropertyout", (id) => {
         document.getElementById(id).style.border = "1px solid var(--border-color-two)";
     });
+    nuxtApp.provide("onDragItHereover", (event) => {
+        event.preventDefault()
+        const child = event.currentTarget.querySelector(".drag")
+        if (child) child.classList.add("drag-active")
+    })
+
+    nuxtApp.provide("onDragItHereleave", (event) => {
+        event.preventDefault()
+        const child = event.currentTarget.querySelector(".drag")
+        if (child) child.classList.remove("drag-active")
+    })
+
+
 });

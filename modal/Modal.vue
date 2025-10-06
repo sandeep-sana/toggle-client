@@ -33,4 +33,7 @@
     color: var(--text-color-one);
     border-radius: 12px;
 }
+.modal-header{
+    justify-content: space-between;
+}
 </style>
