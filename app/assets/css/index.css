@@ -105,3 +105,11 @@ button{
   border-radius: 10px;
   padding: 5px 10px;
 }
+
+.input{
+  background-color: var(--background-color-two);
+  color: var(--text-color-one);
+  border: 1px solid var(--border-color-one);
+  border-radius: 10px;
+  padding: 5px 10px;
+}

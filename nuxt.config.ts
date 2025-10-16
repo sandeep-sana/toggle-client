@@ -14,6 +14,8 @@ export default defineNuxtConfig({
     'vue-multiselect/dist/vue-multiselect.css',
     '@vuepic/vue-datepicker/dist/main.css',
     'remixicon/fonts/remixicon.css',
+    '@vue-flow/core/dist/style.css',
+    '@vue-flow/core/dist/theme-default.css',
   ],
   plugins: [
     '~/plugins/toastify.client.js',

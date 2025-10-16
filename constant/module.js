@@ -6,5 +6,7 @@ export const MODULE = {
         { label: "Role", path: "ROLE" },
         { label: "Master", path: "MASTER" },
         { label: "Form", path: "FORM" },
+        { label: "Task", path: "TASK" },
+        { label: "Workflow", path: "WORKFLOW" },
     ]
 }

@@ -11,11 +11,13 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.11.2",
+    "@vue-flow/core": "^1.47.0",
     "@vuepic/vue-datepicker": "^11.0.2",
     "axios": "^1.11.0",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "chart.js": "^4.5.0",
+    "dagre": "^0.8.5",
     "nuxt": "^4.1.1",
     "pinia": "^3.0.3",
     "remixicon": "^4.6.0",
