@@ -55,6 +55,7 @@ import Tools from './tools/Tools.vue';
 import Property from './Property.vue';
 import TextInput from './blocks/TextInput.vue';
 import Heading from './blocks/Heading.vue';
+import Paragraph from './blocks/Paragraph.vue'
 import { ErrorMessage, Field } from 'vee-validate';
 import api from '~~/api.config';
 import { STATUS } from '~~/constant';
@@ -66,7 +67,7 @@ const props = defineProps({
     form: { type: Object },
 })
 
-const components = { TextInput, Heading };
+const components = { TextInput, Heading, Paragraph };
 const formBuilder = reactive({
     isEditMode: true,
 });

@@ -52,7 +52,7 @@ export const FORM_BUILDER = {
             { is: 'Heading', size:12, label: 'H4 header', description: 'HTML <h4> tag', icon: 'ri-h-4', headingType: 'h4' },
             { is: 'Heading', size:12, label: 'H5 header', description: 'HTML <h5> tag', icon: 'ri-h-5', headingType: 'h5' },
             { is: 'Heading', size:12, label: 'H6 header', description: 'HTML <h6> tag', icon: 'ri-h-6', headingType: 'h6' },
-            { is: 'TextInput', size:12, label: 'Paragraph', description: 'HTML <p> tag', icon: 'ri-paragraph' },
+            { is: 'Paragraph', size:12, label: 'Paragraph', description: 'HTML <p> tag', icon: 'ri-paragraph' },
             { is: 'TextInput', size:12, label: 'Quote', description: 'HTML <quote> tag', icon: 'ri-double-quotes-l' },
             { is: 'TextInput', size:12, label: 'Image', description: 'HTML <img> tag', icon: 'ri-image-2-line' },
             { is: 'TextInput', size:12, label: 'Link', description: 'HTML <a> tag', icon: 'ri-link' },
