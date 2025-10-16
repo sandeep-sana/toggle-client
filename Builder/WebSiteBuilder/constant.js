@@ -66,14 +66,22 @@ export const FORM_BUILDER = {
                 is: 'Paragraph',
                 icon: 'ri-paragraph',
                 description: 'HTML <p> tag',
-                attribute:{
+                attribute: {
                     size: 12,
                     label: 'Paragraph',
                 },
-                style:{},
+                style: {},
             },
             // { is: 'TextInput', size: 12, label: 'Quote', description: 'HTML <quote> tag', icon: 'ri-double-quotes-l' },
-            // { is: 'TextInput', size: 12, label: 'Image', description: 'HTML <img> tag', icon: 'ri-image-2-line' },
+            {
+                is: 'Image',
+                icon: 'ri-image-2-line',
+                description: 'HTML <img> tag',
+                attribute:{
+                    size: 12,
+                    label: 'Image',
+                },
+            },
             // { is: 'TextInput', size: 12, label: 'Link', description: 'HTML <a> tag', icon: 'ri-link' },
         ],
         STRUCTURES: [
