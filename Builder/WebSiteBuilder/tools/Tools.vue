@@ -11,7 +11,7 @@
                 <i :class="tool.icon"></i>
             </div>
             <div class="block-right">
-                <h3>{{ tool.label }}</h3>
+                <h3>{{ tool.attribute.label }}</h3>
                 <p>{{ tool.description }}</p>
             </div>
         </div>

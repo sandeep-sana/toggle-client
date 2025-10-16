@@ -1,12 +1,16 @@
 <template>
+
+    <!-- Label -->
     <div class="property">
-        <label for="name">Lable</label>
-        <Field class="field" as="input" type="text" v-model="form.property.label"></Field>
+        <label for="name">Label</label>
+        <Field class="field" as="input" type="text" v-model="form.attribute.label"></Field>
         <ErrorMessage name="name"></ErrorMessage>
     </div>
+
+    <!-- Size -->
     <div class="property">
         <label for="name">Size</label>
-        <Field class="field" as="select" v-model="form.property.size">
+        <Field class="field" as="select" v-model="form.attribute.size">
             <option :value="1">1</option>
             <option :value="2">2</option>
             <option :value="3">3</option>
@@ -22,15 +26,28 @@
         </Field>
         <ErrorMessage name="name"></ErrorMessage>
     </div>
-    <div v-if="form.property.headingType" class="property">
+
+    <!-- headingType -->
+    <div v-if="form.attribute.headingType" class="property">
         <label for="name">Heading Type</label>
-        <Field class="field" as="select" v-model="form.property.headingType">
+        <Field class="field" as="select" v-model="form.attribute.headingType">
             <option value="h1">H1</option>
             <option value="h2">H2</option>
             <option value="h3">H3</option>
             <option value="h4">H4</option>
             <option value="h5">H5</option>
             <option value="h6">H6</option>
+        </Field>
+        <ErrorMessage name="name"></ErrorMessage>
+    </div>
+    <!-- Text Align -->
+    <div class="property">
+        <label for="name">Text Align</label>
+        <Field class="field" as="select" v-model="form.style.textAlign">
+            <option value="center">Center</option>
+            <option value="right">right</option>
+            <option value="left">left</option>
+            <option value="justify">justify</option>
         </Field>
         <ErrorMessage name="name"></ErrorMessage>
     </div>

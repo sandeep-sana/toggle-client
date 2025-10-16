@@ -18,7 +18,7 @@
             @dragleave="(event) => $onDragleave(event)" @drop="(event) => $onDrop(event, form)">
             <div class="row">
                 <div v-for="(block, blockIndex) in form.blocks" :key="block.id"
-                    :class="`position-relative col-lg-${block.size}`" @click="onProperty(block)">
+                    :class="`position-relative col-lg-${block.attribute.size}`" @click="onProperty(block)">
                     <div draggable="true" @dragstart="(event) => $onDragStart(event, block, true, block.id)">
                         <div class="leyar left" @dragover="$onDragItHereover" @dragleave="$onDragItHereleave"
                             @drop="(event) => $onDrop(event, form, blockIndex, blockIndex)">
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="col-lg-3">
-            <Property v-if="form.property" :form="form" />
+            <Property v-if="form.attribute" :form="form" />
         </div>
     </div>
 </template>
@@ -73,10 +73,11 @@ const formBuilder = reactive({
 const form = reactive(props.form);
 
 const onProperty = (block) => {
-    if (form.property) {
-        $onPropertyout(JSON.parse(JSON.stringify(form.property.id)));
+    if (form.attribute) {
+        // $onPropertyout(JSON.parse(JSON.stringify(form.attribute.id)));
     }
-    form.property = block;
+    form.attribute = block.attribute;
+    form.style = block.style;
     $speak(`selected ${block.label}`);
 
 }

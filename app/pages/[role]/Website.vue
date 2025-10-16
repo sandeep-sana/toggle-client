@@ -57,7 +57,6 @@ import api from '~~/api.config';
 import Modal from '~~/modal/Modal.vue';
 import WebsiteBuilder from '../../../Builder/WebSiteBuilder/WebsiteBuilder.vue';
 import { STATUS } from '~~/constant';
-import { Form } from 'vee-validate';
 
 
 const form = reactive({
