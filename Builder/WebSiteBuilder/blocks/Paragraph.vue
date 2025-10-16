@@ -2,17 +2,16 @@
     <div class="com" @mouseover="(event) => $onMouseover(event, block)"
         @mouseout="(event) => $onMouseout(event, block, form)" :id="block.id">
         <div>
+            {{ block }}
             <div class="head">
-                <div>
-                    <p for="name">{{ block.label }}</p>
-                </div>
+                    <p for="name" :style="block.style" class="w-100">{{ block.attribute.label }}</p>
                 <div>
                     <i class="ri-close-fill" @click="onDelete(block.id)"></i>
                 </div>
             </div>
         </div>
         <div class="box">
-            <div class="sizing" @mousedown="startDrag">{{ block.size }}</div>
+            <div class="sizing" @mousedown="startDrag">{{ block.attribute.size }}</div>
         </div>
     </div>
 </template>
@@ -43,7 +42,7 @@ let startSize = 0;
 const startDrag = (event) => {
     isDragging = true;
     startX = event.clientX;
-    startSize = block.size;
+    startSize = block.attribute.size;
 
     document.addEventListener('mousemove', drag);
     document.addEventListener('mouseup', stopDrag);
@@ -58,7 +57,7 @@ const drag = (event) => {
 
     if (newSize >= 1 && newSize <= 12) { // Set min/max size
         $speak(`${block.label} size ${newSize}`);
-        block.size = newSize;
+        block.attribute.size = newSize;
     }
 };
 
@@ -83,6 +82,7 @@ const onDelete = (id) => {
 .head {
     display: flex;
     justify-content: space-between;
+    width: 100%;
 }
 .head i{
     z-index: 30;

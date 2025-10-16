@@ -47,6 +47,7 @@
             <Property v-if="form.attribute" :form="form" />
         </div>
     </div>
+    <pre>{{ form.blocks }}</pre>
 </template>
 
 <script setup>

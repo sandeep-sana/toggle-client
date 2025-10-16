@@ -40,6 +40,7 @@
         </Field>
         <ErrorMessage name="name"></ErrorMessage>
     </div>
+
     <!-- Text Align -->
     <div class="property">
         <label for="name">Text Align</label>
@@ -51,6 +52,60 @@
         </Field>
         <ErrorMessage name="name"></ErrorMessage>
     </div>
+
+    <!-- Font Weight -->
+    <div class="property">
+        <label for="name">Font Weight</label>
+        <Field class="field" as="select" v-model="form.style.fontWeight">
+            <option :value="100">100</option>
+            <option :value="200">200</option>
+            <option :value="300">300</option>
+            <option :value="400">400</option>
+            <option :value="500">500</option>
+            <option :value="600">600</option>
+            <option :value="700">700</option>
+            <option :value="800">800</option>
+            <option :value="900">900</option>
+            <option value="normal">normal</option>
+            <option value="bold">bold</option>
+            <option value="bolder">bolder</option>
+            <option value="lighter">lighter</option>
+        </Field>
+        <ErrorMessage name="name"></ErrorMessage>
+    </div>
+
+    <!-- Margin Left -->
+    <div class="property">
+        <label for="marginLeft">Margin Left</label>
+        <Field class="field" as="input" type="number" v-model="form.style.marginLeftValue"></Field>
+        <ErrorMessage name="marginLeft"></ErrorMessage>
+        <select v-model="form.style.marginLeftUnit" class="unit-select">
+            <option value="px">px</option>
+            <option value="rem">rem</option>
+        </select>
+    </div>
+
+    <!-- Margin Right -->
+    <div class="property">
+        <label for="marginRight">Margin Right</label>
+        <Field class="field" as="input" type="number" v-model="form.style.marginRight"></Field>
+        <ErrorMessage name="marginRight"></ErrorMessage>
+    </div>
+
+    <!-- Margin Top -->
+    <div class="property">
+        <label for="marginTop">Margin Top</label>
+        <Field class="field" as="input" type="number" v-model="form.style.marginTop"></Field>
+        <ErrorMessage name="marginTop"></ErrorMessage>
+    </div>
+
+    <!-- Margin Bottom -->
+    <div class="property">
+        <label for="marginBottom">Margin Bottom</label>
+        <Field class="field" as="input" type="number" v-model="form.style.marginBottom"></Field>
+        <ErrorMessage name="marginBottom"></ErrorMessage>
+    </div>
+
 </template>
 
 <script setup>
@@ -59,6 +114,10 @@ import { ErrorMessage, Field } from 'vee-validate';
 const props = defineProps({
     form: { type: Object },
 })
+
+const form =  reactive(props.form);
+
+form.style.marginLeft = computed(() => { return form.style.marginLeftValue + form.style.marginLeftUnit});
 </script>
 
 <style scoped>

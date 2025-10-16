@@ -48,8 +48,8 @@ export const FORM_BUILDER = {
             // { is: 'TextInput', size: 12, label: 'Danger button', description: 'Button with danger color', icon: 'ri-alarm-warning-fill' },
             {
                 is: 'Heading',
-                description: 'HTML <h1> tag',
                 icon: 'ri-h-1',
+                description: 'HTML <h1> tag',
                 attribute: {
                     headingType: 'h1',
                     label: 'H1 header',
@@ -62,7 +62,16 @@ export const FORM_BUILDER = {
             // { is: 'Heading', size: 12, label: 'H4 header', description: 'HTML <h4> tag', icon: 'ri-h-4', headingType: 'h4' },
             // { is: 'Heading', size: 12, label: 'H5 header', description: 'HTML <h5> tag', icon: 'ri-h-5', headingType: 'h5' },
             // { is: 'Heading', size: 12, label: 'H6 header', description: 'HTML <h6> tag', icon: 'ri-h-6', headingType: 'h6' },
-            // { is: 'TextInput', size: 12, label: 'Paragraph', description: 'HTML <p> tag', icon: 'ri-paragraph' },
+            {
+                is: 'Paragraph',
+                icon: 'ri-paragraph',
+                description: 'HTML <p> tag',
+                attribute:{
+                    size: 12,
+                    label: 'Paragraph',
+                },
+                style:{},
+            },
             // { is: 'TextInput', size: 12, label: 'Quote', description: 'HTML <quote> tag', icon: 'ri-double-quotes-l' },
             // { is: 'TextInput', size: 12, label: 'Image', description: 'HTML <img> tag', icon: 'ri-image-2-line' },
             // { is: 'TextInput', size: 12, label: 'Link', description: 'HTML <a> tag', icon: 'ri-link' },
