@@ -94,7 +94,7 @@ export default defineNuxtPlugin(nuxtApp => {
         utterance.rate = 1;
         utterance.pitch = 1;
         synth.cancel();
-        synth.speak(utterance);
+        // synth.speak(utterance);
     };
     nuxtApp.provide("speak", speak);
     nuxtApp.provide("onDragStart", (event, block, isSwap, swapBlockId) => {
@@ -123,14 +123,10 @@ export default defineNuxtPlugin(nuxtApp => {
         event.currentTarget.style.border = "1px solid var(--border-color-one)";
     });
     nuxtApp.provide("onDrop", (event, form, blockIndex, partnerBlockIndex) => {
-        console.log('blockIndex', blockIndex)
-        console.log('partnerBlockIndex', partnerBlockIndex)
         event.preventDefault();
         event.stopPropagation();
-
         const block = JSON.parse(event.dataTransfer.getData("application/json"));
         let id = block.is + "_" + (crypto.randomUUID ? crypto.randomUUID() : Date.now());
-
         if (partnerBlockIndex !== undefined && partnerBlockIndex !== null) {
             const partnerBlock = form.blocks[partnerBlockIndex];
             partnerBlock.size = Math.max(partnerBlock.size / 2, 3);
