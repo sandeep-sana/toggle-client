@@ -116,49 +116,64 @@
         </div>
 
         <!-- Margin Right -->
-        <div class="property">
+         <div class="property">
             <label for="marginRight">Margin Right</label>
-            <Field class="field" as="input" type="number" v-model="form.style.marginRightValue"></Field>
-            <ErrorMessage name="marginRight"></ErrorMessage>
-            <select v-model="form.style.marginRightUnit" class="unit-select">
-                <option value="px">px</option>
-                <option value="rem">rem</option>
-                <option value="em">em</option>
-                <option value="%">percentage</option>
+            <Field class="field" as="select" v-model="form.style.marginRightType" @change="marginRightType">
+                <option value="">None</option>
                 <option value="auto">auto</option>
-                <option value="inherit">inherit</option>
-            </select>
-        </div>
+                <option value="custom">custom</option>
+            </Field>
+            <template v-if="['custom'].includes(form.style.marginRightType)">
+                <Field class="field" as="input" type="number" v-model="form.style.marginRightValue"
+                    @change="marginRightValue"></Field>
+                <Field class="field" as="select" v-model="form.style.marginRightUnit" @change="marginRightValue">
+                    <option value="px">px</option>
+                    <option value="rem">rem</option>
+                    <option value="em">em</option>
+                    <option value="%">percentage</option>
+                </Field>
+            </template>
+            </div>
 
         <!-- Margin Top -->
         <div class="property">
-            <label for="marginTop">Margin Top</label>
-            <Field class="field" as="input" type="number" v-model="form.style.marginTopValue"></Field>
-            <ErrorMessage name="marginTop"></ErrorMessage>
-            <select v-model="form.style.marginTopUnit" class="unit-select">
-                <option value="px">px</option>
-                <option value="rem">rem</option>
-                <option value="em">em</option>
-                <option value="%">percentage</option>
+           <label for="marginTop">Margin Top</label>
+            <Field class="field" as="select" v-model="form.style.marginTopType" @change="marginTopType">
+                <option value="">None</option>
                 <option value="auto">auto</option>
-                <option value="inherit">inherit</option>
-            </select>
+                <option value="custom">custom</option>
+            </Field>
+            <template v-if="['custom'].includes(form.style.marginTopType)">
+                <Field class="field" as="input" type="number" v-model="form.style.marginTopValue"
+                    @change="marginTopValue"></Field>
+                <Field class="field" as="select" v-model="form.style.marginTopUnit" @change="marginTopValue">
+                    <option value="px">px</option>
+                    <option value="rem">rem</option>
+                    <option value="em">em</option>
+                    <option value="%">percentage</option>
+                </Field>
+            </template>
         </div>
 
         <!-- Margin Bottom -->
         <div class="property">
-            <label for="marginBottom">Margin Bottom</label>
-            <Field class="field" as="input" type="number" v-model="form.style.marginBottomValue"></Field>
-            <ErrorMessage name="marginBottom"></ErrorMessage>
-            <select v-model="form.style.marginBottomUnit" class="unit-select">
-                <option value="px">px</option>
-                <option value="rem">rem</option>
-                <option value="em">em</option>
-                <option value="%">percentage</option>
+             <label for="marginBottom">Margin Bottom</label>
+            <Field class="field" as="select" v-model="form.style.marginBottomType" @change="marginBottomType">
+                <option value="">None</option>
                 <option value="auto">auto</option>
-                <option value="inherit">inherit</option>
-            </select>
-        </div>
+                <option value="custom">custom</option>
+            </Field>
+            <template v-if="['custom'].includes(form.style.marginBottomType)">
+                <Field class="field" as="input" type="number" v-model="form.style.marginBottomValue"
+                    @change="marginBottomValue"></Field>
+                <Field class="field" as="select" v-model="form.style.marginBottomUnit" @change="marginBottomValue">
+                    <option value="px">px</option>
+                    <option value="rem">rem</option>
+                    <option value="em">em</option>
+                    <option value="%">percentage</option>
+                </Field>
+            </template>
+             </div>
     </template>
 
 
@@ -232,6 +247,56 @@ const marginLeftValue = () => {
     }
 }
 
+const marginRightType = () => {
+    if (['auto'].includes(form.style.marginRightType)) {
+        if (form.style?.marginRightValue) {
+            form.style.marginRightValue = null;
+        }
+        if (form.style?.marginRightUnit) {
+            form.style.marginRightUnit = null;
+        }
+    }
+    form.style.marginRight = form.style.marginRightType;
+}
+const marginRightValue = () => {
+    if (form.style?.marginRightValue && form.style?.marginRightUnit) {
+        form.style.marginRight = form.style.marginRightValue + form.style.marginRightUnit;
+    }
+}
+
+const marginTopType = () => {
+    if (['auto'].includes(form.style.marginTopType)) {
+        if (form.style?.marginTopValue) {
+            form.style.marginTopValue = null;
+        }
+        if (form.style?.marginTopUnit) {
+            form.style.marginTopUnit = null;
+        }
+    }
+    form.style.marginRight = form.style.marginRightType;
+}
+const marginTopValue = () => {
+    if (form.style?.marginTopValue && form.style?.marginTopUnit) {
+        form.style.marginTop = form.style.marginTopValue + form.style.marginTopUnit;
+    }
+}
+
+const marginBottomType = () => {
+    if (['auto'].includes(form.style.marginBottomType)) {
+        if (form.style?.marginBottomValue) {
+            form.style.marginBottomValue = null;
+        }
+        if (form.style?.marginBottomUnit) {
+            form.style.marginBottomUnit = null;
+        }
+    }
+    form.style.marginBottom = form.style.marginBottomType;
+}
+const marginBottomValue = () => {
+    if (form.style?.marginBottomValue && form.style?.marginBottomUnit) {
+        form.style.marginBottom = form.style.marginBottomValue + form.style.marginBottomUnit;
+    }
+}
 
 
 </script>
