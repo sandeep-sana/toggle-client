@@ -43,17 +43,6 @@
     </div>
 
     <!-- src -->
-<<<<<<< Updated upstream
-    <!-- <div v-if="'src' in form.attribute" class="property">
-        <label for="src">Src</label>
-        <Field class="field" as="input" type="file" v-model="form.attribute.src"></Field>
-        <ErrorMessage name="src"></ErrorMessage>
-    </div> -->
-    <div v-if="'src' in form.attribute" class="property">
-        <label for="src">Src</label>
-        <input class="field" type="file" @change="onFileChange" />
-        <ErrorMessage name="src" />
-=======
     <div v-if="'src' in form.attribute" class="property flex flex-col gap-2">
     <label for="src">Take or Upload Photo</label>
 
@@ -61,7 +50,6 @@
     <div class="d-flex gap-2">
       <button class="btn btn-outline-primary" v-tippy="`Upload Image`" @click="openFilePicker">📁</button>
       <button class="btn btn-outline-success" v-tippy="`Use Camera`" @click="openCamera">📸</button>
->>>>>>> Stashed changes
     </div>
 
     <!-- Hidden File Input -->
@@ -346,17 +334,6 @@ const marginBottomValue = () => {
         form.style.marginBottom = form.style.marginBottomValue + form.style.marginBottomUnit;
     }
 }
-
-const onFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            form.attribute.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-};
 
 
 // ========== CAMERA AND UPLOAD SECTION ==========
