@@ -77,13 +77,18 @@ export const FORM_BUILDER = {
                 is: 'Image',
                 icon: 'ri-image-2-line',
                 description: 'HTML <img> tag',
-                attribute:{
+                attribute: {
                     size: 12,
                     label: 'Image',
                     src: null,
+                    heightValue: null,
+                    heightUnit: 'px',
+                    widthValue: null,
+                    widthUnit: 'px',
                 },
-                style:{
+                style: {
                     fontWeight: null,
+
                 }
             },
             // { is: 'TextInput', size: 12, label: 'Link', description: 'HTML <a> tag', icon: 'ri-link' },

@@ -53,6 +53,8 @@
         <input class="field" type="file" @change="onFileChange" />
         <ErrorMessage name="src" />
     </div>
+    <!-- Width -->
+    
 
     <h3>Style</h3>
 
@@ -188,6 +190,27 @@
                 </template>
             </div>
         </template>
+    </div>
+
+    <div class="property">
+        <label for="width">Width</label>
+        <Field class="field" as="input" type="number" v-model="form.attribute.widthValue" placeholder="Enter width" />
+        <select v-model="form.attribute.widthUnit" class="unit-select">
+            <option value="px">px</option>
+            <option value="rem">rem</option>
+            <option value="%">%</option>
+        </select>
+    </div>
+    <div class="property">
+
+    <!-- Height -->
+        <label for="height">Height</label>
+        <Field class="field" as="input" type="number" v-model="form.attribute.heightValue" placeholder="Enter height" />
+        <select v-model="form.attribute.heightUnit" class="unit-select">
+            <option value="px">px</option>
+            <option value="rem">rem</option>
+            <option value="%">%</option>
+        </select>
     </div>
 
 

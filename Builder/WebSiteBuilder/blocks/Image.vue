@@ -2,7 +2,6 @@
     <div class="com" @mouseover="(event) => $onMouseover(event, block)"
         @mouseout="(event) => $onMouseout(event, block, form)" :id="block.id">
         <div>
-            {{ block }}
             <div class="head">
                 <div>
                     <label for="name">{{ block.attribute.label }}</label>
@@ -12,8 +11,11 @@
                 </div>
             </div>
             <!-- <Field as="input" type="img" name="name" class="component" :disabled="formBuilder.isEditMode"></Field> -->
-            <img name="name" :src="block.attribute.src" alt="Image" :disabled="formBuilder.isEditMode" />
-            <ErrorMessage name="name"></ErrorMessage>
+            <img name="image" :src="block.attribute.src" alt="Image" :style="{
+                width: block.attribute.widthValue != null ? block.attribute.widthValue + block.attribute.widthUnit : 'auto',
+                height: block.attribute.heightValue != null ? block.attribute.heightValue + block.attribute.heightUnit : 'auto'
+            }" />
+            <ErrorMessage name="image"></ErrorMessage>
         </div>
         <div class="box">
             <div class="sizing" @mousedown="startDrag">{{ block.size }}</div>
@@ -88,7 +90,8 @@ const onDelete = (id) => {
     display: flex;
     justify-content: space-between;
 }
-.head i{
+
+.head i {
     z-index: 30;
     position: relative;
 }
