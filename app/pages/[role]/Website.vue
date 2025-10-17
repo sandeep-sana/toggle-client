@@ -82,7 +82,7 @@ const deleteForm = async (deleteForm) => {
             _id: form._id,
         }
         const response = await api.delete(`${config.public.API}/form/delete`, {
-            
+
         });
         if (response.status === STATUS.OK) {
             $toast.success(response.data.message);
@@ -94,22 +94,26 @@ const deleteForm = async (deleteForm) => {
     }
 }
 
-const closeForm = () => {
+const closeForm = async() => {
     form.isShow = false
-    form.blocks=[];
+    form.blocks = [];
     form.name = 'Draft1';
     delete form._id;
+    await saveForm();
+
 }
 
 watch(
-    () => form,
-    async (newBlocks, oldBlocks) => {
-        if(form.isShow){
-            await saveForm();
-        }
-    },
-    { deep: true }
+  () => form, // Watch only the 'isShow' property
+  async (newValue, oldValue) => {
+    if (newValue) {
+      // When form.isShow is true, call saveForm()
+      await saveForm();
+    }
+  },
+  { deep: true } // Deep watch to detect changes within the nested form object if needed
 );
+
 
 
 const saveForm = async () => {
@@ -127,6 +131,8 @@ const saveForm = async () => {
             const projection = {
                 ...form,
             }
+            delete projection.attribute;
+            delete projection.style;
             const options = {
                 new: true,
                 upsert: true,
@@ -140,15 +146,15 @@ const saveForm = async () => {
             if (response.status === STATUS.OK) {
                 form._id = response.data.form._id;
                 forms.value = forms.value.map(form => {
-                    if(form._id == response.data.form._id ){
+                    if (form._id == response.data.form._id) {
                         return response.data.form;
-                    }else{
+                    } else {
                         return form;
                     }
                 })
                 // $toast.success(response.data.message);
                 // $speak(response.data.message);
-            }else if(response.status === STATUS.CREATED){
+            } else if (response.status === STATUS.CREATED) {
                 form._id = response.data.form._id;
                 forms.value.push(response.data.form);
             }

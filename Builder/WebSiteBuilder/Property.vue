@@ -43,6 +43,7 @@
     </div>
 
     <!-- src -->
+<<<<<<< Updated upstream
     <!-- <div v-if="'src' in form.attribute" class="property">
         <label for="src">Src</label>
         <Field class="field" as="input" type="file" v-model="form.attribute.src"></Field>
@@ -52,7 +53,40 @@
         <label for="src">Src</label>
         <input class="field" type="file" @change="onFileChange" />
         <ErrorMessage name="src" />
+=======
+    <div v-if="'src' in form.attribute" class="property flex flex-col gap-2">
+    <label for="src">Take or Upload Photo</label>
+
+    <!-- Buttons -->
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary" v-tippy="`Upload Image`" @click="openFilePicker">📁</button>
+      <button class="btn btn-outline-success" v-tippy="`Use Camera`" @click="openCamera">📸</button>
+>>>>>>> Stashed changes
     </div>
+
+    <!-- Hidden File Input -->
+    <input
+      ref="fileInput"
+      type="file"
+      accept="image/*"
+      class="d-none"
+      @change="handleFileUpload"
+    />
+
+    <!-- Camera Modal -->
+    <div v-if="showCamera" class="camera-modal">
+      <video ref="videoRef" autoplay playsinline></video>
+      <button class="btn btn-danger mt-2" @click="capturePhoto">Capture</button>
+      <button class="btn btn-secondary mt-2" @click="closeCamera">Close</button>
+    </div>
+
+    <!-- Preview -->
+    <div v-if="form.attribute.src" class="mt-3">
+      <img :src="form.attribute.src" alt="Preview" width="200" />
+    </div>
+  </div>
+
+
 
     <h3>Style</h3>
 
@@ -325,6 +359,63 @@ const onFileChange = (event) => {
 };
 
 
+// ========== CAMERA AND UPLOAD SECTION ==========
+const fileInput = ref(null);
+const showCamera = ref(false);
+const videoRef = ref(null);
+let stream = null;
+
+// 📁 Upload from System
+const openFilePicker = () => {
+  fileInput.value?.click();
+};
+
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const base64 = e.target.result;
+    form.attribute.src = base64; // ✅ store base64 string
+  };
+  reader.readAsDataURL(file);
+};
+
+// 📸 Camera Capture
+const openCamera = async () => {
+  try {
+    showCamera.value = true;
+    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    videoRef.value.srcObject = stream;
+  } catch (err) {
+    alert('Unable to access camera. Please allow permissions.');
+  }
+};
+
+const capturePhoto = () => {
+  const canvas = document.createElement('canvas');
+  canvas.width = videoRef.value.videoWidth;
+  canvas.height = videoRef.value.videoHeight;
+  const context = canvas.getContext('2d');
+  context.drawImage(videoRef.value, 0, 0);
+  const base64 = canvas.toDataURL('image/png'); // ✅ base64 format
+  form.attribute.src = base64; // ✅ store base64 string
+  closeCamera();
+};
+
+const closeCamera = () => {
+  if (stream) {
+    stream.getTracks().forEach((t) => t.stop());
+    stream = null;
+  }
+  showCamera.value = false;
+};
+
+onBeforeUnmount(() => closeCamera());
+
+
+
 </script>
 
 <style scoped>
@@ -346,5 +437,20 @@ const onFileChange = (event) => {
     background-color: var(--background-color-two);
     padding: 10px;
     width: 80%;
+}
+
+.camera-modal {
+  position: relative;
+  border: 2px solid #ccc;
+  padding: 10px;
+  margin-top: 10px;
+  width: fit-content;
+}
+video {
+  width: 250px;
+  border-radius: 10px;
+}
+.d-none {
+  display: none;
 }
 </style>

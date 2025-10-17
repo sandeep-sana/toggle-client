@@ -2,7 +2,6 @@
     <div class="com" @mouseover="(event) => $onMouseover(event, block)"
         @mouseout="(event) => $onMouseout(event, block, form)" :id="block.id">
         <div>
-            {{ block }}
             <div class="head">
                 <div>
                     <label for="name">{{ block.attribute.label }}</label>
