@@ -80,7 +80,11 @@ export const FORM_BUILDER = {
                 attribute:{
                     size: 12,
                     label: 'Image',
+                    src: null,
                 },
+                style:{
+                    fontWeight: null,
+                }
             },
             // { is: 'TextInput', size: 12, label: 'Link', description: 'HTML <a> tag', icon: 'ri-link' },
         ],

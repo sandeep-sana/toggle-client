@@ -1,14 +1,15 @@
 <template>
+    <h3>Attribute</h3>
 
     <!-- Label -->
-    <div class="property">
+    <div v-if="form?.attribute?.label" class="property">
         <label for="label">Label</label>
         <Field class="field" as="input" type="text" v-model="form.attribute.label"></Field>
         <ErrorMessage name="name"></ErrorMessage>
     </div>
 
     <!-- Size -->
-    <div class="property">
+    <div v-if="form?.attribute?.size" class="property">
         <label for="size">Size</label>
         <Field class="field" as="select" v-model="form.attribute.size">
             <option :value="1">1</option>
@@ -28,7 +29,7 @@
     </div>
 
     <!-- headingType -->
-    <div v-if="form.attribute.headingType" class="property">
+    <div v-if="form?.attribute?.headingType" class="property">
         <label for="headingType">Heading Type</label>
         <Field class="field" as="select" v-model="form.attribute.headingType">
             <option value="h1">H1</option>
@@ -41,8 +42,17 @@
         <ErrorMessage name="name"></ErrorMessage>
     </div>
 
+    <!-- src -->
+    <div v-if="'src' in form.attribute" class="property">
+        <label for="src">Src</label>
+        <Field class="field" as="input" type="file" v-model="form.attribute.src"></Field>
+        <ErrorMessage name="src"></ErrorMessage>
+    </div>
+
+    <h3>Style</h3>
+
     <!-- Text Align -->
-    <div class="property">
+    <div v-if="form?.style?.textAlign" class="property">
         <label for="textAlign">Text Align</label>
         <Field class="field" as="select" v-model="form.style.textAlign">
             <option value="center">Center</option>
@@ -54,7 +64,7 @@
     </div>
 
     <!-- Font Weight -->
-    <div class="property">
+    <div v-if="'fontWeight' in form.style" class="property">
         <label for="fontWeight">Font Weight</label>
         <Field class="field" as="select" v-model="form.style.fontWeight">
             <option :value="100">100</option>
@@ -75,106 +85,106 @@
     </div>
 
     <!-- Margin -->
-    <div class="property">
+    <div v-if="form?.style?.margin" class="property">
         <label for="margin">Margin</label>
         <Field class="field" as="select" v-model="form.style.margin" @change="margin">
             <option value="">None</option>
             <option value="inherit">inherit</option>
         </Field>
         <ErrorMessage name="margin"></ErrorMessage>
-    </div>
-
-    <template v-if="!['inherit'].includes(form.style.margin)">
-        <!-- Margin Left -->
-        <div class="property">
-            <label for="marginLeft">Margin Left</label>
-            <Field class="field" as="select" v-model="form.style.marginLeftType" @change="marginLeftType">
-                <option value="">None</option>
-                <option value="auto">auto</option>
-                <option value="custom">custom</option>
-            </Field>
-            <template v-if="['custom'].includes(form.style.marginLeftType)">
-                <Field class="field" as="input" type="number" v-model="form.style.marginLeftValue"
-                    @change="marginLeftValue"></Field>
-                <Field class="field" as="select" v-model="form.style.marginLeftUnit" @change="marginLeftValue">
+        <template v-if="!['inherit'].includes(form.style.margin)">
+            <!-- Margin Left -->
+            <div class="property">
+                <label for="marginLeft">Margin Left</label>
+                <Field class="field" as="select" v-model="form.style.marginLeftType" @change="marginLeftType">
+                    <option value="">None</option>
+                    <option value="auto">auto</option>
+                    <option value="custom">custom</option>
+                </Field>
+                <template v-if="['custom'].includes(form.style.marginLeftType)">
+                    <Field class="field" as="input" type="number" v-model="form.style.marginLeftValue"
+                        @change="marginLeftValue"></Field>
+                    <Field class="field" as="select" v-model="form.style.marginLeftUnit" @change="marginLeftValue">
+                        <option value="px">px</option>
+                        <option value="rem">rem</option>
+                        <option value="em">em</option>
+                        <option value="%">percentage</option>
+                    </Field>
+                </template>
+                <!-- <Field class="field" as="input" type="number" v-model="form.style.marginLeftValue"></Field>
+                <ErrorMessage name="marginLeft"></ErrorMessage>
+                <select v-model="form.style.marginLeftUnit" class="unit-select">
                     <option value="px">px</option>
                     <option value="rem">rem</option>
                     <option value="em">em</option>
                     <option value="%">percentage</option>
-                </Field>
-            </template>
-            <!-- <Field class="field" as="input" type="number" v-model="form.style.marginLeftValue"></Field>
-            <ErrorMessage name="marginLeft"></ErrorMessage>
-            <select v-model="form.style.marginLeftUnit" class="unit-select">
-                <option value="px">px</option>
-                <option value="rem">rem</option>
-                <option value="em">em</option>
-                <option value="%">percentage</option>
-                <option value="auto">auto</option>
-                <option value="inherit">inherit</option>
-            </select> -->
-        </div>
-
-        <!-- Margin Right -->
-         <div class="property">
-            <label for="marginRight">Margin Right</label>
-            <Field class="field" as="select" v-model="form.style.marginRightType" @change="marginRightType">
-                <option value="">None</option>
-                <option value="auto">auto</option>
-                <option value="custom">custom</option>
-            </Field>
-            <template v-if="['custom'].includes(form.style.marginRightType)">
-                <Field class="field" as="input" type="number" v-model="form.style.marginRightValue"
-                    @change="marginRightValue"></Field>
-                <Field class="field" as="select" v-model="form.style.marginRightUnit" @change="marginRightValue">
-                    <option value="px">px</option>
-                    <option value="rem">rem</option>
-                    <option value="em">em</option>
-                    <option value="%">percentage</option>
-                </Field>
-            </template>
+                    <option value="auto">auto</option>
+                    <option value="inherit">inherit</option>
+                </select> -->
             </div>
 
-        <!-- Margin Top -->
-        <div class="property">
-           <label for="marginTop">Margin Top</label>
-            <Field class="field" as="select" v-model="form.style.marginTopType" @change="marginTopType">
-                <option value="">None</option>
-                <option value="auto">auto</option>
-                <option value="custom">custom</option>
-            </Field>
-            <template v-if="['custom'].includes(form.style.marginTopType)">
-                <Field class="field" as="input" type="number" v-model="form.style.marginTopValue"
-                    @change="marginTopValue"></Field>
-                <Field class="field" as="select" v-model="form.style.marginTopUnit" @change="marginTopValue">
-                    <option value="px">px</option>
-                    <option value="rem">rem</option>
-                    <option value="em">em</option>
-                    <option value="%">percentage</option>
+            <!-- Margin Right -->
+            <div class="property">
+                <label for="marginRight">Margin Right</label>
+                <Field class="field" as="select" v-model="form.style.marginRightType" @change="marginRightType">
+                    <option value="">None</option>
+                    <option value="auto">auto</option>
+                    <option value="custom">custom</option>
                 </Field>
-            </template>
-        </div>
+                <template v-if="['custom'].includes(form.style.marginRightType)">
+                    <Field class="field" as="input" type="number" v-model="form.style.marginRightValue"
+                        @change="marginRightValue"></Field>
+                    <Field class="field" as="select" v-model="form.style.marginRightUnit" @change="marginRightValue">
+                        <option value="px">px</option>
+                        <option value="rem">rem</option>
+                        <option value="em">em</option>
+                        <option value="%">percentage</option>
+                    </Field>
+                </template>
+            </div>
 
-        <!-- Margin Bottom -->
-        <div class="property">
-             <label for="marginBottom">Margin Bottom</label>
-            <Field class="field" as="select" v-model="form.style.marginBottomType" @change="marginBottomType">
-                <option value="">None</option>
-                <option value="auto">auto</option>
-                <option value="custom">custom</option>
-            </Field>
-            <template v-if="['custom'].includes(form.style.marginBottomType)">
-                <Field class="field" as="input" type="number" v-model="form.style.marginBottomValue"
-                    @change="marginBottomValue"></Field>
-                <Field class="field" as="select" v-model="form.style.marginBottomUnit" @change="marginBottomValue">
-                    <option value="px">px</option>
-                    <option value="rem">rem</option>
-                    <option value="em">em</option>
-                    <option value="%">percentage</option>
+            <!-- Margin Top -->
+            <div class="property">
+                <label for="marginTop">Margin Top</label>
+                <Field class="field" as="select" v-model="form.style.marginTopType" @change="marginTopType">
+                    <option value="">None</option>
+                    <option value="auto">auto</option>
+                    <option value="custom">custom</option>
                 </Field>
-            </template>
-             </div>
-    </template>
+                <template v-if="['custom'].includes(form.style.marginTopType)">
+                    <Field class="field" as="input" type="number" v-model="form.style.marginTopValue"
+                        @change="marginTopValue"></Field>
+                    <Field class="field" as="select" v-model="form.style.marginTopUnit" @change="marginTopValue">
+                        <option value="px">px</option>
+                        <option value="rem">rem</option>
+                        <option value="em">em</option>
+                        <option value="%">percentage</option>
+                    </Field>
+                </template>
+            </div>
+
+            <!-- Margin Bottom -->
+            <div class="property">
+                <label for="marginBottom">Margin Bottom</label>
+                <Field class="field" as="select" v-model="form.style.marginBottomType" @change="marginBottomType">
+                    <option value="">None</option>
+                    <option value="auto">auto</option>
+                    <option value="custom">custom</option>
+                </Field>
+                <template v-if="['custom'].includes(form.style.marginBottomType)">
+                    <Field class="field" as="input" type="number" v-model="form.style.marginBottomValue"
+                        @change="marginBottomValue"></Field>
+                    <Field class="field" as="select" v-model="form.style.marginBottomUnit" @change="marginBottomValue">
+                        <option value="px">px</option>
+                        <option value="rem">rem</option>
+                        <option value="em">em</option>
+                        <option value="%">percentage</option>
+                    </Field>
+                </template>
+            </div>
+        </template>
+    </div>
+
 
 
 
