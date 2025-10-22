@@ -1,15 +1,16 @@
 <template>
-    <div class="com" @mouseover="(event) => $onMouseover(event, block)"
-        @mouseout="(event) => $onMouseout(event, block, form)" :id="block.id">
+    <div class="com" @mouseover="(event) => onMouseover(event)"
+        @mouseout="(event) => onMouseout(event)" :id="block.id">
         <div>
             <div class="head">
-                    <component :is="block.attribute.headingType" for="name" :style="block.style" class="w-100">{{ block.attribute.label }}</component>
-                <div>
+                <component :is="block.attribute.headingType" for="name" :style="block.style" class="w-100">{{
+                    block.attribute.label }}</component>
+                <div v-if="websiteBuilder.isEditMode">
                     <i class="ri-close-fill" @click="onDelete(block.id)"></i>
                 </div>
             </div>
         </div>
-        <div class="box">
+        <div v-if="websiteBuilder.isEditMode" class="box">
             <div class="sizing" @mousedown="startDrag">{{ block.attribute.size }}</div>
         </div>
     </div>
@@ -26,13 +27,13 @@ const { $onMouseover, $onMouseout, $speak, $onDragleave, $onDrop } = useNuxtApp(
 
 const props = defineProps({
     block: { type: Object },
-    formBuilder: { type: Object },
-    form: { type: Object },
+    websiteBuilder: { type: Object },
+    website: { type: Object },
 })
 
 const block = reactive(props.block);
-const form = reactive(props.form);
-// const formBuilder = reactive(props.formBuilder);
+const website = reactive(props.website);
+const websiteBuilder = reactive(props.websiteBuilder);
 
 let startX = 0;
 let isDragging = false;
@@ -73,8 +74,19 @@ onBeforeUnmount(() => {
 });
 
 const onDelete = (id) => {
-    form.blocks = form.blocks.filter(b => b.id != id);
+    website.blocks = website.blocks.filter(b => b.id != id);
     $speak(`${block.label} deleted`);
+}
+
+const onMouseover = (event) => {
+    if(websiteBuilder.isEditMode){
+        $onMouseover(event, block);
+    }
+}
+const onMouseout = (event) => {
+    if(websiteBuilder.isEditMode){
+        $onMouseout(event, block, website)
+    }
 }
 </script>
 <style scoped>
@@ -83,7 +95,8 @@ const onDelete = (id) => {
     justify-content: space-between;
     width: 100%;
 }
-.head i{
+
+.head i {
     z-index: 30;
     position: relative;
 }

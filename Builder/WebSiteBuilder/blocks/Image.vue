@@ -10,13 +10,8 @@
                     <i class="ri-close-fill" @click="onDelete(block.id)"></i>
                 </div>
             </div>
-            <!-- <Field as="input" type="img" name="name" class="component" :disabled="formBuilder.isEditMode"></Field> -->
-            <img name="image" :src="block.attribute.src" alt="Image" :style="{
-                width: form.style.width || 'auto',
-                height: form.style.height || 'auto',
-                maxWidth: '100%',
-                display: 'block'
-            }" />
+            <Field as="input" type="img" name="name" class="component" :disabled="formBuilder.isEditMode"></Field>
+            
             <ErrorMessage name="image"></ErrorMessage>
         </div>
         <div class="box">

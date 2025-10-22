@@ -1,42 +1,42 @@
 <template>
-    <!-- <Form @submit="handleSubmit"> -->
+    <!-- <website @submit="handleSubmit"> -->
         <div class="d-flex head">
-            <div class="form-name col-lg-2">
-                <Field class="field" as="input" type="text" v-model="form.name" name="name" placeholder="Name..."
+            <div class="website-name col-lg-2">
+                <Field class="field" as="input" type="text" v-model="website.name" name="name" placeholder="Name..."
                     rules="required"></Field>
                 <ErrorMessage name="name"></ErrorMessage>
             </div>
         </div>
-    <!-- </Form> -->
-    <div class="form-builder">
+    <!-- </website> -->
+    <div class="website-builder">
         <div class="left col-lg-2">
             <div class="block">
                 <Tools />
             </div>
         </div>
         <div class="editor-container" @dragover="(event) => $onDragover(event)"
-            @dragleave="(event) => $onDragleave(event)" @drop="(event) => $onDrop(event, form)">
+            @dragleave="(event) => $onDragleave(event)" @drop="(event) => $onDrop(event, website)">
             <div class="row">
-                <div v-for="(block, blockIndex) in form.blocks" :key="block.id"
+                <div v-for="(block, blockIndex) in website.blocks" :key="block.id"
                     :class="`position-relative col-lg-${block.attribute.size}`" @click="onProperty(block)">
                     <div draggable="true" @dragstart="(event) => $onDragStart(event, block, true, block.id)">
                         <div class="leyar left" @dragover="$onDragItHereover" @dragleave="$onDragItHereleave"
-                            @drop="(event) => $onDrop(event, form, blockIndex, blockIndex)">
+                            @drop="(event) => $onDrop(event, website, blockIndex, blockIndex)">
                             <div class="drag left">
                             </div>
                         </div>
                         <div class="leyar top" @dragover="$onDragItHereover" @dragleave="$onDragItHereleave"
-                            @drop="(event) => $onDrop(event, form, blockIndex)">
+                            @drop="(event) => $onDrop(event, website, blockIndex)">
                             <div class="drag top"></div>
                         </div>
-                        <component :is="components[block.is]" :block="block" :formBuilder="formBuilder" :form="form">
+                        <component :is="components[block.is]" :block="block" :websiteBuilder="websiteBuilder" :website="website">
                         </component>
                         <div class="leyar right" @dragover="$onDragItHereover" @dragleave="$onDragItHereleave"
-                            @drop="(event) => $onDrop(event, form, blockIndex + 1, blockIndex)">
+                            @drop="(event) => $onDrop(event, website, blockIndex + 1, blockIndex)">
                             <div class="drag right"></div>
                         </div>
                         <div class="leyar bottom" @dragover="$onDragItHereover" @dragleave="$onDragItHereleave"
-                            @drop="(event) => $onDrop(event, form, blockIndex + 1)">
+                            @drop="(event) => $onDrop(event, website, blockIndex + 1)">
                             <div class="drag bottom"></div>
                         </div>
                     </div>
@@ -44,10 +44,10 @@
             </div>
         </div>
         <div class="col-lg-3">
-            <Property v-if="form.attribute" :form="form" />
+            <Property v-if="website.attribute" :website="website" />
         </div>
     </div>
-    <pre>{{ form.blocks }}</pre>
+    <pre>{{ website.blocks }}</pre>
 </template>
 
 <script setup>
@@ -66,7 +66,7 @@ const config = useRuntimeConfig();
 const { $onDragover, $onDragleave, $onPropertyout, $speak, $toast, } = useNuxtApp();
 
 const props = defineProps({
-    form: { type: Object },
+    website: { type: Object },
 })
 
 const components = { 
@@ -75,36 +75,36 @@ const components = {
     Paragraph,
     TextInput, 
 };
-const formBuilder = reactive({
+const websiteBuilder = reactive({
     isEditMode: true,
 });
-const form = reactive(props.form);
+const website = reactive(props.website);
 
 const onProperty = (block) => {
-    if (form.attribute) {
-        // $onPropertyout(JSON.parse(JSON.stringify(form.attribute.id)));
+    if (website.attribute) {
+        // $onPropertyout(JSON.parse(JSON.stringify(website.attribute.id)));
     }
-    form.attribute = block.attribute;
-    form.style = block.style;
+    website.attribute = block.attribute;
+    website.style = block.style;
     $speak(`selected ${block.label}`);
 
 }
 
 // const handleSubmit = async () => {
 //     try {
-//         if (form.blocks.length) {
+//         if (website.blocks.length) {
 //             const query = {
-//                 _id: form._id,
+//                 _id: website._id,
 //             }
 //             const projection = {
-//                 ...form,
+//                 ...website,
 //             }
 //             const options = {
 //                 new: true,
 //                 upsert: true,
 //                 rawResult: true,
 //             }
-//             const response = await api.post(`${config.public.API}/form/update`, {
+//             const response = await api.post(`${config.public.API}/website/update`, {
 //                 query: JSON.stringify(query),
 //                 projection: JSON.stringify(projection),
 //                 options: JSON.stringify(options),
@@ -219,7 +219,7 @@ const onProperty = (block) => {
     background-color: var(--background-color-three);
 }
 
-.form-name .field {
+.website-name .field {
     border: 1px solid var(--border-color-one);
     border-radius: 10px;
     padding: 10px;
@@ -229,7 +229,7 @@ const onProperty = (block) => {
     width: 100%;
 }
 
-.form-builder {
+.website-builder {
     display: flex;
 }
 

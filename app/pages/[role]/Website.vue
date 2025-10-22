@@ -1,11 +1,11 @@
 <template>
-    <div class="form">
+    <div class="website">
         <div class="header">
             <div class="left">
                 <h1>Website</h1>
             </div>
             <div class="right">
-                <button type="button" v-tippy="`Website Builder`" @click="form.isShow = true"><i
+                <button type="button" v-tippy="`Website Builder`" @click="website.isShow = true"><i
                         class="ri-sticky-note-add-fill"></i></button>
             </div>
         </div>
@@ -18,13 +18,13 @@
                     <th>Action</th>
                 </thead>
                 <tbody>
-                    <tr v-for="form in forms">
-                        <td>{{ form.name }}</td>
-                        <td>{{ form.createdAt }}</td>
-                        <td>{{ form.updatedAt }}</td>
+                    <tr v-for="website in websites">
+                        <td>{{ website.name }}</td>
+                        <td>{{ website.createdAt }}</td>
+                        <td>{{ website.updatedAt }}</td>
                         <td>
-                            <button type="button" @click="editForm(form)"><i class="ri-pencil-fill"></i></button>
-                            <button type="button" @click="deleteForm(form)"><i
+                            <button type="button" @click="editWebsite(website)"><i class="ri-pencil-fill"></i></button>
+                            <button type="button" @click="deleteWebsite(website)"><i
                                     class="ri-delete-bin-6-fill"></i></button>
                         </td>
                     </tr>
@@ -33,20 +33,20 @@
             <!-- <div class="card">
                 <p>Name</p>
             </div>
-            <div class="card" v-for="form in forms">
-                <p>{{ form.name }}</p>
+            <div class="card" v-for="website in websites">
+                <p>{{ website.name }}</p>
             </div> -->
         </div>
     </div>
-    <Modal v-if="form.isShow">
+    <Modal v-if="website.isShow">
         <template #header>
             <h2 class="text-center text-xl font-bold text-primary">
                 <i class="fa fa-plus-circle"></i> Add Website
             </h2>
-            <button type="button" @click="closeForm"><i class="ri-close-fill"></i></button>
+            <button type="button" @click="closeWebsite"><i class="ri-close-fill"></i></button>
         </template>
         <template #body>
-            <WebsiteBuilder :form="form" />
+            <WebsiteBuilder :website="website" />
         </template>
     </Modal>
 </template>
@@ -59,77 +59,77 @@ import WebsiteBuilder from '../../../Builder/WebSiteBuilder/WebsiteBuilder.vue';
 import { STATUS } from '~~/constant';
 
 
-const form = reactive({
+const website = reactive({
     isShow: false,
     blocks: [],
     name: 'Draft1',
 })
-const forms = ref([]);
+const websites = ref([]);
 const config = useRuntimeConfig();
 const { $speak, $toast, } = useNuxtApp();
 
 
-const editForm = (editForm) => {
-    form.name = editForm.name;
-    form.blocks = editForm.blocks;
-    form.isShow = true;
-    form._id = editForm._id;
+const editWebsite = (editWebsite) => {
+    website.name = editWebsite.name;
+    website.blocks = editWebsite.blocks;
+    website.isShow = true;
+    website._id = editWebsite._id;
 }
 
-const deleteForm = async (deleteForm) => {
+const deleteWebsite = async (deleteWebsite) => {
     try {
         const query = {
-            _id: form._id,
+            _id: website._id,
         }
-        const response = await api.delete(`${config.public.API}/form/delete`, {
+        const response = await api.delete(`${config.public.API}/website/delete`, {
 
         });
         if (response.status === STATUS.OK) {
             $toast.success(response.data.message);
             $speak(response.data.message);
-            forms.value = forms.value.filter(form => form._id != deleteForm._id);
+            websites.value = websites.value.filter(website => website._id != deleteWebsite._id);
         }
     } catch (error) {
         console.log(error);
     }
 }
 
-const closeForm = async() => {
-    form.isShow = false
-    form.blocks = [];
-    form.name = 'Draft1';
-    delete form._id;
-    await saveForm();
+const closeWebsite = async() => {
+    website.isShow = false
+    website.blocks = [];
+    website.name = 'Draft1';
+    delete website._id;
+    await saveWebsite();
 
 }
 
 watch(
-  () => form, // Watch only the 'isShow' property
+  () => website, // Watch only the 'isShow' property
   async (newValue, oldValue) => {
     if (newValue) {
-      // When form.isShow is true, call saveForm()
-      await saveForm();
+      // When website.isShow is true, call saveWebsite()
+      await saveWebsite();
     }
   },
-  { deep: true } // Deep watch to detect changes within the nested form object if needed
+  { deep: true } // Deep watch to detect changes within the nested website object if needed
 );
 
 
 
-const saveForm = async () => {
+const saveWebsite = async () => {
     try {
-        if (!form.name) {
-            $toast.info('Form Name');
-            $speak('Form Name');
-        } else if (!form.blocks.length) {
+        if (!website.name) {
+            $toast.info('website Name');
+            $speak('website Name');
+        } else if (!website.blocks.length) {
             $toast.info('Please drag any field');
             $speak('Please drag any field');
         } else {
             const query = {
-                _id: form._id,
+                _id: website._id,
             }
             const projection = {
-                ...form,
+                ...website,
             }
             delete projection.attribute;
             delete projection.style;
@@ -138,25 +138,26 @@ const saveForm = async () => {
                 upsert: true,
                 rawResult: true,
             }
-            const response = await api.post(`${config.public.API}/form/update`, {
+            const response = await api.post(`${config.public.API}/website/update`, {
                 query: JSON.stringify(query),
                 projection: JSON.stringify(projection),
                 options: JSON.stringify(options),
             });
+            console.log(response)
             if (response.status === STATUS.OK) {
-                form._id = response.data.form._id;
-                forms.value = forms.value.map(form => {
-                    if (form._id == response.data.form._id) {
-                        return response.data.form;
+                website._id = response.data.website._id;
+                websites.value = websites.value.map(website => {
+                    if (website._id == response.data.website._id) {
+                        return response.data.website;
                     } else {
-                        return form;
+                        return website;
                     }
                 })
                 // $toast.success(response.data.message);
                 // $speak(response.data.message);
             } else if (response.status === STATUS.CREATED) {
-                form._id = response.data.form._id;
-                forms.value.push(response.data.form);
+                website._id = response.data.website._id;
+                websites.value.push(response.data.website);
             }
         }
     } catch (error) {
@@ -166,9 +167,9 @@ const saveForm = async () => {
 
 const init = async () => {
     try {
-        const response = await api.get(`${config.public.API}/form/fetchs`);
+        const response = await api.get(`${config.public.API}/website/fetchs`);
         if (response.status === STATUS.OK) {
-            forms.value = response.data.forms;
+            websites.value = response.data.websites;
         }
     } catch (error) {
         console.log(error);
@@ -181,7 +182,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.form {
+.website {
     width: 100%;
     padding: 10px;
 }
