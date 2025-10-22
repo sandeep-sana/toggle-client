@@ -12,8 +12,10 @@
             </div>
             <!-- <Field as="input" type="img" name="name" class="component" :disabled="formBuilder.isEditMode"></Field> -->
             <img name="image" :src="block.attribute.src" alt="Image" :style="{
-                width: block.attribute.widthValue != null ? block.attribute.widthValue + block.attribute.widthUnit : 'auto',
-                height: block.attribute.heightValue != null ? block.attribute.heightValue + block.attribute.heightUnit : 'auto'
+                width: form.style.width || 'auto',
+                height: form.style.height || 'auto',
+                maxWidth: '100%',
+                display: 'block'
             }" />
             <ErrorMessage name="image"></ErrorMessage>
         </div>

@@ -44,37 +44,31 @@
 
     <!-- src -->
     <div v-if="'src' in form.attribute" class="property flex flex-col gap-2">
-    <label for="src">Take or Upload Photo</label>
+        <label for="src">Take or Upload Photo</label>
 
-    <!-- Buttons -->
-    <div class="d-flex gap-2">
-      <button class="btn btn-outline-primary" v-tippy="`Upload Image`" @click="openFilePicker">📁</button>
-      <button class="btn btn-outline-success" v-tippy="`Use Camera`" @click="openCamera">📸</button>
+        <!-- Buttons -->
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" v-tippy="`Upload Image`" @click="openFilePicker">📁</button>
+            <button class="btn btn-outline-success" v-tippy="`Use Camera`" @click="openCamera">📸</button>
+        </div>
+        <!-- Width -->
+
+
+        <!-- Hidden File Input -->
+        <input ref="fileInput" type="file" accept="image/*" class="d-none" @change="handleFileUpload" />
+
+        <!-- Camera Modal -->
+        <div v-if="showCamera" class="camera-modal">
+            <video ref="videoRef" autoplay playsinline></video>
+            <button class="btn btn-danger mt-2" @click="capturePhoto">Capture</button>
+            <button class="btn btn-secondary mt-2" @click="closeCamera">Close</button>
+        </div>
+
+        <!-- Preview -->
+        <div v-if="form.attribute.src" class="mt-3">
+            <img :src="form.attribute.src" alt="Preview" />
+        </div>
     </div>
-    <!-- Width -->
-    
-
-    <!-- Hidden File Input -->
-    <input
-      ref="fileInput"
-      type="file"
-      accept="image/*"
-      class="d-none"
-      @change="handleFileUpload"
-    />
-
-    <!-- Camera Modal -->
-    <div v-if="showCamera" class="camera-modal">
-      <video ref="videoRef" autoplay playsinline></video>
-      <button class="btn btn-danger mt-2" @click="capturePhoto">Capture</button>
-      <button class="btn btn-secondary mt-2" @click="closeCamera">Close</button>
-    </div>
-
-    <!-- Preview -->
-    <div v-if="form.attribute.src" class="mt-3">
-      <img :src="form.attribute.src" alt="Preview" width="200" />
-    </div>
-  </div>
 
 
 
@@ -82,65 +76,65 @@
 
     <!-- Text Align -->
     <div v-if="form?.style?.textAlign" class="property">
-        <label for="textAlign">Text Align</label>
-        <Field class="field" as="select" v-model="form.style.textAlign">
-            <option value="center">Center</option>
-            <option value="right">right</option>
-            <option value="left">left</option>
-            <option value="justify">justify</option>
-        </Field>
-        <ErrorMessage name="name"></ErrorMessage>
-    </div>
+            <label for="textAlign">Text Align</label>
+            <Field class="field" as="select" v-model="form.style.textAlign">
+                <option value="center">Center</option>
+                <option value="right">right</option>
+                <option value="left">left</option>
+                <option value="justify">justify</option>
+            </Field>
+            <ErrorMessage name="name"></ErrorMessage>
+        </div>
 
-    <!-- Font Weight -->
-    <div v-if="'fontWeight' in form.style" class="property">
-        <label for="fontWeight">Font Weight</label>
-        <Field class="field" as="select" v-model="form.style.fontWeight">
-            <option :value="100">100</option>
-            <option :value="200">200</option>
-            <option :value="300">300</option>
-            <option :value="400">400</option>
-            <option :value="500">500</option>
-            <option :value="600">600</option>
-            <option :value="700">700</option>
-            <option :value="800">800</option>
-            <option :value="900">900</option>
-            <option value="normal">normal</option>
-            <option value="bold">bold</option>
-            <option value="bolder">bolder</option>
-            <option value="lighter">lighter</option>
-        </Field>
-        <ErrorMessage name="name"></ErrorMessage>
-    </div>
+        <!-- Font Weight -->
+        <div v-if="'fontWeight' in form.style" class="property">
+            <label for="fontWeight">Font Weight</label>
+            <Field class="field" as="select" v-model="form.style.fontWeight">
+                <option :value="100">100</option>
+                <option :value="200">200</option>
+                <option :value="300">300</option>
+                <option :value="400">400</option>
+                <option :value="500">500</option>
+                <option :value="600">600</option>
+                <option :value="700">700</option>
+                <option :value="800">800</option>
+                <option :value="900">900</option>
+                <option value="normal">normal</option>
+                <option value="bold">bold</option>
+                <option value="bolder">bolder</option>
+                <option value="lighter">lighter</option>
+            </Field>
+            <ErrorMessage name="name"></ErrorMessage>
+        </div>
 
-    <!-- Margin -->
-    <div v-if="form?.style?.margin" class="property">
-        <label for="margin">Margin</label>
-        <Field class="field" as="select" v-model="form.style.margin" @change="margin">
-            <option value="">None</option>
-            <option value="inherit">inherit</option>
-        </Field>
-        <ErrorMessage name="margin"></ErrorMessage>
-        <template v-if="!['inherit'].includes(form.style.margin)">
-            <!-- Margin Left -->
-            <div class="property">
-                <label for="marginLeft">Margin Left</label>
-                <Field class="field" as="select" v-model="form.style.marginLeftType" @change="marginLeftType">
-                    <option value="">None</option>
-                    <option value="auto">auto</option>
-                    <option value="custom">custom</option>
-                </Field>
-                <template v-if="['custom'].includes(form.style.marginLeftType)">
-                    <Field class="field" as="input" type="number" v-model="form.style.marginLeftValue"
-                        @change="marginLeftValue"></Field>
-                    <Field class="field" as="select" v-model="form.style.marginLeftUnit" @change="marginLeftValue">
-                        <option value="px">px</option>
-                        <option value="rem">rem</option>
-                        <option value="em">em</option>
-                        <option value="%">percentage</option>
+        <!-- Margin -->
+        <div v-if="form?.style?.margin" class="property">
+            <label for="margin">Margin</label>
+            <Field class="field" as="select" v-model="form.style.margin" @change="margin">
+                <option value="">None</option>
+                <option value="inherit">inherit</option>
+            </Field>
+            <ErrorMessage name="margin"></ErrorMessage>
+            <template v-if="!['inherit'].includes(form.style.margin)">
+                <!-- Margin Left -->
+                <div class="property">
+                    <label for="marginLeft">Margin Left</label>
+                    <Field class="field" as="select" v-model="form.style.marginLeftType" @change="marginLeftType">
+                        <option value="">None</option>
+                        <option value="auto">auto</option>
+                        <option value="custom">custom</option>
                     </Field>
-                </template>
-                <!-- <Field class="field" as="input" type="number" v-model="form.style.marginLeftValue"></Field>
+                    <template v-if="['custom'].includes(form.style.marginLeftType)">
+                        <Field class="field" as="input" type="number" v-model="form.style.marginLeftValue"
+                            @change="marginLeftValue"></Field>
+                        <Field class="field" as="select" v-model="form.style.marginLeftUnit" @change="marginLeftValue">
+                            <option value="px">px</option>
+                            <option value="rem">rem</option>
+                            <option value="em">em</option>
+                            <option value="%">percentage</option>
+                        </Field>
+                    </template>
+                    <!-- <Field class="field" as="input" type="number" v-model="form.style.marginLeftValue"></Field>
                 <ErrorMessage name="marginLeft"></ErrorMessage>
                 <select v-model="form.style.marginLeftUnit" class="unit-select">
                     <option value="px">px</option>
@@ -150,90 +144,111 @@
                     <option value="auto">auto</option>
                     <option value="inherit">inherit</option>
                 </select> -->
-            </div>
+                </div>
 
-            <!-- Margin Right -->
-            <div class="property">
-                <label for="marginRight">Margin Right</label>
-                <Field class="field" as="select" v-model="form.style.marginRightType" @change="marginRightType">
-                    <option value="">None</option>
-                    <option value="auto">auto</option>
-                    <option value="custom">custom</option>
-                </Field>
-                <template v-if="['custom'].includes(form.style.marginRightType)">
-                    <Field class="field" as="input" type="number" v-model="form.style.marginRightValue"
-                        @change="marginRightValue"></Field>
-                    <Field class="field" as="select" v-model="form.style.marginRightUnit" @change="marginRightValue">
-                        <option value="px">px</option>
-                        <option value="rem">rem</option>
-                        <option value="em">em</option>
-                        <option value="%">percentage</option>
+                <!-- Margin Right -->
+                <div class="property">
+                    <label for="marginRight">Margin Right</label>
+                    <Field class="field" as="select" v-model="form.style.marginRightType" @change="marginRightType">
+                        <option value="">None</option>
+                        <option value="auto">auto</option>
+                        <option value="custom">custom</option>
                     </Field>
-                </template>
-            </div>
+                    <template v-if="['custom'].includes(form.style.marginRightType)">
+                        <Field class="field" as="input" type="number" v-model="form.style.marginRightValue"
+                            @change="marginRightValue"></Field>
+                        <Field class="field" as="select" v-model="form.style.marginRightUnit"
+                            @change="marginRightValue">
+                            <option value="px">px</option>
+                            <option value="rem">rem</option>
+                            <option value="em">em</option>
+                            <option value="%">percentage</option>
+                        </Field>
+                    </template>
+                </div>
 
-            <!-- Margin Top -->
-            <div class="property">
-                <label for="marginTop">Margin Top</label>
-                <Field class="field" as="select" v-model="form.style.marginTopType" @change="marginTopType">
-                    <option value="">None</option>
-                    <option value="auto">auto</option>
-                    <option value="custom">custom</option>
-                </Field>
-                <template v-if="['custom'].includes(form.style.marginTopType)">
-                    <Field class="field" as="input" type="number" v-model="form.style.marginTopValue"
-                        @change="marginTopValue"></Field>
-                    <Field class="field" as="select" v-model="form.style.marginTopUnit" @change="marginTopValue">
-                        <option value="px">px</option>
-                        <option value="rem">rem</option>
-                        <option value="em">em</option>
-                        <option value="%">percentage</option>
+                <!-- Margin Top -->
+                <div class="property">
+                    <label for="marginTop">Margin Top</label>
+                    <Field class="field" as="select" v-model="form.style.marginTopType" @change="marginTopType">
+                        <option value="">None</option>
+                        <option value="auto">auto</option>
+                        <option value="custom">custom</option>
                     </Field>
-                </template>
-            </div>
+                    <template v-if="['custom'].includes(form.style.marginTopType)">
+                        <Field class="field" as="input" type="number" v-model="form.style.marginTopValue"
+                            @change="marginTopValue"></Field>
+                        <Field class="field" as="select" v-model="form.style.marginTopUnit" @change="marginTopValue">
+                            <option value="px">px</option>
+                            <option value="rem">rem</option>
+                            <option value="em">em</option>
+                            <option value="%">percentage</option>
+                        </Field>
+                    </template>
+                </div>
 
-            <!-- Margin Bottom -->
-            <div class="property">
-                <label for="marginBottom">Margin Bottom</label>
-                <Field class="field" as="select" v-model="form.style.marginBottomType" @change="marginBottomType">
-                    <option value="">None</option>
-                    <option value="auto">auto</option>
-                    <option value="custom">custom</option>
-                </Field>
-                <template v-if="['custom'].includes(form.style.marginBottomType)">
-                    <Field class="field" as="input" type="number" v-model="form.style.marginBottomValue"
-                        @change="marginBottomValue"></Field>
-                    <Field class="field" as="select" v-model="form.style.marginBottomUnit" @change="marginBottomValue">
-                        <option value="px">px</option>
-                        <option value="rem">rem</option>
-                        <option value="em">em</option>
-                        <option value="%">percentage</option>
+                <!-- Margin Bottom -->
+                <div class="property">
+                    <label for="marginBottom">Margin Bottom</label>
+                    <Field class="field" as="select" v-model="form.style.marginBottomType" @change="marginBottomType">
+                        <option value="">None</option>
+                        <option value="auto">auto</option>
+                        <option value="custom">custom</option>
                     </Field>
-                </template>
-            </div>
-        </template>
-    </div>
+                    <template v-if="['custom'].includes(form.style.marginBottomType)">
+                        <Field class="field" as="input" type="number" v-model="form.style.marginBottomValue"
+                            @change="marginBottomValue"></Field>
+                        <Field class="field" as="select" v-model="form.style.marginBottomUnit"
+                            @change="marginBottomValue">
+                            <option value="px">px</option>
+                            <option value="rem">rem</option>
+                            <option value="em">em</option>
+                            <option value="%">percentage</option>
+                        </Field>
+                    </template>
+                </div>
+            </template>
+        </div>
 
-    <div class="property">
-        <label for="width">Width</label>
-        <Field class="field" as="input" type="number" v-model="form.attribute.widthValue" placeholder="Enter width" />
-        <select v-model="form.attribute.widthUnit" class="unit-select">
-            <option value="px">px</option>
-            <option value="rem">rem</option>
-            <option value="%">%</option>
-        </select>
-    </div>
-    <div class="property">
+        <!-- Height -->
+        <div class="property">
+            <label for="height">Height</label>
+            <Field class="field" as="select" v-model="form.style.heightType" @change="heightType">
+                <option value="">None</option>
+                <option value="auto">auto</option>
+                <option value="custom">custom</option>
+            </Field>
 
-    <!-- Height -->
-        <label for="height">Height</label>
-        <Field class="field" as="input" type="number" v-model="form.attribute.heightValue" placeholder="Enter height" />
-        <select v-model="form.attribute.heightUnit" class="unit-select">
-            <option value="px">px</option>
-            <option value="rem">rem</option>
-            <option value="%">%</option>
-        </select>
-    </div>
+            <template v-if="form.style.heightType === 'custom'">
+                <Field class="field" as="input" type="number" v-model="form.style.heightValue"
+                    placeholder="Enter height" @change="heightValue" />
+                <Field class="field" as="select" v-model="form.style.heightUnit" @change="heightValue">
+                    <option value="px">px</option>
+                    <option value="rem">rem</option>
+                    <option value="%">%</option>
+                </Field>
+            </template>
+        </div>
+
+        <!-- Width -->
+        <div class="property">
+            <label for="width">Width</label>
+            <Field class="field" as="select" v-model="form.style.widthType" @change="widthType">
+                <option value="">None</option>
+                <option value="auto">auto</option>
+                <option value="custom">custom</option>
+            </Field>
+
+            <template v-if="form.style.widthType === 'custom'">
+                <Field class="field" as="input" type="number" v-model="form.style.widthValue" placeholder="Enter width"
+                    @change="widthValue" />
+                <Field class="field" as="select" v-model="form.style.widthUnit" @change="widthValue">
+                    <option value="px">px</option>
+                    <option value="rem">rem</option>
+                    <option value="%">%</option>
+                </Field>
+            </template>
+        </div>
 
 
 
@@ -248,6 +263,44 @@ const props = defineProps({
 })
 
 const form = reactive(props.form);
+
+const widthType = () => {
+    if (form.style.widthType === 'auto') {
+        if (form.style?.widthValue) {
+            form.style.widthValue = null;
+        }
+        if (form.style?.widthUnit) {
+            form.style.widthUnit = null;
+        }
+    }
+    form.style.width = form.style.widthType;
+};
+
+const widthValue = () => {
+    if (form.style?.widthValue && form.style?.widthUnit) {
+        form.style.width = form.style.widthValue + form.style.widthUnit;
+    }
+};
+
+
+const heightType = () => {
+    if (form.style.heightType === 'auto') {
+        if (form.style?.heightValue) {
+            form.style.heightValue = null;
+        }
+        if (form.style?.heightUnit) {
+            form.style.heightUnit = null;
+        }
+    }
+    form.style.height = form.style.heightType;
+};
+
+const heightValue = () => {
+    if (form.style?.heightValue && form.style?.heightUnit) {
+        form.style.height = form.style.heightValue + form.style.heightUnit;
+    }
+};
+
 
 const margin = () => {
     if (['inherit'].includes(form.style.margin)) {
@@ -367,49 +420,49 @@ let stream = null;
 
 // 📁 Upload from System
 const openFilePicker = () => {
-  fileInput.value?.click();
+    fileInput.value?.click();
 };
 
 const handleFileUpload = (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
+    const file = event.target.files[0];
+    if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const base64 = e.target.result;
-    form.attribute.src = base64; // ✅ store base64 string
-  };
-  reader.readAsDataURL(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const base64 = e.target.result;
+        form.attribute.src = base64; // ✅ store base64 string
+    };
+    reader.readAsDataURL(file);
 };
 
 // 📸 Camera Capture
 const openCamera = async () => {
-  try {
-    showCamera.value = true;
-    stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    videoRef.value.srcObject = stream;
-  } catch (err) {
-    alert('Unable to access camera. Please allow permissions.');
-  }
+    try {
+        showCamera.value = true;
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        videoRef.value.srcObject = stream;
+    } catch (err) {
+        alert('Unable to access camera. Please allow permissions.');
+    }
 };
 
 const capturePhoto = () => {
-  const canvas = document.createElement('canvas');
-  canvas.width = videoRef.value.videoWidth;
-  canvas.height = videoRef.value.videoHeight;
-  const context = canvas.getContext('2d');
-  context.drawImage(videoRef.value, 0, 0);
-  const base64 = canvas.toDataURL('image/png'); // ✅ base64 format
-  form.attribute.src = base64; // ✅ store base64 string
-  closeCamera();
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRef.value.videoWidth;
+    canvas.height = videoRef.value.videoHeight;
+    const context = canvas.getContext('2d');
+    context.drawImage(videoRef.value, 0, 0);
+    const base64 = canvas.toDataURL('image/png'); // ✅ base64 format
+    form.attribute.src = base64; // ✅ store base64 string
+    closeCamera();
 };
 
 const closeCamera = () => {
-  if (stream) {
-    stream.getTracks().forEach((t) => t.stop());
-    stream = null;
-  }
-  showCamera.value = false;
+    if (stream) {
+        stream.getTracks().forEach((t) => t.stop());
+        stream = null;
+    }
+    showCamera.value = false;
 };
 
 onBeforeUnmount(() => closeCamera());
@@ -440,17 +493,19 @@ onBeforeUnmount(() => closeCamera());
 }
 
 .camera-modal {
-  position: relative;
-  border: 2px solid #ccc;
-  padding: 10px;
-  margin-top: 10px;
-  width: fit-content;
+    position: relative;
+    border: 2px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+    width: fit-content;
 }
+
 video {
-  width: 250px;
-  border-radius: 10px;
+    width: 250px;
+    border-radius: 10px;
 }
+
 .d-none {
-  display: none;
+    display: none;
 }
 </style>
