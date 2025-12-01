@@ -1,5 +1,5 @@
 <template>
-    <div class="form">
+    <div class="task">
         <div class="header">
             <div class="left">
                 <h1>Tasks</h1>
@@ -17,13 +17,13 @@
                     <th>Action</th>
                 </thead>
                 <tbody>
-                    <tr v-for="form in forms">
-                        <td>{{ form.name }}</td>
-                        <td>{{ form.createdAt }}</td>
-                        <td>{{ form.updatedAt }}</td>
+                    <tr v-for="task in tasks">
+                        <td>{{ task.name }}</td>
+                        <td>{{ task.createdAt }}</td>
+                        <td>{{ task.updatedAt }}</td>
                         <td>
-                            <button type="button" @click="editForm(form)"><i class="ri-pencil-fill"></i></button>
-                            <button type="button" @click="deleteForm(form)"><i
+                            <button type="button" @click="edittask(task)"><i class="ri-pencil-fill"></i></button>
+                            <button type="button" @click="deletetask(task)"><i
                                     class="ri-delete-bin-6-fill"></i></button>
                         </td>
                     </tr>
@@ -32,8 +32,8 @@
             <!-- <div class="card">
                 <p>Name</p>
             </div>
-            <div class="card" v-for="form in forms">
-                <p>{{ form.name }}</p>
+            <div class="card" v-for="task in tasks">
+                <p>{{ task.name }}</p>
             </div> -->
         </div>
     </div>
@@ -42,7 +42,7 @@
             <h2 class="text-center text-xl font-bold text-primary">
                 <i class="fa fa-plus-circle"></i> Add Task
             </h2>
-            <button type="button" @click="closeForm"><i class="ri-close-fill"></i></button>
+            <button type="button" @click="closetask"><i class="ri-close-fill"></i></button>
         </template>
         <template #body>
             <TaskBuilder :task="task" />
@@ -62,38 +62,37 @@ const task = reactive({
     isShow: false,
     name: 'Draft1',
 })
-const forms = ref([]);
 const tasks = ref([]);
 const config = useRuntimeConfig();
 const { $speak, $toast, } = useNuxtApp();
 
 
-const editForm = (editForm) => {
-    task.name = editForm.name;
-    task.blocks = editForm.blocks;
+const edittask = (edittask) => {
+    task.name = edittask.name;
+    task.blocks = edittask.blocks;
     task.isShow = true;
-    task._id = editForm._id;
+    task._id = edittask._id;
 }
 
-const deleteForm = async (deleteForm) => {
+const deletetask = async (deletetask) => {
     try {
         const query = {
             _id: task._id,
         }
-        const response = await api.delete(`${config.public.API}/form/delete`, {
+        const response = await api.delete(`${config.public.API}/task/delete`, {
             
         });
         if (response.status === STATUS.OK) {
             $toast.success(response.data.message);
             $speak(response.data.message);
-            forms.value = forms.value.filter(form => form._id != deleteForm._id);
+            tasks.value = tasks.value.filter(task => task._id != deletetask._id);
         }
     } catch (error) {
         console.log(error);
     }
 }
 
-const closeForm = () => {
+const closetask = () => {
     task.isShow = false
     task.blocks=[];
     task.name = 'Draft1';
@@ -114,8 +113,8 @@ watch(
 const saveTask = async () => {
     try {
         if (!task.name) {
-            $toast.info('Form Name');
-            $speak('Form Name');
+            $toast.info('task Name');
+            $speak('task Name');
         } else {
             const query = {
                 _id: task._id,
@@ -135,7 +134,7 @@ const saveTask = async () => {
             });
             if (response.status === STATUS.OK) {
                 task._id = response.data.task._id;
-                forms.value = forms.value.map(task => {
+                tasks.value = tasks.value.map(task => {
                     if(task._id == response.data.task._id ){
                         return response.data.task;
                     }else{
@@ -146,7 +145,7 @@ const saveTask = async () => {
                 // $speak(response.data.message);
             }else if(response.status === STATUS.CREATED){
                 task._id = response.data.task._id;
-                forms.value.push(response.data.task);
+                tasks.value.push(response.data.task);
             }
         }
     } catch (error) {
@@ -156,9 +155,9 @@ const saveTask = async () => {
 
 const init = async () => {
     try {
-        const response = await api.get(`${config.public.API}/form/fetchs`);
+        const response = await api.get(`${config.public.API}/task/fetchs`);
         if (response.status === STATUS.OK) {
-            forms.value = response.data.forms;
+            tasks.value = response.data.tasks;
         }
     } catch (error) {
         console.log(error);
@@ -171,7 +170,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.form {
+.task {
     width: 100%;
     padding: 10px;
 }
