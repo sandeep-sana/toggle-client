@@ -2,11 +2,11 @@ export const FORM_BUILDER = {
     TOOLS: {
         FIELDS: [
             { is: 'TextInput', size:12, label: 'Text input', description: 'Single line text input', icon: 'ri-text' },
-            { is: 'TextInput', size:12, label: 'Number input', description: 'Input field that only allows numbers', icon: 'ri-numbers-fill' },
-            { is: 'TextInput', size:12, label: 'Email address', description: 'Text field that expects an email', icon: 'ri-mail-add-fill' },
-            { is: 'TextInput', size:12, label: 'Phone number', description: 'Phone number with country selector', icon: 'ri-phone-fill' },
-            { is: 'TextInput', size:12, label: 'Password', description: 'Text field that expects a password', icon: 'ri-key-2-fill' },
-            { is: 'TextInput', size:12, label: 'URL', description: 'Text field that expects an URL', icon: 'ri-links-fill' },
+            { is: 'NumberInput', size:12, label: 'Number input', description: 'Input field that only allows numbers', icon: 'ri-numbers-fill' },
+            { is: 'EmailInput', size:12, label: 'Email address', description: 'Text field that expects an email', icon: 'ri-mail-add-fill' },
+            { is: 'PhoneInput', size:12, label: 'Phone number', description: 'Phone number with country selector', icon: 'ri-phone-fill' },
+            { is: 'PasswordInput', size:12, label: 'Password', description: 'Text field that expects a password', icon: 'ri-key-2-fill' },
+            { is: 'UrlInput', size:12, label: 'URL', description: 'Text field that expects an URL', icon: 'ri-links-fill' },
             { is: 'TextInput', size:12, label: 'Location', description: 'Google places location input', icon: 'ri-map-pin-fill' },
             { is: 'TextInput', size:12, label: 'Textarea', description: 'Single line or multiline text area', icon: 'ri-text-block' },
             { is: 'TextInput', size:12, label: 'WYSIWYG editor', description: 'Rich text editor', icon: 'ri-italic' },

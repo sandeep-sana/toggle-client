@@ -54,6 +54,11 @@ import { defineProps } from 'vue';
 import Tools from './tools/Tools.vue';
 import Property from './Property.vue';
 import TextInput from './blocks/TextInput.vue';
+import NumberInput from './blocks/NumberInput.vue';
+import EmailInput from './blocks/EmailInput.vue';
+import PhoneInput from './blocks/PhoneInput.vue';
+import PasswordInput from './blocks/PasswordInput.vue';
+import UrlInput from './blocks/UrlInput.vue';
 import { ErrorMessage, Field } from 'vee-validate';
 import api from '~~/api.config';
 import { STATUS } from '~~/constant';
@@ -65,7 +70,7 @@ const props = defineProps({
     form: { type: Object },
 })
 
-const components = { TextInput };
+const components = { TextInput, NumberInput, EmailInput, PhoneInput, PasswordInput, UrlInput };
 const formBuilder = reactive({
     isEditMode: true,
 });
