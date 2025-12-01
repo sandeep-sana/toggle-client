@@ -43,6 +43,7 @@ let isDragging = false;
 let startSize = 0;
 
 const startDrag = (event) => {
+    event.preventDefault();
     isDragging = true;
     startX = event.clientX;
     startSize = block.size;

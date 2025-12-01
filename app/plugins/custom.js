@@ -149,15 +149,19 @@ export default defineNuxtPlugin(nuxtApp => {
         if (isSwap) {
             if (swapBlockId !== undefined && swapBlockId !== null) {
                 console.log(swapBlockId)
-                form.blocks = form.blocks.filter( block => block.id != swapBlockId);
+                form.blocks = form.blocks.filter(block => block.id != swapBlockId);
             }
         }
 
         nuxtApp.$speak(`${block.label} dropped`);
     });
     nuxtApp.provide("onPropertyout", (id) => {
-        document.getElementById(id).style.border = "1px solid var(--border-color-two)";
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.border = "1px solid var(--border-color-two)";
+        }
     });
+
     nuxtApp.provide("onDragItHereover", (event) => {
         event.preventDefault()
         const child = event.currentTarget.querySelector(".drag")

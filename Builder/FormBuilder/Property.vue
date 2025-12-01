@@ -1,5 +1,4 @@
 <template>
-    {{ form.property }}
     <div class="property">
         <label for="name">Lable</label>
         <Field class="field" as="input" type="text" v-model="form.property.label"></Field>
