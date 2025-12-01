@@ -41,7 +41,7 @@
                         </div>
                         <div class="form-floating mb-3 col-6">
                             <Field name="phoneNumber" as="input" type="number" class="form-control" id="phoneNumber"
-                                placeholder="Company phoneNumber" rules="required|nospace" />
+                                placeholder="Company phoneNumber" rules="required|nospace|min:10|max:10" />
                             <label :class="`${values.phoneNumber ? 'fix-top' : ''}`" for="phoneNumber">Phone No</label>
                             <ErrorMessage name="phoneNumber" class="error-message" />
                         </div>
