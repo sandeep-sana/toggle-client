@@ -18,8 +18,7 @@
                     <td>{{ roleIndex++ }}</td>
                     <td>{{ role.name }}</td>
                     <td>
-                        <button type="button" @click="statusRole(role)">{{ $activeInactive('role', role.status)
-                        }}</button>
+                        <!-- <button type="button" @click="statusRole(role)">{{ $activeInactive('role', role.status)}}</button> -->
                         <button type="button" @click="editRole(role)">edit</button>
                     </td>
                 </tr>
@@ -93,7 +92,7 @@ const editRole = (role) => {
 }
 
 const saveRole = async (values) => {
-    const response = await api.post(`${config.public.API}/role/role`, {
+    const response = await api.post(`${config.public.API}/role/insert`, {
         query: JSON.stringify(values)
     })
     if (response.status === STATUS.CREATED) {
@@ -161,7 +160,7 @@ const activeHierarchy = async () => {
 
 const init = async () => {
     try {
-        const response = await api.get(`${config.public.API}/role/roles`);
+        const response = await api.get(`${config.public.API}/role/fetchs`);
         if (response.status === STATUS.OK) {
             roles.value = response.data.roles;
         }
