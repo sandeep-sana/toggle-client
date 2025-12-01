@@ -1,10 +1,27 @@
+<!-- Fields.vue -->
 <template>
-  <div class="drag-container">
-    <div 
-      draggable="true" 
-      @dragstart="(event) => handleDragStart(event, 'ADD_FIELD')" 
-      class="drag-item">
-      Add Column
+  <div class="card shadow-sm">
+    <div class="card-header bg-light fw-semibold">Toolbox</div>
+    <div class="card-body p-2">
+      <p class="text-muted small mb-3">Drag a block into the canvas</p>
+
+      <div class="d-grid gap-2">
+        <button draggable="true" @dragstart="(e)=>start(e,'STRING')" class="btn btn-outline-primary text-start">
+          <i class="fa fa-font me-2"></i> Text
+        </button>
+        <button draggable="true" @dragstart="(e)=>start(e,'NUMBER')" class="btn btn-outline-primary text-start">
+          <i class="fa fa-hashtag me-2"></i> Number
+        </button>
+        <button draggable="true" @dragstart="(e)=>start(e,'DATE')" class="btn btn-outline-primary text-start">
+          <i class="fa fa-calendar me-2"></i> Date
+        </button>
+        <button draggable="true" @dragstart="(e)=>start(e,'BOOLEAN')" class="btn btn-outline-primary text-start">
+          <i class="fa fa-toggle-on me-2"></i> Boolean
+        </button>
+        <button draggable="true" @dragstart="(e)=>start(e,'ARRAY')" class="btn btn-outline-primary text-start">
+          <i class="fa fa-list-ul me-2"></i> Array
+        </button>
+      </div>
     </div>
     <div 
       draggable="true" 
@@ -16,41 +33,10 @@
 </template>
 
 <script setup>
-const handleDragStart = (event, type) => {
-    event.dataTransfer.setData('type', type);
+const start = (e, fieldType) => {
+  e.dataTransfer.setData('type', 'ADD_FIELD');
+  e.dataTransfer.setData('fieldType', fieldType);
+  e.dataTransfer.setData('application/json', JSON.stringify({ kind: 'ADD_FIELD', type: fieldType }));
+  e.dataTransfer.effectAllowed = 'copy';
 };
 </script>
-
-<style scoped>
-/* Container for all drag items */
-.drag-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px; /* Space between drag items */
-  max-width: 250px; /* Optional: set a max width for the drag container */
-  margin: 0 auto; /* Center the container */
-}
-
-/* Styling for individual drag items */
-.drag-item {
-  padding: 12px 20px;
-  background-color: #007bff;
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
-  border-radius: 8px;
-  cursor: pointer; /* Hand cursor to indicate draggable item */
-  transition: background-color 0.3s ease;
-  text-align: center;
-}
-
-/* Hover effect for drag items */
-.drag-item:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-}
-
-/* Styling for when dragging starts */
-.drag-item:active {
-  background-color: #004085; /* Even darker blue when item is being dragged */
-}
-</style>

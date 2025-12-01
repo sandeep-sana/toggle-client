@@ -1,25 +1,47 @@
 <template>
-    <div class="container mt-5">
-        <!-- Header Section -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="text-primary">Master</h1>
-            <button @click="master.isShow = true" class="btn btn-primary px-4 py-2">
-                <i class="fa fa-plus-circle"></i> Add Master
+    <div class="container py-4 py-md-5">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4 col-12 bg-white border-0 shadow-sm p-2 rounded">
+            <div class="m-0 fw-bold">Masters</div>
+            <button type="button" class="btn btn-secondary d-flex align-items-center" data-bs-toggle="modal"
+                data-bs-target="#addMasterModal">
+                <i class="fa fa-plus-circle me-2"></i> Add Master
             </button>
         </div>
 
-        <!-- Master Lists Section -->
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            <div v-for="list in master.lists" :key="list._id" class="col">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate">{{ list.name }}</h5>
-                        <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-link text-decoration-none" @click="$router.push(`/system-admin/table-${list._id}`)">
-                                <i class="fa fa-database"></i> Schema
+        <!-- Loading -->
+        <div v-if="isLoading" class="d-flex justify-content-center py-5">
+            <div class="spinner-border text-primary" role="status" aria-label="Loading"></div>
+        </div>
+
+        <!-- Empty state -->
+        <div v-else-if="filteredMasters.length === 0" class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <div class="display-6 text-muted mb-2">
+                    <i class="fa fa-database"></i>
+                </div>
+                <p class="mb-3 text-muted">No masters found</p>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                    data-bs-target="#addMasterModal">
+                    Create one
+                </button>
+            </div>
+        </div>
+
+        <!-- Masters grid -->
+        <div v-else class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 g-md-4">
+            <div v-for="list in filteredMasters" :key="list._id" class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-truncate mb-2">{{ list.name }}</h5>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                @click="$router.push(`/system-admin/table-${list._id}`)" aria-label="Open schema">
+                                <i class="fa fa-database me-1"></i> Schema
                             </button>
-                            <button type="button" class="btn btn-danger btn-sm" @click="deleteMaster(list._id)">
-                                <i class="fa fa-trash-alt"></i> Delete
+                            <button type="button" class="btn btn-sm btn-outline-danger" @click="confirmDelete(list._id)"
+                                aria-label="Delete master">
+                                <i class="fa fa-trash-alt me-1"></i> Delete
                             </button>
                         </div>
                     </div>
@@ -27,51 +49,75 @@
             </div>
         </div>
 
-        <!-- Modal for Adding Master -->
-        <Modal v-if="master.isShow">
-            <template #header>
-                <h2 class="text-center text-xl font-bold text-primary">
-                    <i class="fa fa-plus-circle"></i> Add Master
-                </h2>
-            </template>
-            <template #body>
-                <form @submit.prevent="addMaster">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <Field name="name" as="input" type="text" id="name" class="form-control" placeholder="Enter name" rules="required|nospace" />
-                        <ErrorMessage name="name" class="text-danger mt-2" />
+        <!-- Add Master Modal -->
+        <div class="modal fade" id="addMasterModal" tabindex="-1" aria-labelledby="addMasterModalLabel"
+            aria-hidden="true" ref="modalEl">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="addMasterModalLabel">
+                            <i class="fa fa-plus-circle me-2"></i>Add Master
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
-                    <div class="d-flex justify-content-end gap-3">
-                        <button type="button" @click="master.isShow = false" class="btn btn-secondary">
-                            <i class="fa fa-times-circle"></i> Cancel
-                        </button>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fa fa-save"></i> Save
-                        </button>
-                    </div>
-                </form>
-            </template>
-        </Modal>
+
+                    <form @submit.prevent="addMaster" novalidate>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <Field name="name" as="input" type="text" id="name" class="form-control"
+                                    placeholder="Enter name" rules="required|nospace"
+                                    :class="{ 'is-invalid': errors.name }" />
+                                <ErrorMessage name="name" class="invalid-feedback d-block" />
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fa fa-times-circle me-1"></i> Cancel
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-save me-1"></i> Save
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
+import { ref, reactive, computed, onMounted } from "vue";
 import STATUS from "~~/status";
 import api from "~~/api.config";
-import Modal from "../modal/Modal.vue";
-import { useGlobalStore } from '~/stores/global';
 import { Field, ErrorMessage, useForm } from "vee-validate";
+import { useGlobalStore } from "~/stores/global";
 
 const config = useRuntimeConfig();
 const globalStore = useGlobalStore();
+const { $toast } = useNuxtApp();
+
+const isLoading = ref(true);
+const q = ref("");
 
 const master = reactive({
-    isShow: false,
     lists: [],
-})
+});
 
-const { $toast } = useNuxtApp();
-const { handleSubmit } = useForm();
+const { handleSubmit, errors } = useForm();
+
+const filteredMasters = computed(() => {
+    const term = q.value.trim().toLowerCase();
+    return term
+        ? master.lists.filter((x) => (x.name || "").toLowerCase().includes(term))
+        : master.lists;
+});
+
+const modalEl = ref(null);
+let modalInstance = null;
 
 const addMaster = handleSubmit(async (values) => {
     console.log(values.name)
@@ -81,110 +127,56 @@ const addMaster = handleSubmit(async (values) => {
     const query = { ...values }
     try {
         const response = await api.post(`${config.public.API}/master/add`, {
-            query: JSON.stringify(query),
+            query: JSON.stringify(values),
         });
         if (response.status === STATUS.CREATED) {
             master.lists.push(response.data.master);
             $toast.success(response.data.message);
             globalStore.setIsMaster(!globalStore.isMaster);
+            modalInstance?.hide();
         }
     } catch (error) {
-        console.log(error);
-    } finally {
-        master.isShow = false;
+        console.error(error);
     }
 });
 
-const deleteMaster = async (id) => {
+const confirmDelete = async (id) => {
+    const ok = window.confirm("Delete this master?");
+    if (!ok) return;
     try {
         const response = await api.delete(`${config.public.API}/master/delete/${id}`);
         if (response.status === STATUS.OK) {
-            master.lists = master.lists.filter(item => item._id !== id);
-            $toast.success('Master deleted successfully');
+            master.lists = master.lists.filter((item) => item._id !== id);
+            $toast.success("Master deleted successfully");
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
-}
+};
 
 const init = async () => {
     try {
-        const projection = { name: 1 }
+        const projection = { name: 1 };
         const response = await api.get(`${config.public.API}/master/fetchs`, {
-            params: {
-                projection: JSON.stringify(projection),
-            }
+            params: { projection: JSON.stringify(projection) },
         });
         if (response.status === STATUS.OK) {
             master.lists = response.data.masters;
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+    } finally {
+        isLoading.value = false;
     }
-}
+};
 
-onMounted(init);
-
-const masterDelete = async(_id) => {
-    try {
-        const response = await api.delete(`${config.public.API}/master/delete/${_id}`);
-        if (response.status === STATUS.OK) {
-            $toast.success(response.data.message);
-            master.lists =  master.lists.filter(list => list._id != _id);
-        }
-        
-    } catch (error) {
-        console.log(error);
-    }
-}
+onMounted(async () => {
+    await init();
+    const { Modal } = await import("bootstrap");
+    modalInstance = new Modal(modalEl.value);
+});
 </script>
 
-<style scoped>
-/* Custom CSS for polished professional design */
+<!-- <style scoped>
 
-/* Card Styling */
-.card {
-    border: 1px solid #ddd;
-    border-radius: 0.5rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Modal Header */
-.modal-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #ddd;
-}
-
-/* Modal Footer */
-.modal-footer {
-    border-top: 1px solid #ddd;
-}
-
-/* Icon Button Styling */
-button i {
-    margin-right: 5px;
-}
-
-/* Form Inputs */
-input.form-control {
-    padding: 0.75rem;
-}
-
-/* Header Styling */
-.text-primary {
-    color: #007bff;
-}
-
-h1, h2 {
-    font-family: 'Poppins', sans-serif;
-}
-
-.btn i {
-    margin-right: 8px;
-}
-
-</style>
+</style> -->
