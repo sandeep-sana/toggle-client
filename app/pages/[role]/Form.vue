@@ -399,7 +399,7 @@ onMounted(async () => {
     background: var(--background-color-two);
     position: sticky;
     top: 0;
-    z-index: 10;
+    /* z-index: 10; */
 }
 
 .modern-table thead tr th {
