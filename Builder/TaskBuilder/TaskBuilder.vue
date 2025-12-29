@@ -24,7 +24,7 @@
                 <label class="w-100">Assigned To</label>
                 <Field name="assignedTo" v-model="task.assignedTo" as="select" class="form-select input" rules="required">
                     <option value="">Select User</option>
-                    <option v-for="user in users" :key="user._id" :value="user._id">{{ user.name }}</option>
+                    <option v-for="user in users" :key="user._id" :value="user._id">{{ user.firstName }}&nbsp;{{ user.lastName }}</option>
                 </Field>
                 <ErrorMessage name="assignedTo" class="text-danger small" />
             </div>
@@ -77,7 +77,23 @@ const fetchForms = async () => {
     }
 };
 
-onMounted(fetchForms);
+const fetchUsers = async () => {
+    try {
+        const response = await api.get(`${config.public.API}/user/fetchs`);
+        if(response.status === STATUS.OK){
+            users.value = response.data.users;
+        }
+        console.log(response)
+        
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+onMounted(async() => {
+    await fetchForms();
+    await fetchUsers();
+});
 </script>
 
 <style scoped>

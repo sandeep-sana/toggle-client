@@ -55,7 +55,11 @@ export const FORM_BUILDER = {
                     label: 'H1 header',
                     size: 12,
                 },
-                style: {},
+                style: {
+                    color: '',
+                    fontSize: '',
+                    fontWeight: '',
+                },
             },
             // { is: 'Heading', size: 12, label: 'H2 header', description: 'HTML <h2> tag', icon: 'ri-h-2', headingType: 'h2' },
             // { is: 'Heading', size: 12, label: 'H3 header', description: 'HTML <h3> tag', icon: 'ri-h-3', headingType: 'h3' },
@@ -96,6 +100,17 @@ export const FORM_BUILDER = {
             // { is: 'TextInput', size: 12, label: 'Link', description: 'HTML <a> tag', icon: 'ri-link' },
         ],
         STRUCTURES: [
+            {
+                is: 'ColumnOne',
+                icon: 'ri-rectangle-line',
+                description: 'One columns next to each other',
+                attribute: {
+                    label: 'Column One',
+                    size: 12,
+                },
+                style: {
+                },
+            },
             // { is: 'TextInput', size: 12, label: 'Tabs', description: 'Break forms into tabs', icon: 'ri-layout-4-fill' },
             // { is: 'TextInput', size: 12, label: 'Steps', description: 'Break forms into steps', icon: 'ri-steam-line' },
             // { is: 'TextInput', size: 12, label: 'Grid', description: 'Create complex layouts', icon: 'ri-layout-grid-fill' },

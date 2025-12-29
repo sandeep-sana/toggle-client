@@ -13,6 +13,7 @@ defineRule('nospace', (value) => {
   }
   return true
 })
+
 defineRule('nouppercase', (value) => {
   if (/[A-Z]/.test(value)) {
     return 'Uppercase letters are not allowed';

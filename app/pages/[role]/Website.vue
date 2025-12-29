@@ -5,8 +5,9 @@
                 <h1>Website</h1>
             </div>
             <div class="right">
-                <button type="button" v-tippy="`Website Builder`" @click="website.isShow = true"><i
-                        class="ri-sticky-note-add-fill"></i></button>
+                <button type="button" v-tippy="`Add Website`" @click="website.isShow = true">
+                    <i class="ri-sticky-note-add-fill"></i>
+                </button>
             </div>
         </div>
         <div class="body">
@@ -44,6 +45,7 @@
                 <i class="fa fa-plus-circle"></i> Add Website
             </h2>
             <button type="button" @click="closeWebsite"><i class="ri-close-fill"></i></button>
+            <button type="button" @click="saveWebsite"><i class="ri-save-3-line"></i></button>
         </template>
         <template #body>
             <WebsiteBuilder :website="website" />
@@ -62,7 +64,7 @@ import { STATUS } from '~~/constant';
 const website = reactive({
     isShow: false,
     blocks: [],
-    name: 'Draft1',
+    name: '',
 })
 const websites = ref([]);
 const config = useRuntimeConfig();
@@ -94,7 +96,7 @@ const deleteWebsite = async (deleteWebsite) => {
     }
 }
 
-const closeWebsite = async() => {
+const closeWebsite = async () => {
     website.isShow = false
     website.blocks = [];
     website.name = 'Draft1';
@@ -104,27 +106,28 @@ const closeWebsite = async() => {
 }
 
 watch(
-  () => website, // Watch only the 'isShow' property
-  async (newValue, oldValue) => {
-    if (newValue) {
-      // When website.isShow is true, call saveWebsite()
-      await saveWebsite();
-    }
-  },
-  { deep: true } // Deep watch to detect changes within the nested website object if needed
+    () => website, // Watch only the 'isShow' property
+    async (newValue, oldValue) => {
+        if (newValue) {
+            // When website.isShow is true, call saveWebsite()
+            //   await saveWebsite();
+        }
+    },
+    { deep: true } // Deep watch to detect changes within the nested website object if needed
 );
 
 
 
 const saveWebsite = async () => {
     try {
-        if (!website.name) {
-            $toast.info('website Name');
-            $speak('website Name');
-        } else if (!website.blocks.length) {
-            $toast.info('Please drag any field');
-            $speak('Please drag any field');
-        } else {
+        // if (!website.name) {
+        //     $toast.info('website Name');
+        //     $speak('website Name');
+        // } else if (!website.blocks.length) {
+        //     $toast.info('Please drag any field');
+        //     $speak('Please drag any field');
+        // } 
+        // else {
             const query = {
                 _id: website._id,
             }
@@ -159,7 +162,7 @@ const saveWebsite = async () => {
                 website._id = response.data.website._id;
                 websites.value.push(response.data.website);
             }
-        }
+        // }
     } catch (error) {
         console.log(error);
     }

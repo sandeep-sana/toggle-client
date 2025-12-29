@@ -1,78 +1,78 @@
-    <template>
-    <div class="top">
-        <Button @click="tools.activeTool = 'FIELDS'" class="col-lg-4">Fields</Button>
-        <Button @click="tools.activeTool = 'STATIC'" class="col-lg-4">Static</Button>
-        <Button @click="tools.activeTool = 'STRUCTURES'" class="col-lg-4">Structure</Button>
+<template>
+  <div v-for="(tool, toolIndex) in Tools" :key="toolIndex">
+    <p>{{ tool.name }}</p>
+    <div class="d-flex flex-wrap w-100">
+      <div v-for="(list, listIndex) in tool.lists" :key="listIndex" class="col-6 border element"
+        v-tippy="`${list.description}`" @dragstart="(event) => $onDragStart(event, list)" draggable="true">
+        <i :class="list.icon"></i>
+        <h5>{{ list.attribute.label }}</h5>
+      </div>
     </div>
-    <div class="bottom">
-        <div v-for="tool in FORM_BUILDER.TOOLS[tools.activeTool]" class="blocks"
-            @dragstart="(event) => $onDragStart(event, tool)" draggable="true">
-            <div class="block-left">
-                <i :class="tool.icon"></i>
-            </div>
-            <div class="block-right">
-                <h3>{{ tool.attribute.label }}</h3>
-                <p>{{ tool.description }}</p>
-            </div>
-        </div>
-    </div>
+  </div>
 </template>
 
 <script setup>
-import { FORM_BUILDER } from '../constant';
+const Tools = [
+  {
+    name: 'Fields',
+    lists: [],
+  },
+  {
+    name: 'Static',
+    lists: [],
+  },
+  {
+    name: 'Structures',
+    lists: [
+      {
+        is: 'ColumnOne',
+        icon: 'ri-rectangle-line',
+        description: 'One columns next to each other',
+        attribute: {
+          label: 'Column One',
+          size: 12,
+        },
+        style: {
+          width: '',
+          height: '100px',
+          backgroundImage: '',
+        },
+      },
+      // {
+      //   is: 'ColumnTwo',
+      //   icon: 'ri-layout-column-line',
+      //   description: 'Two columns next to each other',
+      //   attribute: {
+      //     label: 'Column Two',
+      //     size: 12,
+      //   },
+      //   style: {
+      //   },
+      // },
+      // {
+      //   is: 'ColumnThree',
+      //   icon: 'ri-kanban-view-2',
+      //   description: 'Three columns next to each other',
+      //   attribute: {
+      //     label: 'Column Three',
+      //     size: 12,
+      //   },
+      //   style: {
+      //   },
+      // },
 
-const { $onDragStart, } = useNuxtApp();
-
-const tools = reactive({
-    activeTool: 'FIELDS',
-})
+    ],
+  }
+]
 </script>
 
 <style scoped>
-.top {
-    padding-right: 10px;
+.element {
+  text-align: center;
+  cursor: pointer;
 }
 
-.top button {
-    background-color: var(--background-color-two);
-    color: var(--text-color-one);
-    border: 1px solid var(--border-color-one);
-    padding: 5px 10px;
-}
-
-.bottom {
-    max-height: calc(100vh - 100px);
-    overflow-y: scroll;
-}
-
-.blocks {
-    border: 1px solid var(--border-color-one);
-    background-color: var(--background-color-two);
-    border-radius: 10px;
-    display: flex;
-    margin: 10px 0;
-    align-items: center;
-    cursor: all-scroll;
-}
-
-.block-left {
-    border: 1px solid var(--border-color-one);
-    padding: 2px 5px;
-    margin: 5px;
-    border-radius: 5px;
-}
-
-.block-right {
-    width: 100%;
-    text-align: left;
-}
-
-.block-right h3 {
-    font-size: 16px;
-    margin: 0;
-}
-
-.block-right p {
-    font-size: 10px;
+.element i {
+  font-size: 60px;
 }
 </style>

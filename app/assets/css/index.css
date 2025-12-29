@@ -1,115 +1,19 @@
 :root {
-    /* background color */
-    /* --background-color-one: #232333;
-    --background-color-two: #2b2c40;
-    --background-color-three: #5759e6;
-    --background-color-four: #5759e6;
-    --background-color-five: #696cff;
-    --background-color-six: #8789ff;
-    --background-color-seven: #a5a6ff;
-    --background-color-eight: #c7c8ff;
-    --background-color-nine: #f0f0ff; */
+  --background-color-one: #232333;
 
-    /* hover background color */
-    /* --hover-background-color-one: #36374a;
-    --hover-background-color-two: #2d2fa1;
-    --hover-background-color-three: #4446cc;
-    --hover-background-color-four: #5759e6;
-    --hover-background-color-five: #696cff;
-    --hover-background-color-six: #8789ff;
-    --hover-background-color-seven: #a5a6ff;
-    --hover-background-color-eight: #c7c8ff;
-    --hover-background-color-nine: #f0f0ff; */
+  --border-color-one: #cbd5e1;
 
-    /* text color */
-    /* --text-color-one: #ffffff;
-    --text-color-two: #c9d3df;
-    --text-color-three: #334155;
-    --text-color-four: #475569;
-    --text-color-five: #64748b;
-    --text-color-six: #94a3b8;
-    --text-color-seven: #cbd5e1;
-    --text-color-eight: #e2e8f0;
-    --text-color-nine: #ffffff;
-    --text-color-ten: #4446cc; */
-
-    /* border color */
-    /* --border-color-one: #0f172a;
-    --border-color-two: #1e293b;
-    --border-color-three: #334155;
-    --border-color-four: #475569;
-    --border-color-five: #64748b;
-    --border-color-six: #94a3b8;
-    --border-color-seven: #cbd5e1;
-    --border-color-eight: #e2e8f0;
-    --border-color-nine: #ffffff;
-    --border-color-ten: #4446cc; */
-
-    /* pending color */
-    /* --pending-color-one: #ff9d00;
-    --pending-color-two: #ffab23;
-    --pending-color-three: #feb43d;
-    --pending-color-four: #fdc264;
-    --pending-color-five: #fccf87;
-    --pending-color-six: #f9d9a5;
-    --pending-color-seven: #ffedd1;
-    --pending-color-eight: #fff7e9;
-    --pending-color-nine: #ffffff; */
-
-    /* completed color */
-    /* --complete-color-one: #00ff04;
-    --complete-color-two: #25ff28;
-    --complete-color-three: #41ff44;
-    --complete-color-four: #75ff77;
-    --complete-color-five: #96ff98;
-    --complete-color-six: #a9ffaa;
-    --complete-color-seven: #caffcb;
-    --complete-color-eight: #e1ffe2;
-    --complete-color-nine: #ffffff; */
+  --text-color-one: #ffffff;
 }
 
 
 body {
-    overflow-x: hidden;
-    background-color: var(--background-color-one);
-}
-
-/* Global thin vertical scrollbar */
-html {
-  scrollbar-width: thin;               /* Firefox vertical */
-  scrollbar-color: var(--background-color-one) transparent;   /* Firefox color */
-}
-
-::-webkit-scrollbar {
-  width: 2px;     /* Thin vertical scrollbar */
-  height: 6px;    /* Keep horizontal normal */
-}
-
-::-webkit-scrollbar-track {
-  background: transparent; /* Invisible track */
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--background-color-two);   /* Gray thumb */
-  border-radius: 10px;      /* Rounded edges */
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--background-color-three);   /* Darker on hover */
-}
-
-button{
-  background-color: var(--background-color-two);
+  background-color: var(--background-color-one);
   color: var(--text-color-one);
-  border: 1px solid var(--border-color-one);
-  border-radius: 10px;
-  padding: 5px 10px;
+
 }
 
-.input{
-  background-color: var(--background-color-two);
+a {
+  text-decoration: none;
   color: var(--text-color-one);
-  border: 1px solid var(--border-color-one);
-  border-radius: 10px;
-  padding: 5px 10px;
 }
