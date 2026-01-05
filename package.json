@@ -1,0 +1,22 @@
+{
+  "name": "toggle-client",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "build:web": "cross-env NUXT_APP_PLATFORM=web nuxt build",
+    "start:web": "node .output/server/index.mjs",
+    "build:mobile": "cross-env NUXT_APP_PLATFORM=mobile nuxt generate"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "nuxt": "^4.2.2",
+    "vue": "^3.5.26",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.4",
+    "cross-env": "^10.1.0"
+  }
+}
