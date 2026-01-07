@@ -1,0 +1,16 @@
+:root {
+    --background-one: #232333;
+    --background-two: #6262b2;
+
+    --border-color-one: #cbd5e1;
+
+    --color-one: #ffffff;
+
+    --box-shadow-one: #636363;
+}
+
+body{
+    background-color: var(--background-one);
+}
+
+

@@ -13,10 +13,10 @@ export default defineNuxtConfig({
   // modules: [
   //   '@pinia/nuxt',
   // ],
-  // css: [
-  //   '~/assets/css/global.css',
-  //   'remixicon/fonts/remixicon.css'
-  // ],
+  css: [
+    '~/assets/css/index.css',
+    //   'remixicon/fonts/remixicon.css'
+  ],
   // plugins: [
   //   '~/plugins/toastify.client.js',
   // ],
