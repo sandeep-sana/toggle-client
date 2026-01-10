@@ -76,6 +76,9 @@ const isMenuOpen = ref(false);
   gap: 1rem;
 }
 
+.btn-secondary{
+  padding: 0.6rem 1.2rem;
+}
 .btn-primary {
   background: var(--background-one);
   color: var(--color-one) !important;
