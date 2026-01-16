@@ -1,6 +1,8 @@
 :root{
-    --primary: blueviolet;
+    --primary: rgb(226, 43, 43);
 }
+
+
 a{
     text-decoration: unset;
 }
