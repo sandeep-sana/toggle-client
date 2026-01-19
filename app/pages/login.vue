@@ -21,8 +21,10 @@
 import { reactive } from 'vue';
 import api from '~/api.config';
 import { Field, ErrorMessage, Form } from 'vee-validate';
+import { STATUS } from '~/constant';
 
 const config = useRuntimeConfig();
+const {$toast, $speak} = useNuxtApp();
 const login = reactive({
     email: '',
     password: ''
@@ -36,7 +38,12 @@ const submit = async () => {
         const response = await api.get(`${config.public.API}/user/fetch`, {
             query,
         });
-        console.log(response)
+        if(response.status === STATUS.OK){
+            $toast.success(response.data.message);
+            $speak(response.data.message);
+            const {activeRole, _id, domain} = response.data.user;
+        }
+
     } catch (error) {
         console.error(error);
     }
