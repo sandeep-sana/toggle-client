@@ -11,7 +11,7 @@ return true;
 
 defineRule('min', (value, [limit]) =>{
     if(String(value).length < Number(limit)){
-        return `Must be atleast ${limit} characters`
+        return `Must be atleast ${limit} characters!`
     }
     return true;
 })
@@ -19,7 +19,7 @@ defineRule('min', (value, [limit]) =>{
 defineRule('email', (value) => {
     const regex = /^[^\s@]+@[^\s@].@[^\s@]+$/
     if(!regex.test(value)){
-        return 'Please enter a valid email address';
+        return 'Please enter a valid email address!';
     }
     return true;
 })
