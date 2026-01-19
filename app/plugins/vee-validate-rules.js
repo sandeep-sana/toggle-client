@@ -17,11 +17,11 @@ defineRule('min', (value, [limit]) =>{
 })
 
 defineRule('email', (value) => {
-    const regex = /^[^\s@]+@[^\s@].@[^\s@]+$/
-    if(!regex.test(value)){
-        return 'Please enter a valid email address!';
-    }
-    return true;
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!regex.test(value)) {
+    return 'Please enter a valid email address'
+  }
+  return true
 })
 
 
