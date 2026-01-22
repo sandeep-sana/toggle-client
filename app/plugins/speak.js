@@ -49,7 +49,7 @@ export default defineNuxtPlugin(nuxtApp => {
         utterance.rate = 1;
         utterance.pitch = 1;
         synth.cancel();
-        synth.speak(utterance);
+        // synth.speak(utterance);
     }
     nuxtApp.provide("speak", speak);
 })

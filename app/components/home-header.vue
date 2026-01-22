@@ -1,48 +1,83 @@
 <template>
-    <div class="home-header">
-        <div class="home-header-left">
-            <router-link to="/">TOGGLE</router-link>
-        </div>
-         <div class="home-header-components">
-          <router-link to="/">Product</router-link>
-          <router-link to="/">Solution</router-link>
-          <router-link to="/">Templates</router-link>
-          <router-link to="/">Demo</router-link>
-          <router-link to="/">Pricing</router-link>
-          <router-link to="/">Resources</router-link>
-          <router-link to="/">About</router-link>
-          <router-link to="/">Contact</router-link>
-         </div>
-        <div class="home-header-right">
-            <router-link to="/signup" class="button">Login / Signup</router-link>
-        </div>
+  <div class="home-header">
+    <div class="home-header-left">
+      <router-link to="/">TOGGLE</router-link>
     </div>
+    <div class="home-header-components">
+      <router-link v-for="module in modules"
+        :to="`${activeRole ? '/' + activeRole.toLowerCase() : ''}/${module.path.toLowerCase()}`">
+        {{module.label.toLowerCase() }}</router-link>
+    </div>
+    <div class="home-header-right">
+      <router-link to="/signup" class="button">Login / Signup</router-link>
+    </div>
+  </div>
 </template>
+
+<script setup>
+import api from '~/api.config';
+import { MODULES, STATUS } from '~/constant';
+
+const config = useRuntimeConfig();
+
+const modules = ref([]);
+const activeRole = ref(null);
+
+
+
+
+const fetchModules = async () => {
+  try {
+    const query = {};
+    const projection = {
+      modules: 1,
+      activeRole: 1,
+    };
+    const response = await api.get(`${config.public.API}/user/fetch`);
+    console.log(response)
+    if (response.status === STATUS.OK) {
+      modules.value = response.data.user.modules;
+      activeRole.value = response.data.user.activeRole;
+    }
+  } catch (error) {
+    if (error.status === STATUS.NOT_FOUND) {
+      modules.value = MODULES.SUPER_ADMIN;
+    }
+  }
+}
+
+onMounted(async () => {
+  await fetchModules();
+})
+</script>
+
 
 <style>
 .home-header {
-    border: 1px solid;
-    height: 50px;
-    background-color: var(--primary);
-    justify-content: space-between;
-    display: flex;
+  border: 1px solid;
+  height: 50px;
+  background-color: var(--primary);
+  justify-content: space-between;
+  display: flex;
 }
-.home-header-left{
-    display: flex;
+
+.home-header-left {
+  display: flex;
 }
+
 .home-header-right {
-    display: flex;
+  display: flex;
 }
 
 .button {
-    font-size: 16px;
-    background-color: white;
-    border: unset;
-    padding: 10px;
-    border-radius: 10px;
-    margin: 5px;
-    cursor: pointer;
-    color: black;
+  font-size: 16px;
+  background-color: white;
+  border: unset;
+  padding: 10px;
+  border-radius: 10px;
+  margin: 5px;
+  cursor: pointer;
+  color: black;
 }
 
 .home-header-components {
@@ -84,5 +119,4 @@
 .home-header-components .router-link-active::after {
   width: 100%;
 }
-
 </style>

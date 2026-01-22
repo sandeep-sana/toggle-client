@@ -24,7 +24,8 @@ import { Field, ErrorMessage, Form } from 'vee-validate';
 import { STATUS } from '~/constant';
 
 const config = useRuntimeConfig();
-const {$toast, $speak} = useNuxtApp();
+const { $toast, $speak } = useNuxtApp();
+const router = useRouter();
 const login = reactive({
     email: '',
     password: ''
@@ -35,13 +36,26 @@ const submit = async () => {
         const query = {
             ...login,
         }
-        const response = await api.get(`${config.public.API}/user/fetch`, {
-            query,
+        const response = await api.get(`${config.public.API}/user/login`, {
+            params:{
+                query: JSON.stringify(query),
+            }
         });
-        if(response.status === STATUS.OK){
+        if (response.status === STATUS.OK) {
             $toast.success(response.data.message);
             $speak(response.data.message);
-            const {activeRole, _id, domain} = response.data.user;
+            const { activeRole, _id, domain } = response.data.user;
+            const rolePath = `/${activeRole.toLowerCase()}/dashboard`;
+            localStorage.setItem('_id', _id);
+            if (domain === 'toggle') {
+                if (activeRole === ROLE.SUPER_ADMIN) {
+                    router.push(rolePath);
+                } else {
+                    window.location.href = `${config.public.AUTH}${domain}.${config.public.DOMAIN}`;
+                }
+            } else {
+                router.push(rolePath);
+            }
         }
 
     } catch (error) {

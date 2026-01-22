@@ -3,6 +3,10 @@ export const ROLE = {
     SYSTEM_ADMIN: "SYSTEM-ADMIN",
 }
 
+export const MODULES = {
+    SUPER_ADMIN : [{label: 'PRICING', path: 'PRICING'}],
+}
+
 export const STATUS = {
     OK:200,
     CREATED:201,
