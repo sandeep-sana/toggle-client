@@ -3,88 +3,51 @@
     <header class="reject-page__header">
       <div class="reject-page__intro">
         <p class="reject-page__eyebrow">Rejected accounts</p>
-        <h1>System admin registrations</h1>
+        <h1>Previously declined signups</h1>
         <p class="reject-page__lede">
-          Accounts you previously rejected. You can move one back to pending or remove it permanently.
+          Restore a company to pending if you want to review again, or remove the record permanently.
         </p>
       </div>
-      <div class="reject-page__toolbar">
-        <label class="reject-page__search">
-          <span class="visually-hidden">Search by company, email, or domain</span>
-          <input
-            v-model.trim="search"
-            type="search"
-            class="reject-page__input"
-            placeholder="Search company, email, domain…"
-            :disabled="loading"
-            autocomplete="off"
-          />
-        </label>
-        <span class="reject-page__count">{{ filteredUsers.length }} shown</span>
-        <button
-          type="button"
-          class="reject-page__refresh"
-          :disabled="loading"
-          @click="refresh"
-        >
-          <span v-if="!loading">Refresh</span>
-          <span v-else class="reject-page__refresh-loading">
-            <span class="reject-page__spinner" aria-hidden="true" />
-            Loading…
-          </span>
-        </button>
+      <div class="reject-page__meta">
+        <span class="reject-page__count">{{ rejectAccounts.length }} rejected</span>
       </div>
     </header>
 
     <div v-if="loading" class="reject-page__state" aria-busy="true">
-      Loading rejected accounts…
+      Loading accounts…
     </div>
 
     <div
-      v-else-if="filteredUsers.length === 0"
+      v-else-if="rejectAccounts.length === 0"
       class="reject-page__state reject-page__state--empty"
     >
-      <p class="reject-page__empty-title">No matching accounts</p>
-      <p class="reject-page__empty-hint">
-        {{ users.length === 0 ? 'There are no rejected accounts right now.' : 'Try a different search or clear the filter.' }}
-      </p>
+      <p class="reject-page__empty-title">No rejected accounts</p>
+      <p class="reject-page__empty-hint">Declined signups will appear here.</p>
     </div>
 
     <div v-else class="reject-page__grid">
-      <article v-for="user in filteredUsers" :key="user._id" class="reject-card">
+      <article v-for="account in rejectAccounts" :key="account._id" class="reject-card">
         <div class="reject-card__top">
           <div class="reject-card__identity">
-            <div class="reject-card__avatar" :title="user.companyName || user.email">
-              {{ initials(user.companyName || user.email) }}
+            <div class="reject-card__avatar" :title="account.companyName || account.email">
+              {{ initials(account.companyName || account.email) }}
             </div>
             <div class="reject-card__titles">
-              <h2 class="reject-card__company">{{ user.companyName || '—' }}</h2>
-              <p class="reject-card__email">{{ user.email }}</p>
+              <h2 class="reject-card__company">{{ account.companyName || '—' }}</h2>
+              <p class="reject-card__email">{{ account.email }}</p>
             </div>
           </div>
-          <span class="reject-card__badge">{{ user.status || 'REJECT' }}</span>
+          <span class="reject-card__badge">{{ account.status || 'REJECT' }}</span>
         </div>
 
         <dl class="reject-card__list">
           <div>
-            <dt>Domain</dt>
-            <dd>{{ user.domain || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Name</dt>
-            <dd>{{ displayName(user) }}</dd>
-          </div>
-          <div>
             <dt>Phone</dt>
-            <dd>{{ user.phoneNumber || '—' }}</dd>
-          </div>
-          <div>
-            <dt>Price</dt>
-            <dd>{{ user.price ?? '—' }}</dd>
+            <dd>{{ account.phoneNumber || '—' }}</dd>
           </div>
           <div class="reject-card__desc">
             <dt>Description</dt>
-            <dd>{{ user.description || '—' }}</dd>
+            <dd>{{ account.description || '—' }}</dd>
           </div>
         </dl>
 
@@ -92,59 +55,35 @@
           <button
             type="button"
             class="btn btn--pending"
-            :disabled="isProcessing(user._id)"
-            @click="openMove(user)"
+            :disabled="processingId === account._id"
+            @click="moveToPending(account._id)"
           >
-            <span
-              v-if="processing.id === user._id && processing.type === 'MOVE'"
-              class="reject-page__spinner reject-page__spinner--btn"
-              aria-hidden="true"
-            />
             Back to pending
           </button>
           <button
             type="button"
             class="btn btn--delete"
-            :disabled="isProcessing(user._id)"
-            @click="openDelete(user)"
+            :disabled="processingId === account._id"
+            @click="deleteAccount(account._id)"
           >
-            <span
-              v-if="processing.id === user._id && processing.type === 'DELETE'"
-              class="reject-page__spinner reject-page__spinner--btn"
-              aria-hidden="true"
-            />
             Delete
           </button>
         </div>
       </article>
     </div>
-
-    <Confirmation v-if="modal.isConfirmation" :modal="modal" />
   </section>
 </template>
 
 <script setup>
-import STATUS from '~~/status';
+import { ref, onMounted } from 'vue';
 import api from '~~/api.config';
-import { ref, reactive, computed, onMounted } from 'vue';
-import Confirmation from '../../modal/Confirmation.vue';
-import { ROLE } from '../constant/role';
+import STATUS from '~~/status';
 import { USER_STATUS } from '~~/constant/user';
 
-const users = ref([]);
+const rejectAccounts = ref([]);
 const loading = ref(false);
-const search = ref('');
-const processing = reactive({ id: null, type: null });
-
-const modal = ref({
-  isConfirmation: false,
-  message: null,
-  _id: null,
-  reject: null,
-});
-
+const processingId = ref(null);
 const config = useRuntimeConfig();
-const { $toast, $session } = useNuxtApp();
 
 const initials = (value = '') =>
   value
@@ -155,116 +94,57 @@ const initials = (value = '') =>
     .map(s => s[0]?.toUpperCase())
     .join('') || 'NA';
 
-const displayName = (user) => {
-  const n = `${user.firstName || ''} ${user.lastName || ''}`.trim();
-  return n || '—';
+const removeFromList = (id) => {
+  const sid = String(id);
+  rejectAccounts.value = rejectAccounts.value.filter(a => String(a._id) !== sid);
 };
 
-const isProcessing = (id) => processing.id === id;
-
-const filteredUsers = computed(() => {
-  if (!search.value) return users.value;
-  const q = search.value.toLowerCase();
-  return users.value.filter((u) => {
-    const hay = [
-      u.companyName,
-      u.email,
-      u.domain,
-      u.phoneNumber,
-      u.description,
-      u.firstName,
-      u.lastName,
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase();
-    return hay.includes(q);
-  });
-});
-
-const openMove = (user) => {
-  modal.value.isConfirmation = true;
-  modal.value.message = `Do you want to move “${user.companyName || user.email}” back to pending?`;
-  modal.value._id = user._id;
-  modal.value.reject = pendingUser;
-};
-
-const openDelete = (user) => {
-  modal.value.isConfirmation = true;
-  modal.value.message = `Do you want to delete “${user.companyName || user.email}”?`;
-  modal.value._id = user._id;
-  modal.value.reject = userDelete;
-};
-
-const pendingUser = async (_id) => {
-  processing.id = _id;
-  processing.type = 'MOVE';
+const moveToPending = async (id) => {
+  processingId.value = id;
   try {
-    const projection = { status: USER_STATUS.PENDING };
-    const response = await api.post(`${config.public.API}/user/user/${_id}`, {
-      projection: JSON.stringify(projection),
+    const response = await api.post(`${config.public.API}/user/change-status`, {
+      _id: id,
+      status: USER_STATUS.PENDING,
     });
     if (response.status === STATUS.OK) {
-      $toast.success(response.data.message);
-      users.value = users.value.filter(user => user._id !== _id);
+      removeFromList(id);
     }
   } catch (error) {
-    console.log(error);
-    $toast.error('Failed to move. Please try again.');
+    console.error(error);
   } finally {
-    processing.id = null;
-    processing.type = null;
-    modal.value.isConfirmation = false;
+    processingId.value = null;
   }
 };
 
-const userDelete = async (_id) => {
-  processing.id = _id;
-  processing.type = 'DELETE';
+const deleteAccount = async (id) => {
+  processingId.value = id;
   try {
-    const projection = { status: USER_STATUS.DELETE };
-    const response = await api.post(`${config.public.API}/user/user/${_id}`, {
-      projection: JSON.stringify(projection),
+    const response = await api.post(`${config.public.API}/user/change-status`, {
+      _id: id,
+      status: USER_STATUS.DELETE,
     });
     if (response.status === STATUS.OK) {
-      $toast.success(response.data.message);
-      users.value = users.value.filter(user => user._id !== _id);
+      removeFromList(id);
     }
   } catch (error) {
-    console.log(error);
-    $toast.error('Failed to delete. Please try again.');
+    console.error(error);
   } finally {
-    processing.id = null;
-    processing.type = null;
-    modal.value.isConfirmation = false;
+    processingId.value = null;
   }
-};
-
-const init = async () => {
-  loading.value = true;
-  try {
-    const query = { role: ROLE.SYSTEM_ADMIN, status: USER_STATUS.REJECT };
-    const res = await api.get(`${config.public.API}/user/users`, {
-      params: { query: JSON.stringify(query) },
-    });
-    if (res.status === STATUS.OK) {
-      users.value = res.data.users || [];
-    }
-  } catch (e) {
-    console.error(e);
-    $toast.error('Failed to load users.');
-  } finally {
-    loading.value = false;
-  }
-};
-
-const refresh = async () => {
-  await init();
 };
 
 onMounted(async () => {
-  $session();
-  await init();
+  loading.value = true;
+  try {
+    const response = await api.get(`${config.public.API}/user/reject-accounts`);
+    if (response.status === STATUS.OK) {
+      rejectAccounts.value = response.data.rejectAccounts || [];
+    }
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loading.value = false;
+  }
 });
 </script>
 
@@ -282,10 +162,10 @@ onMounted(async () => {
   margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 640px) {
   .reject-page__header {
     flex-direction: row;
     align-items: flex-start;
@@ -312,82 +192,23 @@ onMounted(async () => {
   font-size: 0.88rem;
   line-height: 1.45;
   color: rgba(255, 255, 255, 0.62);
-  max-width: 42rem;
+  max-width: 40rem;
 }
 
-.reject-page__toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.55rem;
+.reject-page__meta {
   flex-shrink: 0;
 }
 
-.reject-page__search {
-  flex: 1;
-  min-width: min(100%, 220px);
-}
-
-.reject-page__input {
-  width: 100%;
-  margin: 0;
-  border-radius: 10px;
-  border: 1px solid rgba(203, 213, 225, 0.35);
-  background: rgba(15, 23, 42, 0.35);
-  color: var(--text-color-one);
-  padding: 0.45rem 0.65rem;
-  font-size: 0.88rem;
-}
-
-.reject-page__input::placeholder {
-  color: rgba(255, 255, 255, 0.38);
-}
-
-.reject-page__input:focus {
-  outline: none;
-  border-color: rgba(165, 180, 252, 0.65);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-}
-
-.reject-page__input:disabled {
-  opacity: 0.55;
-}
-
 .reject-page__count {
-  border: 1px solid rgba(203, 213, 225, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 999px;
-  padding: 0.32rem 0.7rem;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.85);
-  white-space: nowrap;
-}
-
-.reject-page__refresh {
-  margin: 0;
-  border-radius: 10px;
-  padding: 0.42rem 0.85rem;
-  font-size: 0.84rem;
-  font-weight: 600;
-  border: 1px solid rgba(203, 213, 225, 0.35);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-color-one);
-  cursor: pointer;
-}
-
-.reject-page__refresh:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.reject-page__refresh:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-
-.reject-page__refresh-loading {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  background: rgba(248, 113, 113, 0.12);
+  color: #fecaca;
+  border-radius: 999px;
+  padding: 0.32rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .reject-page__state {
@@ -543,10 +364,6 @@ onMounted(async () => {
   font-weight: 600;
   border: 1px solid transparent;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
 }
 
 .btn:disabled {
@@ -564,6 +381,11 @@ onMounted(async () => {
   background: rgba(99, 102, 241, 0.25);
 }
 
+.btn--pending:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(35, 35, 51, 0.95), 0 0 0 4px rgba(129, 140, 248, 0.45);
+}
+
 .btn--delete {
   color: #fecaca;
   border-color: rgba(248, 113, 113, 0.45);
@@ -574,35 +396,8 @@ onMounted(async () => {
   background: rgba(248, 113, 113, 0.2);
 }
 
-.reject-page__spinner {
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  border-top-color: rgba(255, 255, 255, 0.85);
-  border-radius: 50%;
-  animation: reject-spin 0.7s linear infinite;
-}
-
-.reject-page__spinner--btn {
-  width: 0.85rem;
-  height: 0.85rem;
-}
-
-@keyframes reject-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.btn--delete:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(35, 35, 51, 0.95), 0 0 0 4px rgba(248, 113, 113, 0.4);
 }
 </style>
