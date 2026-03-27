@@ -133,7 +133,21 @@ const createDatabase = async (id) => {
   }
 };
 
-const getCompanyUrl = (domain) => `https://${domain}.${config.public.DOMAIN}`;
+const getCompanyUrl = (subdomain) => {
+  const rawDomain = String(config.public.DOMAIN || '').trim();
+  if (!subdomain || !rawDomain) return '#';
+
+  const cleanBase = rawDomain
+    .replace(/^https?:\/\//i, '')
+    .replace(/\/+$/, '');
+
+  const hasProtocol = /^https?:\/\//i.test(rawDomain);
+  const protocol = hasProtocol
+    ? rawDomain.match(/^https?/i)?.[0].toLowerCase()
+    : (/localhost|127\.0\.0\.1/i.test(cleanBase) ? 'http' : 'https');
+
+  return `${protocol}://${subdomain}.${cleanBase}`;
+};
 
 onMounted(async () => {
   loading.value = true;

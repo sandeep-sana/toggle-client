@@ -70,7 +70,7 @@ useHead({
 
 const submit = async () => {
   try {
-    const response = await api.get(`${config.public.API}/user/fetch`, {
+    const response = await api.get(`${config.public.API}/user/login`, {
       params: {
         email: login.email,
         password: login.password,

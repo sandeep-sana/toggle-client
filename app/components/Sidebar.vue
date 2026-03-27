@@ -4,7 +4,7 @@
       <NuxtLink :to="homeHref" class="sidebar__logo" aria-label="Toggle home">
         <span class="sidebar__mark" aria-hidden="true" />
         <span class="sidebar__brand-text">
-          <span class="sidebar__brand-name">Toggle</span>
+          <span class="sidebar__brand-name">{{ brandName }}</span>
           <span class="sidebar__brand-sub">Workspace</span>
         </span>
       </NuxtLink>
@@ -48,6 +48,7 @@
 import { reactive, ref, computed } from 'vue';
 import api from '~~/api.config';
 import STATUS from '~~/status';
+import { subDomain } from "~~/function";
 
 const route = useRoute();
 const config = useRuntimeConfig();
@@ -58,6 +59,7 @@ const loadError = ref(false);
 const sidebar = reactive({
   modules: [],
 });
+const brandName = computed(() => subDomain());
 
 const homeHref = computed(() => {
   const r = route.params.role;
