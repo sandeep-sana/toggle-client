@@ -60,12 +60,23 @@
             Block
           </button>
           <button
+            v-if="!account.isCreatedDatabase"
             type="button"
-            class="btn btn--reject"
-            @click="rejectAccount(account._id)"
+            class="btn btn--create"
+            :disabled="creatingId === account._id"
+            @click="createDatabase(account._id)"
           >
-            Reject
+            {{ creatingId === account._id ? 'Creating...' : 'Create Database' }}
           </button>
+          <a
+            v-else
+            class="btn btn--visit"
+            :href="getCompanyUrl(account.domain)"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Visit
+          </a>
         </div>
       </article>
     </div>
@@ -79,7 +90,9 @@ import STATUS from '~~/status';
 
 const acceptAccounts = ref([]);
 const loading = ref(false);
+const creatingId = ref(null);
 const config = useRuntimeConfig();
+const { $toast, $speak } = useNuxtApp();
 
 const initials = (value = '') =>
   value
@@ -100,15 +113,27 @@ const blockAccount = async (id) => {
   }
 };
 
-const rejectAccount = async (id) => {
-  const response = await api.post(`${config.public.API}/user/change-status`, {
-    _id: id,
-    status: 'REJECT',
-  });
-  if (response.status === STATUS.OK) {
-    acceptAccounts.value = acceptAccounts.value.filter(account => account._id !== id);
+const createDatabase = async (id) => {
+  creatingId.value = id;
+  try {
+    const response = await api.post(`${config.public.API}/user/create-database`, {
+      _id: id,
+    });
+    if (response.status === STATUS.OK) {
+      $toast.success(response.data.message);
+      $speak(response.data.message);
+      const item = acceptAccounts.value.find(account => account._id === id);
+      if (item) item.isCreatedDatabase = true;
+    }
+  } catch (error) {
+    console.error(error);
+    $toast.error('Failed to create database.');
+  } finally {
+    creatingId.value = null;
   }
 };
+
+const getCompanyUrl = (domain) => `https://${domain}.${config.public.DOMAIN}`;
 
 onMounted(async () => {
   loading.value = true;
@@ -373,5 +398,31 @@ onMounted(async () => {
 .btn--reject:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px rgba(35, 35, 51, 0.95), 0 0 0 4px rgba(248, 113, 113, 0.4);
+}
+
+.btn--create {
+  color: #0f172a;
+  border-color: rgba(134, 239, 172, 0.65);
+  background: linear-gradient(135deg, #86efac 0%, #4ade80 45%, #22c55e 100%);
+}
+
+.btn--create:hover {
+  filter: brightness(1.05);
+}
+
+.btn--create:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn--visit {
+  color: #dbeafe;
+  border-color: rgba(96, 165, 250, 0.45);
+  background: rgba(59, 130, 246, 0.16);
+  text-decoration: none;
+}
+
+.btn--visit:hover {
+  background: rgba(59, 130, 246, 0.24);
 }
 </style>
