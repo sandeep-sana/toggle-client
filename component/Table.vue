@@ -103,7 +103,7 @@
 import { ref } from 'vue';
 import STATUS from '~~/status';
 import api from '~~/api.config';
-import Modal from '../modal/Modal.vue';
+import Modal from '../app/components/Modal.vue';
 import TableField from './TableField.vue';
 import { DATA_TYPE } from '~~/constant/master';
 import VueDatePicker from '@vuepic/vue-datepicker';

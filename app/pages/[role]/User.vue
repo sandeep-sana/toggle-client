@@ -90,7 +90,7 @@
 <script setup>
 import { reactive } from 'vue';
 import api from '~~/api.config';
-import Modal from '~~/modal/Modal.vue';
+// import Modal from '~~/modal/Modal.vue';
 import { ROLE, STATUS } from '~~/constant';
 import Multiselect from 'vue-multiselect';
 import { ErrorMessage, Field, Form } from 'vee-validate';

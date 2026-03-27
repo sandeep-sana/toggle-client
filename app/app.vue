@@ -1,90 +1,71 @@
-<template>
-  <div>
-    <ToastContainer />
-    <Header></Header>
-    <!-- <div :class="['d-flex', flexDirectionClass]"> -->
-      <!-- <HomeHeader v-if="showHomeHeader" /> -->
-      <!-- <SideHeader v-if="showSideHeader" :layout="layout" /> -->
-      <NuxtLayout>
-        <NuxtPage />
-      </NuxtLayout>
-    <!-- </div> -->
-    <!-- <HeaderSetting :layout="layout" @layoutChange="layoutChange" /> -->
-    <!-- <TaskList /> -->
+<template> <!-- SANDEEP SANA-->
+  <div class="app-shell">
+    <template v-if="isPublicRoute">
+      <Header />
+      <main class="app-shell__public">
+        <NuxtLayout>
+          <NuxtPage />
+        </NuxtLayout>
+      </main>
+    </template>
+
+    <template v-else>
+      <div class="app-shell__private">
+        <Sidebar class="app-shell__sidebar" />
+        <main class="app-shell__content">
+          <NuxtLayout>
+            <NuxtPage />
+          </NuxtLayout>
+        </main>
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup>
-  
-  // import { useRoute } from "vue-router";
-  // import "vue3-toastify/dist/index.css";
-  // import { computed, onMounted } from "vue";
-  import ToastContainer from "vue3-toastify";
-  import Header from '../component/Header.vue';
+import { useRoute } from 'vue-router';
 
-// import STATUS from "~~/status";
-// import api from "~~/api.config";
-// import TaskList from "../setting/TaskList.vue";
-// import HeaderSetting from "../setting/Header.vue";
-// import HomeHeader from "~~/headers/Home-Header.vue";
-// import SideHeader from "~~/headers/Side-Header.vue";
+const route = useRoute();
+const PUBLIC_ROUTES = ['/', '/login', '/signup'];
 
-// const route = useRoute();
-// const config = useRuntimeConfig();
-// const { $applyTheme, $session } = useNuxtApp();
-
-
-// const ACCESS = ["/", "/login", "/signup"];
-// const showHomeHeader = computed(() => ACCESS.includes(route.fullPath));
-// const showSideHeader = computed(() => !ACCESS.includes(route.fullPath));
-// const layout = ref({
-//   position: 'top',
-//   width: 20 || 'auto',
-//   height: 100 || 'auto',
-// })
-
-// const flexDirectionClass = computed(() => {
-//   if (!layout.value?.position) {
-//     layout.value = { position: 'top' };
-//   }
-//   switch (layout.value.position) {
-//     case 'top':
-//       return 'flex-column';
-//     case 'left':
-//       return 'flex-row';
-//     case 'right':
-//       return 'flex-row-reverse';
-//     default:
-//       return 'flex-row'; // fallback
-//   }
-// });
-
-// const layoutChange = (value) => {
-//   layout.value = value;
-// }
-
-// const fetchSetting = async () => {
-//   try {
-//     const query = {
-//       _id: $session(),
-//     }
-//     const response = await api.get(`${config.public.API}/setting/fetch`, {
-//       params: {
-//         query: JSON.stringify(query),
-//       }
-//     });
-//     if (response.status === STATUS.OK) {
-//       // layout.value.position = response.data.setting.headerPosition || 'left';
-//       layout.value.position =  'left';
-//     }
-
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
-// onMounted(async() => {
-//   await fetchSetting();
-
-// })
-
+const isPublicRoute = computed(() => PUBLIC_ROUTES.includes(route.path));
 </script>
+
+<style scoped>
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-shell__public {
+  min-height: calc(100vh - 72px);
+}
+
+.app-shell__private {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(230px, 272px) minmax(0, 1fr);
+}
+
+.app-shell__sidebar {
+  min-height: 100vh;
+}
+
+.app-shell__content {
+  min-width: 0;
+  padding: 1rem 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .app-shell__private {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell__sidebar {
+    min-height: auto;
+  }
+
+  .app-shell__content {
+    padding: 0.85rem 1rem 1rem;
+  }
+}
+</style>

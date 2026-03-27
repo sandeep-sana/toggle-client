@@ -140,7 +140,7 @@
 <script setup>
 import { onMounted, reactive, ref, watch } from 'vue';
 import api from '~~/api.config';
-import Modal from '~~/modal/Modal.vue';
+// import Modal from '~~/modal/Modal.vue';
 import FormBuilder from '../../../Builder/FormBuilder/FormBuilder.vue';
 import { STATUS } from '~~/constant';
 

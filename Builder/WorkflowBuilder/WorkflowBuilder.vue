@@ -13,7 +13,7 @@
   </Modal>
 </template>
 <script setup>
-import Modal from '~~/modal/Modal.vue';
+// import Modal from '~~/modal/Modal.vue';
 
 const hy = reactive({
   isShow: false,
